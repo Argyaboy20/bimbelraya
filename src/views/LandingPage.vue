@@ -135,7 +135,7 @@
     <div v-if="showChat" class="chat-window">
       <div class="chat-header">
         <span>💬 Asisten Bimbel Raya</span>
-        <button class="chat-close" @click="showChat = false">✕</button>
+        <button class="chat-close" @click="closeChat">✕</button>
       </div>
       <div class="chat-body" ref="chatBody">
         <div v-for="(msg, i) in chatMessages" :key="i" class="chat-msg" :class="msg.from">
@@ -203,6 +203,19 @@ const chatMessages = ref([
 
 const goToHelp = () => {
   showChat.value = !showChat.value
+  if (showChat.value) {
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+  } else {
+    document.body.style.overflow = ''
+    document.body.style.touchAction = ''
+  }
+}
+
+const closeChat = () => {
+  showChat.value = false
+  document.body.style.overflow = ''
+  document.body.style.touchAction = ''
 }
 
 const scrollChatToBottom = () => {
@@ -482,6 +495,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  document.body.style.overflow = ''
+  document.body.style.touchAction = ''
   clearInterval(autoPlay)
   clearTimeout(tooltipTimer)
   if (observer) observer.disconnect()
@@ -919,9 +934,9 @@ onUnmounted(() => {
   border-radius: 9999px;
   box-shadow: 0 8px 24px rgba(2, 75, 170, 0.4);
   cursor: pointer;
-  width: 230px;
-  padding: 0 20px;
-  height: 48  px;
+  width: 240px;
+  padding: 0 12px 0 16px;
+  height: 48px;
   overflow: hidden;
   transition:
     width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
@@ -930,8 +945,8 @@ onUnmounted(() => {
   bottom: calc(16px + env(safe-area-inset-bottom));
 }
 .help-float.is-pill {
-  width: 230px;
-  padding: 0 20px;
+  width: 240px;
+  padding: 0 12px 0 16px;
   border-radius: 9999px;
   justify-content: flex-start;
 }
@@ -960,7 +975,7 @@ onUnmounted(() => {
 }
 .help-text.visible {
   opacity: 1;
-  max-width: 200px;
+  max-width: 215px;
 }
 /* Ikon: hidden by default, animate in setelah pill → circle */
 .help-icon {
@@ -1048,10 +1063,10 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   margin: auto;
-  width: calc(100vw - 48px);
-  max-width: 360px;
-  height: fit-content;
-  max-height: 75vh;
+  width: calc(100vw - 32px);
+  max-width: 420px;
+  height: 80vh;
+  max-height: 80vh;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 12px 48px rgba(2, 75, 170, 0.22);
@@ -1105,7 +1120,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 0.6rem;
   background: #f4f7ff;
-  max-height: calc(75vh - 120px);
+  max-height: calc(80vh - 120px);
 }
 .chat-msg {
   display: flex;
@@ -1168,9 +1183,9 @@ onUnmounted(() => {
 
 /* =====================================================
    RESPONSIVE — Mobile-first
-   @media 641px  : ditambahkan jika perlu tweak kecil
-   @media 768px  : tablet
-   @media 1024px : desktop
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
    ===================================================== */
 
 /* ===== TABLET (≥ 641px) ===== */
