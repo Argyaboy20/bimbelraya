@@ -35,7 +35,7 @@
               @focus="touched.email = true"
               @blur="touched.email = true"
               :disabled="isLocked"
-              placeholder="admin@bimbelraya.com"
+              placeholder="masukkan email"
               autocomplete="off"
             />
             <p v-if="touched.email && emailError" class="field-alert">{{ emailError }}</p>

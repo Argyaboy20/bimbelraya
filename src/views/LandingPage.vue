@@ -523,7 +523,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1.5rem; /* Padding vertikal diperkecil dari 1rem → 0.5rem */
+  padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
   position: sticky;
@@ -532,11 +532,11 @@ onUnmounted(() => {
   box-shadow: 0 1px 8px rgba(0,0,0,0.08);
 }
 .navbar-logo {
-  height: 40px;
+  height: 32px;
   width: auto;
 }
 .btn-daftar {
-  padding: 0.5rem 1.5rem;
+  padding: 0.4rem 1rem;
   border-radius: 9999px;
   background: #024baa;
   color: #fff;
@@ -544,6 +544,7 @@ onUnmounted(() => {
   border: none;
   cursor: pointer;
   transition: transform 0.2s;
+  font-size: 0.8rem;
 }
 .btn-daftar:hover {
   transform: scale(1.05);
@@ -552,33 +553,34 @@ onUnmounted(() => {
 /* ===== HERO ===== */
 .hero {
   width: 100%;
-  padding: 4rem 1rem;
+  padding: 2.5rem 1rem 2rem;
   text-align: center;
   background: linear-gradient(135deg, #024baa 0%, #0367d4 50%, #60a5fa 100%);
 }
 .hero-title {
   color: #fff;
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 .hero-slogan {
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 .hero-subtitle {
   color: #bfdbfe;
   max-width: 42rem;
-  margin: 0 auto 3rem;
+  margin: 0 auto 2rem;
+  font-size: 0.875rem;
   line-height: 1.6;
 }
 
 /* ===== CAROUSEL ===== */
 .carousel-container {
-  perspective: 1200px;
-  height: 360px;
+ perspective: 700px;
+  height: 240px;
   position: relative;
   max-width: 900px;
   margin: 0 auto;
@@ -593,8 +595,8 @@ onUnmounted(() => {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 260px;
-  height: 320px;
+  width: 160px;
+  height: 200px;
   transform-origin: center center;
   border-radius: 16px;
   overflow: hidden;
@@ -633,12 +635,12 @@ onUnmounted(() => {
 /* ===== PROGRAMS ===== */
 .programs {
   width: 100%;
-  padding: 5rem 1.5rem;
+  padding: 3rem 1rem;
   background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
   text-align: center;
 }
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #024baa;
   margin-bottom: 1rem;
@@ -648,22 +650,23 @@ onUnmounted(() => {
 }
 .section-subtitle {
   color: #4b5563;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  font-size: 0.875rem;
   max-width: 32rem;
   margin-left: auto;
   margin-right: auto;
 }
 .programs-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
   max-width: 900px;
   margin: 0 auto;
 }
 .program-card {
   background: #fff;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.25rem 1rem;
   text-align: center;
   box-shadow: 0 4px 16px rgba(2,75,170,0.08);
   transition: transform 0.3s, box-shadow 0.3s;
@@ -673,7 +676,7 @@ onUnmounted(() => {
   box-shadow: 0 16px 40px rgba(2, 75, 170, 0.2);
 }
 .program-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-bottom: 0.75rem;
 }
 .program-title {
@@ -690,16 +693,16 @@ onUnmounted(() => {
 /* ===== WHY US ===== */
 .why-us {
   width: 100%;
-  padding: 5rem 1.5rem;
+  padding: 3rem 1rem;
   background: #024baa;
   text-align: center;
 }
 .why-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
   max-width: 900px;
-  margin: 3rem auto 0;
+  margin: 2rem auto 0;
 }
 .why-card {
   text-align: center;
@@ -722,12 +725,12 @@ onUnmounted(() => {
 /* ===== CTA ===== */
 .cta {
   width: 100%;
-  padding: 5rem 1.5rem;
+  padding: 3rem 1rem;
   text-align: center;
   background: linear-gradient(135deg, #024baa, #0367d4);
 }
 .cta-title {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #fff;
   margin-bottom: 1rem;
@@ -735,15 +738,17 @@ onUnmounted(() => {
 .cta-desc {
   color: #bfdbfe;
   max-width: 32rem;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem;
+  font-size: 0.875rem;
+  text-align: center;
 }
 .btn-cta {
-  padding: 0.75rem 2rem;
+  padding: 0.65rem 1.5rem;
   border-radius: 9999px;
   background: #fff;
   color: #024baa;
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   transition: transform 0.2s;
@@ -755,26 +760,28 @@ onUnmounted(() => {
 /* ===== FOOTER ===== */
 .footer {
   width: 100%;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   background: #f9fafb;
   color: #6b7280;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 /* ===== TESTIMONIAL ===== */
 .testimonial {
   width: 100%;
-  padding: 5rem 0;
+  padding: 3rem 0;
   background: #ffffff;
   text-align: center;
   overflow: hidden;
 }
 .testimonial .section-title {
   margin-bottom: 1rem;
+  padding: 0 1rem;
 }
 .testimonial .section-subtitle {
-  margin-bottom: 3rem;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
 }
 
 /* Viewport: full lebar layar, clip overflow */
@@ -801,12 +808,12 @@ onUnmounted(() => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 396px;
-  min-height: 140px;
+  width: 280px;
+  min-height: 130px;
   background: #f8faff;
   border: 2px solid #e2eaf8;
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 1rem;
   gap: 0;
   flex-shrink: 0;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -831,15 +838,15 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 90px;
+  min-width: 68px;
   gap: 0.5rem;
   flex-shrink: 0;
 }
 .testi-avatar {
-  font-size: 2.6rem;
+  font-size: 1.8rem;
   line-height: 1;
-  width: 58px;
-  height: 58px;
+  width: 44px; 
+  height: 44px;
   border-radius: 50%;
   background: #e8f0fe;
   display: flex;
@@ -847,7 +854,7 @@ onUnmounted(() => {
   justify-content: center;
 }
 .testi-name {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #024baa;
   text-align: center;
@@ -859,7 +866,7 @@ onUnmounted(() => {
   width: 1.5px;
   align-self: stretch;
   background: #d1ddf5;
-  margin: 0 1.1rem;
+  margin: 0 0.65rem;
   flex-shrink: 0;
   border-radius: 2px;
 }
@@ -871,9 +878,9 @@ onUnmounted(() => {
   align-items: center;
 }
 .testi-quote {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: #374151;
-  line-height: 1.6;
+  line-height: 1.5;
   text-align: left;
 }
 .testi-card.testi-active .testi-quote {
@@ -901,8 +908,8 @@ onUnmounted(() => {
 /* ===== FLOATING HELP ===== */
 .help-float {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 16px;
+  right: 16px;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -912,23 +919,25 @@ onUnmounted(() => {
   border-radius: 9999px;
   box-shadow: 0 8px 24px rgba(2, 75, 170, 0.4);
   cursor: pointer;
-  width: 260px;
+  width: 230px;
   padding: 0 20px;
-  height: 56px;
+  height: 48  px;
   overflow: hidden;
   transition:
     width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
     padding 0.6s cubic-bezier(0.4, 0, 0.2, 1),
     border-radius 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  bottom: calc(16px + env(safe-area-inset-bottom));
 }
 .help-float.is-pill {
-  width: 260px;
+  width: 230px;
   padding: 0 20px;
   border-radius: 9999px;
   justify-content: flex-start;
 }
 .help-float.is-btn {
-  width: 56px;
+  width: 48px; 
+  height: 48px;
   padding: 0;
   border-radius: 50%;
   justify-content: center;
@@ -939,7 +948,7 @@ onUnmounted(() => {
 }
 /* Teks: tampil saat pill, hilang saat circle */
 .help-text {
-  font-size: 13px;
+  font-size: 11px;
   white-space: nowrap;
   font-weight: 500;
   flex: 1;
@@ -1039,9 +1048,10 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   margin: auto;
-  width: 320px;
+  width: calc(100vw - 48px);
+  max-width: 360px;
   height: fit-content;
-  max-height: 480px;
+  max-height: 75vh;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 12px 48px rgba(2, 75, 170, 0.22);
@@ -1095,7 +1105,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 0.6rem;
   background: #f4f7ff;
-  max-height: 320px;
+  max-height: calc(75vh - 120px);
 }
 .chat-msg {
   display: flex;
@@ -1158,181 +1168,13 @@ onUnmounted(() => {
 
 /* =====================================================
    RESPONSIVE — Mobile-first
-   Default  : ≤ 639px  (mobile)
-   @media 640px  : ditambahkan jika perlu tweak kecil
+   @media 641px  : ditambahkan jika perlu tweak kecil
    @media 768px  : tablet
    @media 1024px : desktop
    ===================================================== */
 
-/* ===== MOBILE DEFAULT (≤ 639px) ===== */
-@media (max-width: 639px) {
-
-  /* Navbar */
-  .navbar {
-    padding: 0.5rem 1rem;
-  }
-  .navbar-logo {
-    height: 32px;
-  }
-  .btn-daftar {
-    padding: 0.4rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  /* Hero */
-  .hero {
-    padding: 2.5rem 1rem 2rem;
-  }
-  .hero-title {
-    font-size: 1.75rem;
-  }
-  .hero-slogan {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-  .hero-subtitle {
-    font-size: 0.875rem;
-    margin-bottom: 2rem;
-  }
-
-  /* Carousel foto */
-  .carousel-container {
-    height: 240px;
-    perspective: 700px;
-  }
-  .carousel-card {
-    width: 160px;
-    height: 200px;
-  }
-
-  /* Programs */
-  .programs {
-    padding: 3rem 1rem;
-  }
-  .programs-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  .program-card {
-    padding: 1.25rem 1rem;
-  }
-  .program-icon {
-    font-size: 2rem;
-  }
-
-  /* Why us */
-  .why-us {
-    padding: 3rem 1rem;
-  }
-  .why-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  /* Testimonial */
-  .testimonial {
-    padding: 3rem 0;
-  }
-  .testimonial .section-title {
-    font-size: 1.4rem;
-    padding: 0 1rem;
-  }
-  .testimonial .section-subtitle {
-    font-size: 0.85rem;
-    padding: 0 1rem;
-    margin-bottom: 2rem;
-  }
-  .testi-card {
-    width: 280px;
-    min-height: 130px;
-    padding: 1rem;
-  }
-  .testi-left {
-    min-width: 68px;
-  }
-  .testi-avatar {
-    width: 44px;
-    height: 44px;
-    font-size: 1.8rem;
-  }
-  .testi-name {
-    font-size: 0.7rem;
-  }
-  .testi-divider {
-    margin: 0 0.65rem;
-  }
-  .testi-quote {
-    font-size: 0.72rem;
-    line-height: 1.5;
-  }
-
-  /* Section headings */
-  .section-title {
-    font-size: 1.4rem;
-  }
-  .section-subtitle {
-    font-size: 0.875rem;
-    margin-bottom: 2rem;
-  }
-
-  /* CTA */
-  .cta {
-    padding: 3rem 1rem;
-  }
-  .cta-title {
-    font-size: 1.4rem;
-  }
-  .cta-desc {
-    font-size: 0.875rem;
-    margin-bottom: 1.5rem;
-  }
-  .btn-cta {
-    font-size: 1rem;
-    padding: 0.65rem 1.5rem;
-  }
-
-  /* Footer */
-  .footer {
-    padding: 1.5rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  /* Help float — mobile sedikit lebih kecil supaya tidak makan ruang */
-  .help-float {
-    bottom: 16px;
-    right: 16px;
-    height: 48px;
-    width: 230px;
-  }
-  .help-float.is-pill {
-    width: 230px;
-  }
-  .help-float.is-btn {
-    width: 48px;
-    height: 48px;
-  }
-  .help-text {
-    font-size: 11px;
-  }
-
-  .chat-window {
-      width: calc(100vw - 48px);
-      max-width: 360px;
-      max-height: 75vh;
-  }
-  .chat-body {
-      max-height: calc(75vh - 120px);
-  }
-
-  /* Modal */
-  .modal-box {
-    padding: 1.5rem;
-  }
-}
-
-/* ===== TABLET (≥ 640px) ===== */
-@media (min-width: 640px) {
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
 
   /* Navbar */
   .navbar {
@@ -1437,6 +1279,7 @@ onUnmounted(() => {
     right: 20px;
     height: 52px;
     width: 248px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
   }
   .help-float.is-pill {
     width: 248px;
@@ -1498,7 +1341,7 @@ onUnmounted(() => {
 
   /* Programs */
   .programs {
-    padding: 5rem 2rem;
+    padding: 3.5rem 2rem;
   }
   .programs-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1514,7 +1357,7 @@ onUnmounted(() => {
 
   /* Why us */
   .why-us {
-    padding: 5rem 2rem;
+    padding: 3.5rem 2rem;
   }
   .why-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1528,7 +1371,7 @@ onUnmounted(() => {
 
   /* Testimonial */
   .testimonial {
-    padding: 5rem 0;
+    padding: 3.5rem 0;
   }
   .testi-card {
     width: 396px;
@@ -1565,7 +1408,7 @@ onUnmounted(() => {
 
   /* CTA */
   .cta {
-    padding: 5rem 2rem;
+    padding: 3.5rem 2rem;
   }
   .cta-title {
     font-size: 1.75rem;
@@ -1591,6 +1434,7 @@ onUnmounted(() => {
     right: 24px;
     height: 56px;
     width: 260px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
   }
   .help-float.is-pill {
     width: 260px;
@@ -1620,7 +1464,7 @@ onUnmounted(() => {
   }
 
   .hero {
-    padding: 5rem 2rem 4rem;
+    padding: 4rem 2rem 3.5rem;
   }
   .hero-title {
     font-size: 2.75rem;
@@ -1630,25 +1474,25 @@ onUnmounted(() => {
   }
 
   .programs {
-    padding: 6rem 2rem;
+    padding: 4rem 2rem;
   }
   .programs-grid {
     max-width: 1100px;
   }
 
   .why-us {
-    padding: 6rem 2rem;
+    padding: 4rem 2rem;
   }
   .why-grid {
     max-width: 1100px;
   }
 
   .testimonial {
-    padding: 6rem 0;
+    padding: 4rem 0;
   }
 
   .cta {
-    padding: 6rem 2rem;
+    padding: 4rem 2rem;
   }
   .cta-title {
     font-size: 2rem;
