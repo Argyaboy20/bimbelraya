@@ -180,7 +180,6 @@ const handleSubmit = () => {
   justify-content: center;
   padding: 2rem 1rem;
   overflow: hidden;
-  /* Background sedikit beda arah & nuansa dari SignInPage */
   background: linear-gradient(135deg, #fdf3e7 0%, #fbe7d6 45%, #fde8d8 100%);
 }
 
@@ -198,26 +197,25 @@ const handleSubmit = () => {
   filter: blur(60px);
   opacity: 0.55;
 }
-/* Posisi blob dibalik kanan-kiri dari SignInPage agar terasa beda */
 .blob-1 {
-  width: 360px;
-  height: 360px;
+  width: 280px;
+  height: 280px;
   background: #2E87F6;
-  top: -90px;
-  right: -100px;
+  top: -80px;
+  right: -80px;
   animation: floatBlob1 15s ease-in-out infinite;
 }
 .blob-2 {
-  width: 300px;
-  height: 300px;
+  width: 240px;
+  height: 240px;
   background: #F9ECCC;
-  bottom: -80px;
-  left: -60px;
+  bottom: -60px;
+  left: -50px;
   animation: floatBlob2 17s ease-in-out infinite;
 }
 .blob-3 {
-  width: 220px;
-  height: 220px;
+  width: 180px;
+  height: 180px;
   background: #F35C2B;
   top: 38%;
   left: 8%;
@@ -225,8 +223,8 @@ const handleSubmit = () => {
   animation: floatBlob3 13s ease-in-out infinite;
 }
 .blob-4 {
-  width: 260px;
-  height: 260px;
+  width: 200px;
+  height: 200px;
   background: #2E87F6;
   bottom: 8%;
   right: 6%;
@@ -247,17 +245,26 @@ const handleSubmit = () => {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(-30px, -40px) scale(1.2); }
 }
+@keyframes floatRing1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -25px) scale(1.1); }
+  66% { transform: translate(-15px, 15px) scale(0.95); }
+}
+@keyframes floatRing2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20px, 20px) scale(1.15); }
+}
 
 /* ===== WRAPPER ===== */
 .login-wrapper {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 460px;
+  max-width: 420px;
   display: flex;
 }
 
-/* ===== SIDE PANEL (Desktop only, hidden default) ===== */
+/* ===== SIDE PANEL (muncul mulai desktop) ===== */
 .side-panel {
   display: none;
 }
@@ -267,8 +274,8 @@ const handleSubmit = () => {
   width: 100%;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
+  border-radius: 22px;
+  padding: 2.25rem 1.5rem;
   box-shadow: 0 20px 60px rgba(46, 135, 246, 0.12), 0 4px 16px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
@@ -276,30 +283,30 @@ const handleSubmit = () => {
 }
 
 .form-logo {
-  height: 56px;
+  height: 48px;
   width: auto;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
 }
 
 .form-title {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
   text-align: center;
   margin-bottom: 0.25rem;
 }
 .form-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   color: #6b7280;
   text-align: center;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1rem;
 }
 
 /* ===== FIELD GROUP ===== */
@@ -309,17 +316,17 @@ const handleSubmit = () => {
   width: 100%;
 }
 .field-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #374151;
   margin-bottom: 0.4rem;
 }
 .field-input {
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
   border: 1.5px solid #e5e7eb;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   background: #fff;
@@ -336,7 +343,7 @@ const handleSubmit = () => {
 }
 
 .field-alert {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: #F35C2B;
   margin-top: 0.35rem;
   line-height: 1.3;
@@ -365,13 +372,13 @@ const handleSubmit = () => {
 /* ===== SUBMIT BUTTON ===== */
 .btn-submit {
   width: 100%;
-  padding: 0.85rem;
+  padding: 0.8rem;
   border-radius: 12px;
   border: none;
   background: #2E87F6;
   color: #fff;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   margin-top: 0.5rem;
   transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
@@ -389,7 +396,7 @@ const handleSubmit = () => {
 
 .login-redirect {
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #6b7280;
   margin-top: 0.75rem;
 }
@@ -403,42 +410,114 @@ const handleSubmit = () => {
   text-decoration: underline;
 }
 
-/* ============================================
-   DESKTOP — form di KIRI, panel dekorasi di KANAN
-   (posisi ditukar dari SignInPage.vue)
-   ============================================ */
-@media (min-width: 1024px) {
+/* =====================================================
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
+
+  .login-page {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .blob-1 { width: 320px; height: 320px; }
+  .blob-2 { width: 270px; height: 270px; }
+  .blob-3 { width: 200px; height: 200px; }
+  .blob-4 { width: 230px; height: 230px; }
+
   .login-wrapper {
-    max-width: 920px;
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 30px 80px rgba(46, 135, 246, 0.15), 0 8px 24px rgba(0,0,0,0.06);
+    max-width: 480px;
   }
 
   .form-card {
-    order: 1; /* form di kiri */
-    width: 58%;
+    border-radius: 24px;
+    padding: 2.75rem 2.25rem;
+  }
+  .form-logo {
+    height: 56px;
+    margin-bottom: 1.25rem;
+  }
+  .form-title {
+    font-size: 1.4rem;
+  }
+  .form-subtitle {
+    font-size: 0.88rem;
+    margin-bottom: 1.75rem;
+  }
+  .form-body {
+    gap: 1.1rem;
+  }
+
+  .field-label {
+    font-size: 0.8rem;
+  }
+  .field-input {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.92rem;
+  }
+  .field-alert {
+    font-size: 0.74rem;
+  }
+
+  .btn-submit {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+  }
+  .login-redirect {
+    font-size: 0.8rem;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) — layout 2 kolom mulai aktif ===== */
+@media (min-width: 768px) {
+
+  .login-page {
+    padding: 3rem 2rem;
+  }
+
+  .login-wrapper {
+    max-width: 760px;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 28px 70px rgba(46, 135, 246, 0.14), 0 6px 20px rgba(0,0,0,0.05);
+  }
+
+  /* Form di kiri */
+  .form-card {
+    order: 1;
+    width: 56%;
     border-radius: 0;
     box-shadow: none;
-    padding: 3rem 3rem;
+    padding: 2.75rem 2.5rem;
     background: #ffffff;
   }
   .form-logo {
-    display: none; /* Logo sudah ada di side panel */
+    display: none; /* logo sudah ada di side panel */
+  }
+  .form-title {
+    font-size: 1.45rem;
+    text-align: left;
+  }
+  .form-subtitle {
+    text-align: left;
+    margin-bottom: 1.75rem;
   }
 
+  /* Panel dekorasi di kanan */
   .side-panel {
-    order: 2; /* panel dekorasi di kanan */
+    order: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 42%;
-    /* Gradient arah dibalik & warna utama beda dari SignInPage (oranye → biru) */
+    width: 44%;
     background: linear-gradient(200deg, #F35C2B 0%, #d6441a 60%, #a8330f 100%);
     overflow: hidden;
-    padding: 3rem 2rem;
+    padding: 2.5rem 1.5rem;
   }
 
   .side-decoration {
@@ -450,28 +529,28 @@ const handleSubmit = () => {
     opacity: 0.5;
   }
   .side-blob-1 {
-    width: 260px;
-    height: 260px;
+    width: 200px;
+    height: 200px;
     background: #2E87F6;
-    top: -60px;
-    right: -60px;
+    top: -50px;
+    right: -50px;
     animation: floatBlob1 14s ease-in-out infinite;
   }
   .side-blob-2 {
-    width: 220px;
-    height: 220px;
+    width: 170px;
+    height: 170px;
     background: #F9ECCC;
-    bottom: -60px;
-    left: -50px;
+    bottom: -50px;
+    left: -40px;
     opacity: 0.4;
     animation: floatBlob2 16s ease-in-out infinite;
   }
   .side-blob-3 {
-    width: 160px;
-    height: 160px;
+    width: 120px;
+    height: 120px;
     background: #F9ECCC;
     top: 55%;
-    right: 60%;
+    right: 58%;
     opacity: 0.25;
     animation: floatBlob3 12s ease-in-out infinite;
   }
@@ -481,28 +560,19 @@ const handleSubmit = () => {
     border-radius: 50%;
   }
   .ring-1 {
-    width: 140px;
-    height: 140px;
+    width: 110px;
+    height: 110px;
     top: 18%;
     left: 10%;
     animation: floatRing1 10s ease-in-out infinite;
   }
   .ring-2 {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     bottom: 15%;
     right: 12%;
     border-color: rgba(46, 135, 246, 0.5);
     animation: floatRing2 12s ease-in-out infinite;
-  }
-  @keyframes floatRing1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(20px, -25px) scale(1.1); }
-    66% { transform: translate(-15px, 15px) scale(0.95); }
-  }
-  @keyframes floatRing2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-20px, 20px) scale(1.15); }
   }
 
   .side-content {
@@ -511,23 +581,94 @@ const handleSubmit = () => {
     text-align: center;
   }
   .side-logo {
-    height: 64px;
+    height: 52px;
     width: auto;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     filter: brightness(0) invert(1);
   }
   .side-title {
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.65rem;
   }
   .side-desc {
     color: #fde3d4;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    max-width: 260px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 210px;
     margin: 0 auto;
+  }
+}
+
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
+@media (min-width: 1024px) {
+
+  .login-wrapper {
+    max-width: 920px;
+    box-shadow: 0 30px 80px rgba(46, 135, 246, 0.15), 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  .form-card {
+    width: 58%;
+    padding: 3rem 3rem;
+  }
+  .form-title {
+    font-size: 1.5rem;
+  }
+  .form-subtitle {
+    font-size: 0.9rem;
+  }
+  .field-input {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+  }
+  .btn-submit {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+  }
+
+  .side-panel {
+    width: 42%;
+    padding: 3rem 2rem;
+  }
+  .side-blob-1 {
+    width: 260px;
+    height: 260px;
+    top: -60px;
+    right: -60px;
+  }
+  .side-blob-2 {
+    width: 220px;
+    height: 220px;
+    bottom: -60px;
+    left: -50px;
+  }
+  .side-blob-3 {
+    width: 160px;
+    height: 160px;
+    top: 55%;
+    right: 60%;
+  }
+  .ring-1 {
+    width: 140px;
+    height: 140px;
+  }
+  .ring-2 {
+    width: 90px;
+    height: 90px;
+  }
+  .side-logo {
+    height: 64px;
+    margin-bottom: 1.5rem;
+  }
+  .side-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .side-desc {
+    font-size: 0.9rem;
+    max-width: 260px;
   }
 }
 </style>

@@ -304,6 +304,9 @@ const handleSubmit = async () => {
   box-sizing: border-box;
 }
 
+/* =====================================================
+   MOBILE (default, < 641px)
+   ===================================================== */
 .login-admin-page {
   position: relative;
   min-height: 100vh;
@@ -330,24 +333,24 @@ const handleSubmit = async () => {
   opacity: 0.25;
 }
 .blob-1 {
-  width: 360px;
-  height: 360px;
+  width: 260px;
+  height: 260px;
   background: #2E87F6;
-  top: -100px;
-  left: -80px;
+  top: -80px;
+  left: -60px;
   animation: floatBlob1 16s ease-in-out infinite;
 }
 .blob-2 {
-  width: 280px;
-  height: 280px;
+  width: 210px;
+  height: 210px;
   background: #F35C2B;
-  bottom: -80px;
-  right: -60px;
+  bottom: -60px;
+  right: -50px;
   animation: floatBlob2 18s ease-in-out infinite;
 }
 .blob-3 {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   background: #2E87F6;
   top: 45%;
   right: 10%;
@@ -371,37 +374,37 @@ const handleSubmit = async () => {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
 }
 
 .form-card {
   background: rgba(255, 255, 255, 0.97);
-  border-radius: 20px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+  border-radius: 18px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .form-logo {
-  height: 52px;
+  height: 44px;
   width: auto;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
 }
 
 .form-title {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #1a2332;
   text-align: center;
   margin-bottom: 0.25rem;
 }
 .form-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   color: #6b7280;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.4rem;
 }
 
 .lockout-warning {
@@ -409,10 +412,10 @@ const handleSubmit = async () => {
   background: #fef2f2;
   border: 1.5px solid #fca5a5;
   color: #b91c1c;
-  font-size: 0.82rem;
-  padding: 0.7rem 0.9rem;
+  font-size: 0.78rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
   text-align: center;
 }
 
@@ -420,7 +423,7 @@ const handleSubmit = async () => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1rem;
 }
 
 .field-group {
@@ -429,17 +432,17 @@ const handleSubmit = async () => {
   width: 100%;
 }
 .field-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #374151;
   margin-bottom: 0.4rem;
 }
 .field-input {
   width: 100%;
-  padding: 0.7rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   border-radius: 10px;
   border: 1.5px solid #e5e7eb;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   background: #fff;
@@ -457,13 +460,13 @@ const handleSubmit = async () => {
 }
 
 .field-alert {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: #F35C2B;
   margin-top: 0.35rem;
   line-height: 1.3;
 }
 .field-hint {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #9ca3af;
   margin-top: 0.35rem;
   font-style: italic;
@@ -498,7 +501,7 @@ const handleSubmit = async () => {
   background: #fef2f2;
   border: 1px solid #fca5a5;
   color: #b91c1c;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   padding: 0.6rem 0.8rem;
   border-radius: 8px;
   text-align: center;
@@ -506,13 +509,13 @@ const handleSubmit = async () => {
 
 .btn-submit {
   width: 100%;
-  padding: 0.85rem;
+  padding: 0.8rem;
   border-radius: 12px;
   border: none;
   background: #1a2332;
   color: #fff;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   margin-top: 0.25rem;
   transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
@@ -533,11 +536,172 @@ const handleSubmit = async () => {
   margin-top: 0.75rem;
 }
 .link-text {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: #6b7280;
   text-decoration: none;
 }
 .link-text:hover {
   text-decoration: underline;
+}
+
+/* =====================================================
+   BREAKPOINTS (sama seperti LandingPage.vue, LoginPage.vue, SignInPage.vue)
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   Catatan: LoginAdmin tetap 1 kolom (tanpa side panel) di semua ukuran,
+   jadi yang berubah hanya lebar card, padding, dan skala font/elemen.
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
+
+  .login-admin-page {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .blob-1 { width: 300px; height: 300px; }
+  .blob-2 { width: 240px; height: 240px; }
+  .blob-3 { width: 180px; height: 180px; }
+
+  .login-wrapper {
+    max-width: 420px;
+  }
+
+  .form-card {
+    border-radius: 20px;
+    padding: 2.25rem 1.75rem;
+  }
+  .form-logo {
+    height: 48px;
+    margin-bottom: 1.2rem;
+  }
+  .form-title {
+    font-size: 1.25rem;
+  }
+  .form-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .lockout-warning {
+    font-size: 0.8rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .form-body {
+    gap: 1.05rem;
+  }
+
+  .field-label {
+    font-size: 0.8rem;
+  }
+  .field-input {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.88rem;
+  }
+  .field-alert {
+    font-size: 0.74rem;
+  }
+  .field-hint {
+    font-size: 0.7rem;
+  }
+
+  .login-error-alert {
+    font-size: 0.8rem;
+  }
+
+  .btn-submit {
+    padding: 0.85rem;
+    font-size: 0.92rem;
+  }
+  .link-text {
+    font-size: 0.78rem;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) ===== */
+@media (min-width: 768px) {
+
+  .login-admin-page {
+    padding: 3rem 2rem;
+  }
+
+  .blob-1 { width: 340px; height: 340px; }
+  .blob-2 { width: 260px; height: 260px; }
+  .blob-3 { width: 190px; height: 190px; }
+
+  .login-wrapper {
+    max-width: 440px;
+  }
+
+  .form-card {
+    border-radius: 22px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.35);
+  }
+  .form-logo {
+    height: 52px;
+    margin-bottom: 1.25rem;
+  }
+  .form-title {
+    font-size: 1.35rem;
+  }
+  .form-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .form-body {
+    gap: 1.1rem;
+  }
+
+  .field-input {
+    padding: 0.72rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-submit {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
+@media (min-width: 1024px) {
+
+  .login-admin-page {
+    padding: 3rem 2rem;
+  }
+
+  .blob-1 { width: 380px; height: 380px; top: -110px; left: -90px; }
+  .blob-2 { width: 300px; height: 300px; bottom: -90px; right: -70px; }
+  .blob-3 { width: 220px; height: 220px; }
+
+  .login-wrapper {
+    max-width: 460px;
+  }
+
+  .form-card {
+    padding: 2.75rem 2.25rem;
+  }
+  .form-logo {
+    height: 56px;
+  }
+  .form-title {
+    font-size: 1.45rem;
+  }
+  .form-subtitle {
+    font-size: 0.88rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .field-label {
+    font-size: 0.82rem;
+  }
+  .field-input {
+    padding: 0.75rem 0.95rem;
+    font-size: 0.92rem;
+  }
 }
 </style>

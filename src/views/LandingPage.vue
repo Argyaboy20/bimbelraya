@@ -132,6 +132,8 @@
     </div>
 
     <!-- ===== CHAT BANTUAN ===== -->
+    <div v-if="showChat" class="chat-overlay" @click="closeChat"></div>
+
     <div v-if="showChat" class="chat-window">
       <div class="chat-header">
         <span>💬 Asisten Bimbel Raya</span>
@@ -1065,8 +1067,8 @@ onUnmounted(() => {
   margin: auto;
   width: calc(100vw - 32px);
   max-width: 420px;
-  height: 80vh;
-  max-height: 80vh;
+  height: auto;
+  max-height: 75vh;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 12px 48px rgba(2, 75, 170, 0.22);
@@ -1077,15 +1079,13 @@ onUnmounted(() => {
   animation: chatFadeIn 0.25s ease-out;
 }
 
-/* Overlay gelap blur di belakang chat */
-.chat-window::before {
-  content: '';
+.chat-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
-  z-index: -1;
+  z-index: 9997;   /* di bawah chat-window (9998) */
 }
 
 @keyframes chatFadeIn {
@@ -1120,7 +1120,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 0.6rem;
   background: #f4f7ff;
-  max-height: calc(80vh - 120px);
+  max-height: calc(75vh - 120px);
 }
 .chat-msg {
   display: flex;
@@ -1306,6 +1306,7 @@ onUnmounted(() => {
 
   .chat-window {
     width: 380px;
+    height: auto;
     max-height: 500px;
   }
   .chat-body {
@@ -1464,6 +1465,7 @@ onUnmounted(() => {
 
   .chat-window {
     width: 360px;
+    height: auto;
     max-height: 500px;
   }
   .chat-body {
