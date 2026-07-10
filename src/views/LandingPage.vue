@@ -102,6 +102,41 @@
       </div>
     </section>
 
+    <!-- ===== DAERAH LAYANAN ===== -->
+    <!-- Ref="sectionServiceArea" untuk scroll animation dari kanan -->
+    <section class="service-area animate-section animate-from-right" ref="sectionServiceArea">
+      <h2 class="section-title white">Daerah Layanan</h2>
+      <p class="section-subtitle light">
+        Bimbel Raya sudah melayani berbagai kota, tersebar di 4 wilayah berikut.
+      </p>
+      <div class="service-grid">
+        <div v-for="area in serviceAreas" :key="area.id" class="service-card">
+          <div class="service-icon">{{ area.icon }}</div>
+          <h3 class="service-title">{{ area.title }}</h3>
+          <div class="service-cities">
+            <span v-for="(city, i) in area.cities" :key="i" class="service-city-tag">{{ city }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CARA BERGABUNG ===== -->
+    <!-- Ref="sectionHowItWorks" untuk scroll animation dari kiri -->
+    <section class="how-it-works animate-section animate-from-left" ref="sectionHowItWorks">
+      <h2 class="section-title">Bagaimana Cara Bergabung?</h2>
+      <p class="section-subtitle">
+        Cuma 4 langkah mudah untuk mulai belajar bersama tentor Bimbel Raya.
+      </p>
+      <div class="steps-grid">
+        <div v-for="(step, index) in howItWorks" :key="step.id" class="step-card">
+          <div class="step-number">{{ index + 1 }}</div>
+          <div class="step-icon">{{ step.icon }}</div>
+          <h3 class="step-title">{{ step.title }}</h3>
+          <p class="step-desc">{{ step.desc }}</p>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== CTA ===== -->
     <!-- Ref="sectionCta" untuk scroll animation dari kiri -->
     <section class="cta animate-section" ref="sectionCta">
@@ -300,6 +335,69 @@ const whyUs = ref([
     icon: '🎯',
     title: 'Kurikulum Personal',
     desc: 'Materi disesuaikan dengan kebutuhan dan kecepatan belajar tiap siswa.'
+  },
+  {
+    id: 4,
+    icon: '🏠',
+    title: 'Home Visit',
+    desc: 'Menerapkan home visit atau tentor datang langsung ke rumah walimurid yang buat jadi makin nyaman.'
+  }
+])
+
+// ===== DATA DAERAH LAYANAN =====
+const serviceAreas = ref([
+  {
+    id: 1,
+    icon: '🕌',
+    title: 'Kudus dan Sekitarnya',
+    cities: ['Kudus', 'Jepara', 'Rembang', 'Purwodadi', 'Gebog', 'Grobogan']
+  },
+  {
+    id: 2,
+    icon: '🚆',
+    title: 'Madiun dan Sekitarnya',
+    cities: ['Madiun', 'Wonosobo', 'Ngawi', 'Nganjuk', 'Kediri', 'Purwokerto']
+  },
+  {
+    id: 3,
+    icon: '🏛️',
+    title: 'Semarang dan Sekitarnya',
+    cities: ['Semarang', 'Kendal', 'Ungaran', 'Salatiga']
+  },
+  {
+    id: 4,
+    icon: '🏯',
+    title: 'Demak, Jogja dan Sekitarnya',
+    cities: ['Demak', 'Mranggen', 'Mijen', 'Yogyakarta', 'Sleman', 'Bantul', 'GunungKidul', 'KulonProgo', 'Solo', 'Boyolali', 'Sukoharjo', 'Karanganyar', 'Wonogiri', 'Sragen', 'Klaten']
+  }
+])
+
+// ===== DATA CARA BERGABUNG =====
+// Section usulan Claude, silakan dikoreksi kalau ada yang mau diubah
+const howItWorks = ref([
+  {
+    id: 1,
+    icon: '💬',
+    title: 'Hubungi Kami',
+    desc: 'Klik tombol daftar dan kirim pesan via WhatsApp ke tim Bimbel Raya.'
+  },
+  {
+    id: 2,
+    icon: '📝',
+    title: 'Konsultasi Kebutuhan',
+    desc: 'Ceritakan jenjang, mata pelajaran, dan jadwal belajar yang diinginkan.'
+  },
+  {
+    id: 3,
+    icon: '🧑‍🏫',
+    title: 'Tentor Dijadwalkan',
+    desc: 'Kami carikan tentor yang sesuai dan atur jadwal home visit ke rumah.'
+  },
+  {
+    id: 4,
+    icon: '🚀',
+    title: 'Mulai Belajar',
+    desc: 'Anak mulai belajar rutin dan perkembangannya dipantau bersama.'
   }
 ])
 
@@ -442,6 +540,8 @@ const tickTesti = (timestamp) => {
 const sectionPrograms = ref(null)
 const sectionWhy = ref(null)
 const sectionTestimonial = ref(null)
+const sectionServiceArea = ref(null)
+const sectionHowItWorks = ref(null)
 const sectionCta = ref(null)
 
 let observer = null
@@ -464,6 +564,8 @@ onMounted(() => {
     sectionPrograms.value,
     sectionWhy.value,
     sectionTestimonial.value,
+    sectionServiceArea.value,
+    sectionHowItWorks.value,
     sectionCta.value
   ]
 
@@ -673,6 +775,9 @@ onUnmounted(() => {
   margin-left: auto;
   margin-right: auto;
 }
+.section-subtitle.light {
+  color: #bfdbfe;
+}
 .programs-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -737,6 +842,119 @@ onUnmounted(() => {
 .why-desc {
   font-size: 0.875rem;
   color: #bfdbfe;
+}
+
+/* ===== DAERAH LAYANAN ===== */
+.service-area {
+  width: 100%;
+  padding: 3rem 1rem;
+  background: #024baa;
+  text-align: center;
+}
+.service-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.service-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.service-card:hover,
+.service-card:active {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+.service-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+.service-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+.service-cities {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.service-city-tag {
+  font-size: 0.75rem;
+  color: #eaf2ff;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+}
+
+/* ===== CARA BERGABUNG ===== */
+.how-it-works {
+  width: 100%;
+  padding: 3rem 1rem;
+  background: #ffffff;
+  text-align: center;
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 2rem auto 0;
+}
+.step-card {
+  position: relative;
+  text-align: center;
+  background: #f8faff;
+  border-radius: 16px;
+  padding: 1.75rem 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.step-card:hover,
+.step-card:active {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(2, 75, 170, 0.2);
+}
+.step-number {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #024baa;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step-icon {
+  font-size: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.step-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #024baa;
+  margin-bottom: 0.5rem;
+}
+.step-desc {
+  font-size: 0.875rem;
+  color: #4b5563;
 }
 
 /* ===== CTA ===== */
@@ -914,6 +1132,10 @@ onUnmounted(() => {
 /* Section yang animate masuk dari kanan */
 .animate-section.animate-from-right {
   transform: translateX(60px);
+}
+/* Section yang animate masuk dari kiri */
+.animate-section.animate-from-left {
+  transform: translateX(-60px);
 }
 /* Masuk viewport → animate in, tetap di sini meski scroll ke atas */
 .animate-section.in-view {
@@ -1246,7 +1468,26 @@ onUnmounted(() => {
     padding: 4rem 1.5rem;
   }
   .why-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  /* Daerah layanan */
+  .service-area {
+    padding: 4rem 1.5rem;
+  }
+  .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* Cara bergabung */
+  .how-it-works {
+    padding: 4rem 1.5rem;
+  }
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     margin-top: 2.5rem;
   }
@@ -1376,13 +1617,37 @@ onUnmounted(() => {
     padding: 3.5rem 2rem;
   }
   .why-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
     margin-top: 3rem;
     max-width: 960px;
   }
   .why-icon {
     font-size: 2.5rem;
+  }
+
+  /* Daerah layanan */
+  .service-area {
+    padding: 3.5rem 2rem;
+  }
+  .service-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+  }
+  .service-icon {
+    font-size: 2.5rem;
+  }
+
+  /* Cara bergabung */
+  .how-it-works {
+    padding: 3.5rem 2rem;
+  }
+  .steps-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+    max-width: 1100px;
   }
 
   /* Testimonial */
@@ -1502,6 +1767,20 @@ onUnmounted(() => {
   }
   .why-grid {
     max-width: 1100px;
+  }
+
+  .service-area {
+    padding: 4rem 2rem;
+  }
+  .service-grid {
+    max-width: 1200px;
+  }
+
+  .how-it-works {
+    padding: 4rem 2rem;
+  }
+  .steps-grid {
+    max-width: 1200px;
   }
 
   .testimonial {
