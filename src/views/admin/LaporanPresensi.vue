@@ -212,7 +212,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
 }
 
 /* =====================================================
-   DEFAULT = MOBILE (≤ 639px)
+   MOBILE (default, < 641px)
    ===================================================== */
 
 .page-content {
@@ -277,7 +277,6 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
 /* ===== RINGKASAN CARD ===== */
 .summary-row {
   display: grid;
-  /* Mobile: 1 baris 3 kolom tapi masing-masing bisa menyusut */
   grid-template-columns: repeat(3, 1fr);
   gap: 0.6rem;
   margin-bottom: 1.5rem;
@@ -432,8 +431,91 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
 }
 
 /* =====================================================
-   TABLET (≥ 768px)
+   BREAKPOINTS (sama seperti file-file lain)
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
    ===================================================== */
+
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
+
+  .page-content {
+    padding: 1.4rem 1.1rem 2.75rem;
+  }
+
+  .page-header {
+    gap: 0.95rem;
+    margin-bottom: 1.35rem;
+  }
+  .page-title {
+    font-size: 1.15rem;
+  }
+  .page-date {
+    font-size: 0.77rem;
+  }
+
+  .btn-nav {
+    padding: 0.42rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  .date-label {
+    font-size: 0.84rem;
+  }
+
+  .summary-row {
+    gap: 0.7rem;
+    margin-bottom: 1.6rem;
+  }
+  .summary-card {
+    padding: 0.85rem 0.6rem;
+    border-radius: 13px;
+  }
+  .summary-number {
+    font-size: 1.65rem;
+  }
+  .summary-label {
+    font-size: 0.65rem;
+  }
+
+  .section-title {
+    font-size: 0.97rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .empty-state {
+    padding: 2.75rem 1rem;
+  }
+
+  /* Presensi card: masih vertikal di tablet, tapi lebih lega */
+  .presensi-card {
+    padding: 1.05rem 1.1rem;
+    gap: 0.8rem;
+  }
+  .tentor-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1.02rem;
+  }
+  .tentor-nama {
+    font-size: 0.9rem;
+  }
+  .tentor-kode {
+    font-size: 0.71rem;
+  }
+  .presensi-waktu {
+    font-size: 0.81rem;
+  }
+  .presensi-walimurid {
+    font-size: 0.79rem;
+  }
+  .foto-presensi {
+    max-width: 210px;
+    height: 140px;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) ===== */
 @media (min-width: 768px) {
 
   .page-content {
@@ -486,7 +568,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
     font-size: 1rem;
   }
 
-  /* Presensi card: horizontal di tablet */
+  /* Presensi card: horizontal di desktop */
   .presensi-card {
     flex-direction: row;
     align-items: flex-start;
@@ -520,9 +602,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   }
 }
 
-/* =====================================================
-   DESKTOP (≥ 1024px)
-   ===================================================== */
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
 
   .page-content {

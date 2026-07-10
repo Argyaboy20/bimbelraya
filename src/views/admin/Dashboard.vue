@@ -105,23 +105,23 @@ const dummyStats = reactive({
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding-bottom: 3rem;
+  padding-bottom: 2.5rem;
 }
 
 /* ===== SECTION ===== */
 .dashboard-section {
-  padding: 1.75rem 0.85rem 0;
+  padding: 1.5rem 0.85rem 0;
 }
 .section-title {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.3rem;
 }
 .section-desc {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #6b7280;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.85rem;
   line-height: 1.5;
 }
 
@@ -129,13 +129,13 @@ const dummyStats = reactive({
 .section-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
   width: 100%;
-  padding: 1rem 1.1rem;
+  padding: 0.9rem 1rem;
   border-radius: 14px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   letter-spacing: 0.02em;
   color: #fff;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -146,13 +146,13 @@ const dummyStats = reactive({
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.15);
 }
 .card-icon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 .card-text {
   flex: 1;
 }
 .card-arrow {
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: transform 0.2s ease;
 }
 .section-card:hover .card-arrow {
@@ -170,8 +170,52 @@ const dummyStats = reactive({
   color: #5a4a1f;
 }
 
-/* ===== RESPONSIVE ===== */
+/* =====================================================
+   BREAKPOINTS (sama seperti LandingPage.vue, LoginPage.vue,
+   SignInPage.vue, LoginAdmin.vue)
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
+
+  .dashboard-content {
+    padding-bottom: 2.75rem;
+  }
+
+  .dashboard-section {
+    padding: 1.75rem 1.1rem 0;
+  }
+  .section-title {
+    font-size: 1.1rem;
+  }
+  .section-desc {
+    font-size: 0.82rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .section-card {
+    gap: 0.8rem;
+    padding: 1.1rem 1.25rem;
+    font-size: 0.88rem;
+  }
+  .card-icon {
+    font-size: 1.25rem;
+  }
+  .card-arrow {
+    font-size: 1.05rem;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) ===== */
 @media (min-width: 768px) {
+
+  .dashboard-content {
+    padding-bottom: 3rem;
+  }
+
   .dashboard-section {
     padding: 2.25rem 1.5rem 0;
   }
@@ -180,16 +224,51 @@ const dummyStats = reactive({
   }
   .section-desc {
     font-size: 0.85rem;
+    margin-bottom: 1rem;
   }
+
   .section-card {
+    gap: 0.85rem;
     padding: 1.25rem 1.5rem;
     font-size: 0.92rem;
   }
+  .card-icon {
+    font-size: 1.3rem;
+  }
+  .card-arrow {
+    font-size: 1.1rem;
+  }
 }
 
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
+
+  .dashboard-content {
+    padding-bottom: 3.5rem;
+  }
+
   .dashboard-section {
     padding: 2.5rem 2.5rem 0;
+  }
+  .section-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+  }
+  .section-desc {
+    font-size: 0.9rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .section-card {
+    gap: 0.9rem;
+    padding: 1.35rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  .card-icon {
+    font-size: 1.4rem;
+  }
+  .card-arrow {
+    font-size: 1.15rem;
   }
 }
 </style>

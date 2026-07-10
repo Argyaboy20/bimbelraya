@@ -466,6 +466,10 @@ const statusCount = computed(() => {
   box-sizing: border-box;
 }
 
+/* =====================================================
+   MOBILE (default, < 641px) — table & summary jadi 2 baris,
+   masing-masing full width tanpa space kiri-kanan
+   ===================================================== */
 .data-walimurid-page {
   width: 100%;
   min-height: 100vh;
@@ -473,30 +477,35 @@ const statusCount = computed(() => {
 }
 
 .page-content {
-  padding: 1.5rem 1rem 3rem;
+  width: 100%;
+  padding: 1.5rem 0 3rem; /* tanpa padding kiri-kanan, biar wrapper full width */
 }
 
 .page-title {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.1rem;
+  padding: 0 1rem; /* jarak dari tepi khusus judul */
+  text-align: center; /* rata tengah */
 }
 
-/* ===== LAYOUT: tabel utama + tabel ringkasan di samping ===== */
+/* ===== LAYOUT: mobile = 2 baris (table di atas, summary di bawah) ===== */
 .content-layout {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
 }
 
-/* ===== TABEL UTAMA ===== */
+/* ===== TABEL UTAMA — full width, scroll horizontal seperti Excel ===== */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .sheet-table {
@@ -509,9 +518,9 @@ const statusCount = computed(() => {
 .sheet-table th {
   background: #2E87F6;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 0.7rem 0.6rem;
+  padding: 0.65rem 0.55rem;
   text-align: left;
   white-space: nowrap;
   position: sticky;
@@ -546,7 +555,7 @@ const statusCount = computed(() => {
   border: 1px solid transparent;
   background: transparent;
   padding: 0.4rem 0.3rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   outline: none;
   border-radius: 6px;
   font-family: inherit;
@@ -567,7 +576,7 @@ const statusCount = computed(() => {
   background: #fff5f2;
 }
 .cell-alert {
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   color: #F35C2B;
   margin-top: 0.15rem;
   line-height: 1.2;
@@ -583,7 +592,7 @@ const statusCount = computed(() => {
   text-align: center;
 }
 .confirm-title {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.4rem;
@@ -598,7 +607,7 @@ const statusCount = computed(() => {
   padding: 0.3rem 0.5rem;
   border-radius: 6px;
   border: none;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -622,7 +631,7 @@ const statusCount = computed(() => {
   border: 1.5px solid #F35C2B;
   background: #fff;
   color: #F35C2B;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -632,35 +641,35 @@ const statusCount = computed(() => {
   color: #fff;
 }
 
-/* ===== TABEL RINGKASAN STATUS ===== */
+/* ===== TABEL RINGKASAN STATUS — mobile: baris ke-2, full width ===== */
 .summary-wrapper {
   width: 100%;
-  max-width: 100%;
 }
 
 .summary-table {
   border-collapse: collapse;
   width: 100%;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  border: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .summary-table thead th {
   background: #F35C2B;
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 0.7rem 1rem;
+  padding: 0.65rem 0.9rem;
   text-align: left;
 }
 
 .summary-label-row,
 .summary-value-row {
   display: flex;
-  padding: 0.7rem 1rem;
+  padding: 0.65rem 0.9rem;
 }
 
 .summary-label-row {
@@ -672,7 +681,7 @@ const statusCount = computed(() => {
 .summary-number {
   flex: 1;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .summary-tag {
@@ -685,7 +694,7 @@ const statusCount = computed(() => {
 .summary-tag.total { color: #2E87F6; }
 
 .summary-number {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
 }
 .summary-number.berlangsung { color: #15803d; }
@@ -693,24 +702,153 @@ const statusCount = computed(() => {
 .summary-number.berhenti { color: #b91c1c; }
 .summary-number.total { color: #2E87F6; }
 
-/* ===== RESPONSIVE: di layar lebar, tabel ringkasan di samping kanan ===== */
-@media (min-width: 1200px) {
+/* =====================================================
+   BREAKPOINTS
+   @media 641px  : tablet  → table & summary sejajar (2 kolom), rapat, full width
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) — mulai sejajar, rapat, tanpa space kiri-kanan ===== */
+@media (min-width: 641px) {
+  .page-content {
+    padding: 1.75rem 0 3rem;
+  }
+  .page-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.2rem;
+    padding: 0 1.25rem;
+  }
+
   .content-layout {
     flex-direction: row;
     align-items: flex-start;
+    gap: 0; /* rapat, tidak ada jarak antara table & summary */
   }
   .table-wrapper {
     flex: 1;
-    min-width: 0;
+    min-width: 0; /* biar tetap bisa scroll internal, tidak mendorong summary keluar */
   }
   .summary-wrapper {
-    width: 320px;
+    width: 220px;
     flex-shrink: 0;
+    border-left: 1px solid #e5e7eb; /* pembatas visual, bukan jarak/gap */
   }
   .summary-label-row,
   .summary-value-row {
     flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .sheet-table th {
+    font-size: 0.8rem;
+    padding: 0.75rem 0.65rem;
+  }
+  .sheet-table td {
+    padding: 0.45rem;
+  }
+  .cell-input,
+  .cell-select {
+    font-size: 0.82rem;
+  }
+  .cell-alert {
+    font-size: 0.66rem;
+  }
+  .summary-table thead th {
+    font-size: 0.85rem;
+  }
+  .summary-number {
+    font-size: 1.3rem;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) ===== */
+@media (min-width: 768px) {
+  .page-content {
+    padding: 2rem 0 3.25rem;
+  }
+  .page-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
+    padding: 0 1.5rem;
+  }
+
+  .summary-wrapper {
+    width: 270px;
+  }
+  .summary-label-row,
+  .summary-value-row {
+    padding: 0.75rem 1rem;
+  }
+
+  .sheet-table th {
+    font-size: 0.84rem;
+    padding: 0.8rem 0.7rem;
+  }
+  .sheet-table td {
+    padding: 0.5rem;
+  }
+  .cell-input,
+  .cell-select {
+    font-size: 0.86rem;
+  }
+  .summary-table thead th {
+    font-size: 0.88rem;
+    padding: 0.75rem 1rem;
+  }
+  .summary-number {
+    font-size: 1.4rem;
+  }
+}
+
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
+@media (min-width: 1024px) {
+  .page-content {
+    padding: 2.25rem 0 3.5rem;
+  }
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 1.4rem;
+    padding: 0 2.5rem;
+  }
+
+  .summary-wrapper {
+    width: 320px;
+  }
+  .summary-label-row,
+  .summary-value-row {
     gap: 0.5rem;
+  }
+
+  .sheet-table th {
+    font-size: 0.86rem;
+    padding: 0.85rem 0.75rem;
+  }
+  .sheet-table td {
+    padding: 0.55rem;
+  }
+  .cell-input,
+  .cell-select {
+    font-size: 0.88rem;
+  }
+  .cell-alert {
+    font-size: 0.68rem;
+  }
+  .confirm-title {
+    font-size: 0.76rem;
+  }
+  .btn-confirm {
+    font-size: 0.76rem;
+  }
+  .btn-delete-row {
+    font-size: 0.78rem;
+  }
+  .summary-table thead th {
+    font-size: 0.9rem;
+  }
+  .summary-number {
+    font-size: 1.45rem;
   }
 }
 </style>

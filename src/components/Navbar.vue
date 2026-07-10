@@ -101,7 +101,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1rem;
   background: linear-gradient(135deg, rgba(46, 135, 246, 0.92) 0%, rgba(57, 148, 255, 0.88) 50%, rgba(46, 135, 246, 0.92) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -117,11 +117,13 @@ onUnmounted(() => {
 }
 .greeting-text {
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word; 
+  line-height: 1.3;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin: 0;
 }
@@ -140,13 +142,13 @@ onUnmounted(() => {
   transform: translateY(-6px);
 }
 
-/* ===== LOGO SUDUT KANAN ===== */
+/* ===== LOGO (mobile: nempel pojok kanan biar hemat ruang) ===== */
 .logo-area {
   order: 3;
   justify-self: end;
 }
 .navbar-logo {
-  height: 34px;
+  height: 30px;
   width: auto;
   /* Ubah logo jadi putih solid agar terlihat jelas di background biru glossy */
   filter: brightness(0) invert(1);
@@ -157,16 +159,25 @@ onUnmounted(() => {
   order: 2;
 }
 
-/* ===== RESPONSIVE: tablet & desktop, sedikit perbesar ===== */
-@media (min-width: 768px) {
+/* =====================================================
+   BREAKPOINTS (sama seperti LandingPage.vue, LoginPage.vue,
+   SignInPage.vue, LoginAdmin.vue, Dashboard.vue)
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) — logo mulai pindah ke tengah ===== */
+@media (min-width: 641px) {
+
   .admin-navbar {
-    padding: 1rem 2rem;
+    padding: 0.65rem 1.5rem;
   }
   .greeting-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
   .navbar-logo {
-    height: 40px;
+    height: 34px;
   }
 
   .logo-area {
@@ -178,15 +189,31 @@ onUnmounted(() => {
   }
 }
 
-@media (min-width: 1024px) {
+/* ===== DESKTOP (≥ 768px) ===== */
+@media (min-width: 768px) {
+
   .admin-navbar {
-    padding: 1.1rem 3rem;
+    padding: 0.7rem 2rem;
+  }
+  .greeting-text {
+    font-size: 0.9rem;
+  }
+  .navbar-logo {
+    height: 36px;
+  }
+}
+
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
+@media (min-width: 1024px) {
+
+  .admin-navbar {
+    padding: 0.75rem 3rem;
   }
   .greeting-text {
     font-size: 0.95rem;
   }
   .navbar-logo {
-    height: 44px;
+    height: 38px;
   }
 }
 </style>

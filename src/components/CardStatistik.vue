@@ -59,11 +59,15 @@ defineProps({
   box-sizing: border-box;
 }
 
+/* =====================================================
+   MOBILE (default, < 641px)
+   ===================================================== */
+
 /* ===== WRAPPER: kasih sedikit gap kiri-kanan, hampir full width ===== */
 .card-statistik-wrap {
   width: 100%;
-  padding: 0 0.85rem;
-  margin-top: 1.25rem;
+  padding: 0 0.75rem;
+  margin-top: 1.1rem;
 }
 
 /* ===== CARD UTAMA ===== */
@@ -73,17 +77,17 @@ defineProps({
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 2 item per baris di semua ukuran */
-  gap: 0.85rem;
-  border-radius: 20px;
-  padding: 1rem;
+  gap: 0.7rem;
+  border-radius: 18px;
+  padding: 0.85rem;
   background: linear-gradient(135deg, #F9ECCC 0%, #ffffff 35%, #F9ECCC 100%);
   box-shadow: 0 12px 32px rgba(46, 135, 246, 0.12), 0 2px 8px rgba(0,0,0,0.04);
 }
 
 /* ===== ITEM STATISTIK ===== */
 .stat-item {
-  border-radius: 16px;
-  padding: 1.1rem 0.9rem;
+  border-radius: 14px;
+  padding: 1rem 0.8rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -98,16 +102,16 @@ defineProps({
 }
 
 .stat-icon {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   margin-bottom: 0.15rem;
 }
 .stat-value {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   line-height: 1;
 }
 .stat-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 500;
   opacity: 0.92;
   line-height: 1.3;
@@ -131,7 +135,43 @@ defineProps({
   grid-column: 1 / -1;
 }
 
-/* ===== RESPONSIVE: tablet & desktop — proporsi lebih lega ===== */
+/* =====================================================
+   BREAKPOINTS (sama seperti LandingPage.vue, LoginPage.vue,
+   SignInPage.vue, LoginAdmin.vue, Dashboard.vue, Navbar.vue)
+   @media 641px  : tablet
+   @media 768px  : desktop
+   @media 1024px : large desktop
+   Catatan: tetap 2 item per baris di semua ukuran (item ke-3
+   melebar full width), yang berubah hanya proporsi/ukuran.
+   ===================================================== */
+
+/* ===== TABLET (≥ 641px) ===== */
+@media (min-width: 641px) {
+  .card-statistik-wrap {
+    padding: 0 1.1rem;
+    margin-top: 1.2rem;
+  }
+  .card-statistik {
+    border-radius: 19px;
+    padding: 1.15rem;
+    gap: 1rem;
+  }
+  .stat-item {
+    border-radius: 15px;
+    padding: 1.25rem 1rem;
+  }
+  .stat-icon {
+    font-size: 1.55rem;
+  }
+  .stat-value {
+    font-size: 1.75rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+  }
+}
+
+/* ===== DESKTOP (≥ 768px) ===== */
 @media (min-width: 768px) {
   .card-statistik-wrap {
     padding: 0 1.5rem;
@@ -154,18 +194,27 @@ defineProps({
   }
 }
 
+/* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
   .card-statistik-wrap {
     padding: 0 2.5rem;
   }
   .card-statistik {
-    /* Desktop: tetap 2 per baris sesuai instruksi, tapi card-3 tidak perlu full width
-       lagi karena ruang sudah lega — namun tetap dipertahankan agar konsisten dengan
-       mobile/tablet sesuai pola "2 item per baris, sisa turun ke bawah" */
+    /* Tetap 2 per baris sesuai instruksi, card-3 tetap full width
+       agar konsisten dengan mobile/tablet meski ruang sudah lega */
     padding: 1.75rem 2rem;
+  }
+  .stat-item {
+    padding: 1.65rem 1.4rem;
+  }
+  .stat-icon {
+    font-size: 1.8rem;
   }
   .stat-value {
     font-size: 2.2rem;
+  }
+  .stat-label {
+    font-size: 0.88rem;
   }
 }
 </style>
