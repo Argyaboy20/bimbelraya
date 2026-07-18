@@ -120,6 +120,90 @@
       </div>
     </section>
 
+    <!-- ===== JAM LAYANAN ===== -->
+    <section class="jam-layanan animate-section" ref="sectionJamLayanan">
+      <h2 class="section-title">Jam Layanan</h2>
+
+      <!-- Jam digital realtime -->
+      <div class="jam-digital">{{ jamSekarang }}</div>
+
+      <!-- Status BUKA / TUTUP -->
+      <div class="jam-status" :class="isOpen ? 'status-buka' : 'status-tutup'">
+        {{ isOpen ? 'BUKA' : 'TUTUP' }}
+      </div>
+
+      <!-- Grid jadwal -->
+      <div class="jam-grid">
+        <div class="jam-card">
+          <div class="jam-card-icon">📅</div>
+          <div class="jam-card-hari">Senin – Jumat</div>
+          <div class="jam-card-waktu">08.00 – 21.00</div>
+        </div>
+        <div class="jam-card">
+          <div class="jam-card-icon">🏖️</div>
+          <div class="jam-card-hari">Sabtu & Minggu</div>
+          <div class="jam-card-waktu">09.00 – 17.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KONTAK KAMI ===== -->
+    <section class="kontak animate-section animate-from-right" ref="sectionKontak">
+      <h2 class="section-title white">Kontak Kami</h2>
+      <p class="section-subtitle light">Hubungi kami lewat platform favoritmu</p>
+
+      <div class="kontak-grid">
+        <!-- Instagram -->
+        <a
+          href="https://www.instagram.com/bimbel_raya"
+          target="_blank"
+          rel="noopener"
+          class="kontak-card"
+        >
+          <div class="kontak-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="kontak-name">Instagram</div>
+          <div class="kontak-handle">@bimbel_raya</div>
+        </a>
+
+        <!-- Email -->
+        <a
+          href="mailto:bimbelrayaid@gmail.com"
+          class="kontak-card"
+        >
+          <div class="kontak-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="kontak-name">Email</div>
+          <div class="kontak-handle">bimbelrayaid@gmail.com</div>
+        </a>
+
+        <!-- Facebook -->
+        <a
+          href="https://www.facebook.com/profile.php?id=100088995355093"
+          target="_blank"
+          rel="noopener"
+          class="kontak-card"
+        >
+          <div class="kontak-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="kontak-name">Facebook</div>
+          <div class="kontak-handle">Bimbel Raya</div>
+        </a>
+      </div>
+    </section>
+
     <!-- ===== CARA BERGABUNG ===== -->
     <!-- Ref="sectionHowItWorks" untuk scroll animation dari kiri -->
     <section class="how-it-works animate-section animate-from-left" ref="sectionHowItWorks">
@@ -226,6 +310,29 @@ const goToSignIn = () => {
 const goToWA = () => {
   const pesan = encodeURIComponent('Halo min. Saya tertarik untuk mendaftarkan anak saya. Mohon info selanjutnya min')
   window.open(`https://wa.me/6282164794445?text=${pesan}`, '_blank')
+}
+
+// ===== JAM LAYANAN =====
+const jamSekarang = ref('')
+const isOpen = ref(false)
+let jamTimer = null
+
+const updateJam = () => {
+  const now = new Date()
+  const h = now.getHours()
+  const m = now.getMinutes().toString().padStart(2, '0')
+  jamSekarang.value = `${h.toString().padStart(2, '0')}:${m}`
+
+  const day = now.getDay() // 0=Minggu, 1=Senin, ..., 6=Sabtu
+  const total = h * 60 + now.getMinutes()
+
+  if (day >= 1 && day <= 5) {
+    // Senin–Jumat: 08:00–21:00
+    isOpen.value = total >= 480 && total < 1260
+  } else {
+    // Sabtu & Minggu: 09:00–17:00
+    isOpen.value = total >= 540 && total < 1020
+  }
 }
 
 // ===== TOOLTIP HELP =====
@@ -543,6 +650,8 @@ const sectionTestimonial = ref(null)
 const sectionServiceArea = ref(null)
 const sectionHowItWorks = ref(null)
 const sectionCta = ref(null)
+const sectionJamLayanan = ref(null)
+const sectionKontak = ref(null)
 
 let observer = null
 let autoPlay = null
@@ -552,6 +661,8 @@ let checkSections = null  // didefinisikan di onMounted
 onMounted(() => {
   // Carousel autoplay
   autoPlay = setInterval(nextSlide, 3000)
+  updateJam()
+  jamTimer = setInterval(updateJam, 1000)
 
   // Tooltip: muncul langsung, lalu transform jadi tombol setelah 4 detik
   tooltipTimer = setTimeout(() => {
@@ -565,8 +676,11 @@ onMounted(() => {
     sectionWhy.value,
     sectionTestimonial.value,
     sectionServiceArea.value,
+    sectionJamLayanan.value,
+    sectionKontak.value,
     sectionHowItWorks.value,
     sectionCta.value
+
   ]
 
   checkSections = () => {
@@ -603,6 +717,7 @@ onUnmounted(() => {
   document.body.style.touchAction = ''
   clearInterval(autoPlay)
   clearTimeout(tooltipTimer)
+  if (jamTimer) clearInterval(jamTimer)
   if (observer) observer.disconnect()
   if (animFrame) cancelAnimationFrame(animFrame)
   window.removeEventListener('scroll', checkSections)
@@ -1403,6 +1518,135 @@ onUnmounted(() => {
   background: #0367d4;
 }
 
+/* ===== JAM LAYANAN ===== */
+.jam-layanan {
+  background: #ffffff;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.jam-digital {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #024baa;
+  letter-spacing: 0.1em;
+  margin: 1.5rem auto 1rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.jam-status {
+  display: inline-block;
+  padding: 0.4rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 2rem;
+}
+.status-buka {
+  background: #dcfce7;
+  color: #15803d;
+}
+.status-tutup {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.jam-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.jam-card {
+  background: #f0f6ff;
+  border: 1.5px solid #d1e5ff;
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+}
+.jam-card-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.jam-card-hari {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.3rem;
+}
+.jam-card-waktu {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #024baa;
+}
+
+/* ===== KONTAK KAMI ===== */
+.kontak {
+  background: linear-gradient(135deg, #024baa 0%, #0367d4 100%);
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.kontak-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.kontak-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  padding: 1.5rem 1rem;
+  text-decoration: none;
+  color: #fff;
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  cursor: pointer;
+}
+.kontak-card:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+.kontak-card:active {
+  transform: scale(0.97);
+}
+
+.kontak-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kontak-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #fff;
+}
+
+.kontak-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.kontak-handle {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  word-break: break-all;
+}
+
 /* =====================================================
    RESPONSIVE — Mobile-first
    @media 641px  : tablet
@@ -1552,6 +1796,19 @@ onUnmounted(() => {
   }
   .chat-body {
     max-height: 340px;
+  }
+
+  .jam-layanan { 
+    padding: 4rem 1.5rem; 
+  }
+  .jam-digital { 
+    font-size: 5rem; 
+  }
+  .kontak { 
+    padding: 4rem 1.5rem; 
+    }
+  .kontak-grid { 
+    grid-template-columns: repeat(3, 1fr); max-width: 600px; 
   }
 }
 
@@ -1736,6 +1993,40 @@ onUnmounted(() => {
   .chat-body {
     max-height: 340px;
   }
+
+  .jam-layanan { 
+    padding: 4rem 2rem; 
+  }
+  .jam-digital { 
+    font-size: 5.5rem; 
+  }
+  .jam-grid { 
+    max-width: 520px; gap: 1.25rem; 
+  }
+  .jam-card { 
+    padding: 1.5rem 1.25rem; 
+  }
+  .jam-card-waktu { 
+    font-size: 1.1rem; 
+  }
+  .kontak { 
+    padding: 4rem 2rem; 
+  }
+  .kontak-grid { 
+    max-width: 700px; 
+  }
+  .kontak-icon { 
+    width: 56px; height: 56px; 
+  }
+  .kontak-icon svg { 
+    width: 28px; height: 28px; 
+  }
+  .kontak-name { 
+    font-size: 1rem; 
+  }
+  .kontak-handle { 
+    font-size: 0.82rem; 
+  }
 }
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
@@ -1792,6 +2083,13 @@ onUnmounted(() => {
   }
   .cta-title {
     font-size: 2rem;
+  }
+
+  .jam-digital { 
+    font-size: 6rem; 
+  }
+  .kontak-grid { 
+    max-width: 780px; 
   }
 }
 </style>
