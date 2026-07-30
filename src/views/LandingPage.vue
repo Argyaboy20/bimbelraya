@@ -1,6 +1,5 @@
 <template>
   <div class="landing-page">
-
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
       <div class="navbar-brand">
@@ -14,7 +13,8 @@
       <h1 class="hero-title">Bimbel Raya</h1>
       <h2 class="hero-slogan">Raya-kan Prestasi Bersama Bimbel Raya</h2>
       <p class="hero-subtitle">
-        Metode belajar modern, home visit dan privat untuk TK, SD, SMP & SMA. Raih prestasi terbaik bersama tutor berpengalaman.
+        Metode belajar modern, home visit dan privat untuk TK, SD, SMP & SMA. Raih prestasi terbaik
+        bersama tutor berpengalaman.
       </p>
 
       <!-- Carousel 3D -->
@@ -33,12 +33,8 @@
 
       <!-- Tombol Carousel -->
       <div class="carousel-controls">
-        <button class="carousel-btn" @click="prevSlide">
-          &#8249;
-        </button>
-        <button class="carousel-btn" @click="nextSlide">
-          &#8250;
-        </button>
+        <button class="carousel-btn" @click="prevSlide">&#8249;</button>
+        <button class="carousel-btn" @click="nextSlide">&#8250;</button>
       </div>
     </header>
 
@@ -114,7 +110,9 @@
           <div class="service-icon">{{ area.icon }}</div>
           <h3 class="service-title">{{ area.title }}</h3>
           <div class="service-cities">
-            <span v-for="(city, i) in area.cities" :key="i" class="service-city-tag">{{ city }}</span>
+            <span v-for="(city, i) in area.cities" :key="i" class="service-city-tag">{{
+              city
+            }}</span>
           </div>
         </div>
       </div>
@@ -162,9 +160,17 @@
         >
           <div class="kontak-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="2"/>
-              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+              <rect
+                x="2"
+                y="2"
+                width="20"
+                height="20"
+                rx="6"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
             </svg>
           </div>
           <div class="kontak-name">Instagram</div>
@@ -172,14 +178,24 @@
         </a>
 
         <!-- Email -->
-        <a
-          href="mailto:bimbelrayaid@gmail.com"
-          class="kontak-card"
-        >
+        <a href="mailto:bimbelrayaid@gmail.com" class="kontak-card">
           <div class="kontak-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
-              <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <rect
+                x="2"
+                y="4"
+                width="20"
+                height="16"
+                rx="3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M2 7l10 7 10-7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
           </div>
           <div class="kontak-name">Email</div>
@@ -195,7 +211,13 @@
         >
           <div class="kontak-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div class="kontak-name">Facebook</div>
@@ -226,8 +248,8 @@
     <section class="cta animate-section" ref="sectionCta">
       <h2 class="cta-title">Siap Bergabung Bersama Kami?</h2>
       <p class="cta-desc">
-        Daftarkan diri sekarang dan mulai perjalanan belajar yang menyenangkan
-        bersama tentor-tentor terbaik Bimbel Raya.
+        Daftarkan diri sekarang dan mulai perjalanan belajar yang menyenangkan bersama tentor-tentor
+        terbaik Bimbel Raya.
       </p>
       <button class="btn-cta" @click="openModal">Daftar Sekarang</button>
     </section>
@@ -246,7 +268,9 @@
       role="button"
       aria-label="Bantuan"
     >
-      <span class="help-text" :class="{ visible: showTooltip }">Butuh Bantuan? Bisa ke sini ya</span>
+      <span class="help-text" :class="{ visible: showTooltip }"
+        >Butuh Bantuan? Bisa ke sini ya</span
+      >
       <span class="help-icon" :class="{ visible: !showTooltip }">💬</span>
     </div>
 
@@ -288,7 +312,6 @@
         <button class="btn-close" @click="closeModal">Tutup</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -308,7 +331,9 @@ const goToSignIn = () => {
 }
 
 const goToWA = () => {
-  const pesan = encodeURIComponent('Halo min. Saya tertarik untuk mendaftarkan anak saya. Mohon info selanjutnya min')
+  const pesan = encodeURIComponent(
+    'Halo min. Saya tertarik untuk mendaftarkan anak saya. Mohon info selanjutnya min',
+  )
   window.open(`https://wa.me/6282164794445?text=${pesan}`, '_blank')
 }
 
@@ -341,9 +366,7 @@ const showChat = ref(false)
 const chatInput = ref('')
 const chatLoading = ref(false)
 const chatBody = ref(null)
-const chatMessages = ref([
-  { from: 'bot', text: 'Halo! Ada yang bisa kami bantu?' }
-])
+const chatMessages = ref([{ from: 'bot', text: 'Halo! Ada yang bisa kami bantu?' }])
 
 const goToHelp = () => {
   showChat.value = !showChat.value
@@ -383,8 +406,11 @@ const sendChat = async () => {
   // Contoh: const res = await fetch('/api/chat', { method: 'POST', body: JSON.stringify({ message: text }) })
   // const data = await res.json()
   // chatMessages.value.push({ from: 'bot', text: data.reply })
-  await new Promise(r => setTimeout(r, 1000)) // simulasi delay
-  chatMessages.value.push({ from: 'bot', text: 'Terima kasih pesannya! Fitur AI sedang dalam pengembangan. Untuk info lebih lanjut, silakan hubungi kami via WhatsApp ya 😊' })
+  await new Promise((r) => setTimeout(r, 1000)) // simulasi delay
+  chatMessages.value.push({
+    from: 'bot',
+    text: 'Terima kasih pesannya! Fitur AI sedang dalam pengembangan. Untuk info lebih lanjut, silakan hubungi kami via WhatsApp ya 😊',
+  })
   chatLoading.value = false
   scrollChatToBottom()
 }
@@ -395,32 +421,32 @@ const programs = ref([
     id: 1,
     icon: '📖',
     title: 'Program Mengaji',
-    desc: 'Belajar mengaji baik iqro ataupun Al-Quran agar jadi lancar'
+    desc: 'Belajar mengaji baik iqro ataupun Al-Quran agar jadi lancar',
   },
   {
     id: 2,
     icon: '🎨',
     title: 'Program TK',
-    desc: 'Belajar sambil bermain, mengenal huruf, angka, dan kreativitas.'
+    desc: 'Belajar sambil bermain, mengenal huruf, angka, dan kreativitas.',
   },
   {
     id: 3,
     icon: '📚',
     title: 'Program SD',
-    desc: 'Pemahaman konsep dasar untuk semua mapel dan TKA.'
+    desc: 'Pemahaman konsep dasar untuk semua mapel dan TKA.',
   },
   {
     id: 4,
     icon: '🔬',
     title: 'Program SMP',
-    desc: 'Tersedia mata pelajaran MTK, IPA, B.Ing dan B.Indo serta fokus TKA.'
+    desc: 'Tersedia mata pelajaran MTK, IPA, B.Ing dan B.Indo serta fokus TKA.',
   },
   {
     id: 5,
     icon: '🎓',
     title: 'Program SMA',
-    desc: 'Tersedia MTK, B.Ing, B.Indo Biologi, Fisika, Kimia serta TKA.'
-  }
+    desc: 'Tersedia MTK, B.Ing, B.Indo Biologi, Fisika, Kimia serta TKA.',
+  },
 ])
 
 // ===== DATA KENAPA KAMI =====
@@ -429,26 +455,26 @@ const whyUs = ref([
     id: 1,
     icon: '✅',
     title: 'Tentor Berpengalaman',
-    desc: 'Pengajar dari universitas terkemuka dengan pengalaman mengajar profesional.'
+    desc: 'Pengajar dari universitas terkemuka dengan pengalaman mengajar profesional.',
   },
   {
     id: 2,
     icon: '🕐',
     title: 'Jadwal Fleksibel',
-    desc: 'Belajar kapan saja sesuai waktu luang siswa dan keluarga.'
+    desc: 'Belajar kapan saja sesuai waktu luang siswa dan keluarga.',
   },
   {
     id: 3,
     icon: '🎯',
     title: 'Kurikulum Personal',
-    desc: 'Materi disesuaikan dengan kebutuhan dan kecepatan belajar tiap siswa.'
+    desc: 'Materi disesuaikan dengan kebutuhan dan kecepatan belajar tiap siswa.',
   },
   {
     id: 4,
     icon: '🏠',
     title: 'Home Visit',
-    desc: 'Menerapkan home visit atau tentor datang langsung ke rumah walimurid yang buat jadi makin nyaman.'
-  }
+    desc: 'Menerapkan home visit atau tentor datang langsung ke rumah walimurid yang buat jadi makin nyaman.',
+  },
 ])
 
 // ===== DATA DAERAH LAYANAN =====
@@ -457,26 +483,42 @@ const serviceAreas = ref([
     id: 1,
     icon: '🕌',
     title: 'Kudus dan Sekitarnya',
-    cities: ['Kudus', 'Jepara', 'Rembang', 'Purwodadi', 'Gebog', 'Grobogan']
+    cities: ['Kudus', 'Jepara', 'Rembang', 'Purwodadi', 'Gebog', 'Grobogan'],
   },
   {
     id: 2,
     icon: '🚆',
     title: 'Madiun dan Sekitarnya',
-    cities: ['Madiun', 'Wonosobo', 'Ngawi', 'Nganjuk', 'Kediri', 'Purwokerto']
+    cities: ['Madiun', 'Wonosobo', 'Ngawi', 'Nganjuk', 'Kediri', 'Purwokerto'],
   },
   {
     id: 3,
     icon: '🏛️',
     title: 'Semarang dan Sekitarnya',
-    cities: ['Semarang', 'Kendal', 'Ungaran', 'Salatiga']
+    cities: ['Semarang', 'Kendal', 'Ungaran', 'Salatiga'],
   },
   {
     id: 4,
     icon: '🏯',
     title: 'Demak, Jogja dan Sekitarnya',
-    cities: ['Demak', 'Mranggen', 'Mijen', 'Yogyakarta', 'Sleman', 'Bantul', 'GunungKidul', 'KulonProgo', 'Solo', 'Boyolali', 'Sukoharjo', 'Karanganyar', 'Wonogiri', 'Sragen', 'Klaten']
-  }
+    cities: [
+      'Demak',
+      'Mranggen',
+      'Mijen',
+      'Yogyakarta',
+      'Sleman',
+      'Bantul',
+      'GunungKidul',
+      'KulonProgo',
+      'Solo',
+      'Boyolali',
+      'Sukoharjo',
+      'Karanganyar',
+      'Wonogiri',
+      'Sragen',
+      'Klaten',
+    ],
+  },
 ])
 
 // ===== DATA CARA BERGABUNG =====
@@ -486,43 +528,51 @@ const howItWorks = ref([
     id: 1,
     icon: '💬',
     title: 'Hubungi Kami',
-    desc: 'Klik tombol daftar dan kirim pesan via WhatsApp ke tim Bimbel Raya.'
+    desc: 'Klik tombol daftar dan kirim pesan via WhatsApp ke tim Bimbel Raya.',
   },
   {
     id: 2,
     icon: '📝',
     title: 'Konsultasi Kebutuhan',
-    desc: 'Ceritakan jenjang, mata pelajaran, dan jadwal belajar yang diinginkan.'
+    desc: 'Ceritakan jenjang, mata pelajaran, dan jadwal belajar yang diinginkan.',
   },
   {
     id: 3,
     icon: '🧑‍🏫',
     title: 'Tentor Dijadwalkan',
-    desc: 'Kami carikan tentor yang sesuai dan atur jadwal home visit ke rumah.'
+    desc: 'Kami carikan tentor yang sesuai dan atur jadwal home visit ke rumah.',
   },
   {
     id: 4,
     icon: '🚀',
     title: 'Mulai Belajar',
-    desc: 'Anak mulai belajar rutin dan perkembangannya dipantau bersama.'
-  }
+    desc: 'Anak mulai belajar rutin dan perkembangannya dipantau bersama.',
+  },
 ])
 
 // ===== CAROUSEL =====
 const carouselImages = ref([
-  { src: 'https://placehold.co/260x320/024baa/ffffff?text=Foto+1', alt: 'Dokumentasi 1' },
-  { src: 'https://placehold.co/260x320/0367d4/ffffff?text=Foto+2', alt: 'Dokumentasi 2' },
-  { src: 'https://placehold.co/260x320/024baa/ffffff?text=Foto+3', alt: 'Dokumentasi 3' },
-  { src: 'https://placehold.co/260x320/0367d4/ffffff?text=Foto+4', alt: 'Dokumentasi 4' },
-  { src: 'https://placehold.co/260x320/024baa/ffffff?text=Foto+5', alt: 'Dokumentasi 5' },
-  { src: 'https://placehold.co/260x320/0367d4/ffffff?text=Foto+6', alt: 'Dokumentasi 6' }
+  { src: '/assets/dokumentasi/dokumentasi1.jpeg', alt: 'Dokumentasi 1' },
+  { src: '/assets/dokumentasi/dokumentasi2.jpeg', alt: 'Dokumentasi 2' },
+  { src: '/assets/dokumentasi/dokumentasi3.jpeg', alt: 'Dokumentasi 3' },
+  { src: '/assets/dokumentasi/dokumentasi4.jpeg', alt: 'Dokumentasi 4' },
+  { src: '/assets/dokumentasi/dokumentasi5.jpeg', alt: 'Dokumentasi 5' },
+  { src: '/assets/dokumentasi/dokumentasi6.jpeg', alt: 'Dokumentasi 6' },
+  { src: '/assets/dokumentasi/dokumentasi7.jpeg', alt: 'Dokumentasi 7' },
+  { src: '/assets/dokumentasi/dokumentasi8.jpeg', alt: 'Dokumentasi 8' },
+  { src: '/assets/dokumentasi/dokumentasi9.jpeg', alt: 'Dokumentasi 9' },
+  { src: '/assets/dokumentasi/dokumentasi10.jpeg', alt: 'Dokumentasi 10' },
+  { src: '/assets/dokumentasi/dokumentasi11.jpeg', alt: 'Dokumentasi 11' },
+  { src: '/assets/dokumentasi/dokumentasi12.jpeg', alt: 'Dokumentasi 12' },
+  { src: '/assets/dokumentasi/dokumentasi13.jpeg', alt: 'Dokumentasi 13' },
+  { src: '/assets/dokumentasi/dokumentasi14.jpeg', alt: 'Dokumentasi 14' },
 ])
 
 const current = ref(0)
 const total = carouselImages.value.length
 
 const getCardStyle = (index) => {
-  let offset = ((index - current.value) % total + total) % total
+  let offset = (((index - current.value) % total) + total) % total
   if (offset > total / 2) offset -= total
   const z = -Math.abs(offset) * 80
   const x = offset * 140
@@ -531,12 +581,16 @@ const getCardStyle = (index) => {
   return {
     transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) scale(${scale})`,
     opacity,
-    zIndex: 10 - Math.abs(offset)
+    zIndex: 10 - Math.abs(offset),
   }
 }
 
-const nextSlide = () => { current.value = (current.value + 1) % total }
-const prevSlide = () => { current.value = (current.value - 1 + total) % total }
+const nextSlide = () => {
+  current.value = (current.value + 1) % total
+}
+const prevSlide = () => {
+  current.value = (current.value - 1 + total) % total
+}
 
 // ===== DATA TESTIMONIAL =====
 const testimonials = ref([
@@ -544,45 +598,51 @@ const testimonials = ref([
     id: 1,
     avatar: '👩',
     name: 'Ibu Sari',
-    review: 'Anak saya yang tadinya takut matematika sekarang malah suka. Tentor sangat sabar dan bisa menyesuaikan cara belajar anak saya.'
+    review:
+      'Anak saya yang tadinya takut matematika sekarang malah suka. Tentor sangat sabar dan bisa menyesuaikan cara belajar anak saya.',
   },
   {
     id: 2,
     avatar: '👨',
     name: 'Bapak Andi',
-    review: 'Jadwal fleksibel banget, sangat membantu karena kesibukan kerja kami. Nilai rapor anak meningkat signifikan hanya dalam 2 bulan.'
+    review:
+      'Jadwal fleksibel banget, sangat membantu karena kesibukan kerja kami. Nilai rapor anak meningkat signifikan hanya dalam 2 bulan.',
   },
   {
     id: 3,
     avatar: '👩‍💼',
     name: 'Ibu Dewi',
-    review: 'Pelayanannya profesional, tentor datang tepat waktu dan selalu siap dengan materi. Anak saya senang belajar bersama Bimbel Raya.'
+    review:
+      'Pelayanannya profesional, tentor datang tepat waktu dan selalu siap dengan materi. Anak saya senang belajar bersama Bimbel Raya.',
   },
   {
     id: 4,
     avatar: '👨‍💼',
     name: 'Bapak Rudi',
-    review: 'Sudah 6 bulan pakai jasa ini, hasilnya nyata. Anak lulus seleksi masuk SMP favorit. Mantap!'
+    review:
+      'Sudah 6 bulan pakai jasa ini, hasilnya nyata. Anak lulus seleksi masuk SMP favorit. Mantap!',
   },
   {
     id: 5,
     avatar: '👩',
     name: 'Ibu Lina',
-    review: 'Cara tentor menjelaskan materi sangat mudah dipahami anak saya yang masih SD. Highly recommended untuk para orang tua!'
+    review:
+      'Cara tentor menjelaskan materi sangat mudah dipahami anak saya yang masih SD. Highly recommended untuk para orang tua!',
   },
   {
     id: 6,
     avatar: '👨',
     name: 'Bapak Hendra',
-    review: 'Pengajaran materi TKA-nya sangat membantu persiapan anak saya. Materi terstruktur dan fokus sesuai kebutuhan ujian.'
-  }
+    review:
+      'Pengajaran materi TKA-nya sangat membantu persiapan anak saya. Materi terstruktur dan fokus sesuai kebutuhan ujian.',
+  },
 ])
 
 // Duplikasi 3x untuk seamless infinite loop
 const testiLoop = computed(() => [
   ...testimonials.value,
   ...testimonials.value,
-  ...testimonials.value
+  ...testimonials.value,
 ])
 
 // Index card aktif (modulo dari seluruh loop)
@@ -599,9 +659,9 @@ let lastTime = null
 // Lebar card dinamis sesuai breakpoint
 const getCardWidth = () => {
   const w = window.innerWidth
-  if (w >= 768) return 420   // desktop: 396px card + 24px gap
-  if (w >= 640) return 364   // tablet: 340px card + 24px gap
-  return 304                  // mobile: 280px card + 24px gap
+  if (w >= 768) return 420 // desktop: 396px card + 24px gap
+  if (w >= 640) return 364 // tablet: 340px card + 24px gap
+  return 304 // mobile: 280px card + 24px gap
 }
 
 const tickTesti = (timestamp) => {
@@ -656,7 +716,7 @@ const sectionKontak = ref(null)
 let observer = null
 let autoPlay = null
 let tooltipTimer = null
-let checkSections = null  // didefinisikan di onMounted
+let checkSections = null // didefinisikan di onMounted
 
 onMounted(() => {
   // Carousel autoplay
@@ -679,8 +739,7 @@ onMounted(() => {
     sectionJamLayanan.value,
     sectionKontak.value,
     sectionHowItWorks.value,
-    sectionCta.value
-
+    sectionCta.value,
   ]
 
   checkSections = () => {
@@ -729,7 +788,8 @@ onUnmounted(() => {
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 
 /* Reset global — hapus margin/padding bawaan browser di html & body */
-:global(html),:global(body) {
+:global(html),
+:global(body) {
   margin: 0 !important;
   padding: 0 !important;
   width: 100%;
@@ -763,7 +823,7 @@ onUnmounted(() => {
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
 }
 .navbar-logo {
   height: 32px;
@@ -813,7 +873,7 @@ onUnmounted(() => {
 
 /* ===== CAROUSEL ===== */
 .carousel-container {
- perspective: 700px;
+  perspective: 700px;
   height: 240px;
   position: relative;
   max-width: 900px;
@@ -835,7 +895,9 @@ onUnmounted(() => {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(2, 75, 170, 0.3);
-  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s;
+  transition:
+    transform 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.8s;
 }
 .carousel-card img {
   width: 100%;
@@ -905,8 +967,10 @@ onUnmounted(() => {
   border-radius: 16px;
   padding: 1.25rem 1rem;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(2,75,170,0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 16px rgba(2, 75, 170, 0.08);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 .program-card:hover {
   transform: translateY(-8px);
@@ -980,7 +1044,10 @@ onUnmounted(() => {
   padding: 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s,
+    background 0.3s;
 }
 .service-card:hover,
 .service-card:active {
@@ -1033,7 +1100,9 @@ onUnmounted(() => {
   border-radius: 16px;
   padding: 1.75rem 1.25rem 1.5rem;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 .step-card:hover,
 .step-card:active {
@@ -1141,7 +1210,13 @@ onUnmounted(() => {
   position: relative;
   /* Fade edge kiri & kanan supaya efek seamless */
   mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
 }
 
 /* Belt: semua card dalam 1 baris, tidak wrap */
@@ -1166,10 +1241,11 @@ onUnmounted(() => {
   padding: 1rem;
   gap: 0;
   flex-shrink: 0;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.4s,
-              opacity 0.4s;
+  transition:
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.4s,
+    opacity 0.4s;
   opacity: 0.45;
   transform: scale(0.9);
 }
@@ -1195,7 +1271,7 @@ onUnmounted(() => {
 .testi-avatar {
   font-size: 1.8rem;
   line-height: 1;
-  width: 44px; 
+  width: 44px;
   height: 44px;
   border-radius: 50%;
   background: #e8f0fe;
@@ -1242,7 +1318,9 @@ onUnmounted(() => {
 .animate-section {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
 }
 /* Section yang animate masuk dari kanan */
 .animate-section.animate-from-right {
@@ -1290,7 +1368,7 @@ onUnmounted(() => {
   justify-content: flex-start;
 }
 .help-float.is-btn {
-  width: 48px; 
+  width: 48px;
   height: 48px;
   padding: 0;
   border-radius: 50%;
@@ -1308,7 +1386,9 @@ onUnmounted(() => {
   flex: 1;
   opacity: 0;
   max-width: 0;
-  transition: opacity 0.35s, max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.35s,
+    max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   overflow: hidden;
 }
@@ -1327,7 +1407,9 @@ onUnmounted(() => {
   justify-content: center;
   opacity: 0;
   transform: scale(0.3) rotate(-30deg);
-  transition: opacity 0.4s 0.45s, transform 0.4s 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 0.4s 0.45s,
+    transform 0.4s 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .help-icon.visible {
   opacity: 1;
@@ -1422,12 +1504,18 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
-  z-index: 9997;   /* di bawah chat-window (9998) */
+  z-index: 9997; /* di bawah chat-window (9998) */
 }
 
 @keyframes chatFadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .chat-header {
@@ -1479,7 +1567,7 @@ onUnmounted(() => {
   background: #fff;
   color: #1f2937;
   border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 .chat-msg.user .chat-bubble {
   background: #024baa;
@@ -1610,7 +1698,10 @@ onUnmounted(() => {
   padding: 1.5rem 1rem;
   text-decoration: none;
   color: #fff;
-  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  transition:
+    background 0.25s,
+    transform 0.2s,
+    box-shadow 0.25s;
   cursor: pointer;
 }
 .kontak-card:hover {
@@ -1656,7 +1747,6 @@ onUnmounted(() => {
 
 /* ===== TABLET (≥ 641px) ===== */
 @media (min-width: 641px) {
-
   /* Navbar */
   .navbar {
     padding: 0.5rem 1.5rem;
@@ -1798,23 +1888,23 @@ onUnmounted(() => {
     max-height: 340px;
   }
 
-  .jam-layanan { 
-    padding: 4rem 1.5rem; 
+  .jam-layanan {
+    padding: 4rem 1.5rem;
   }
-  .jam-digital { 
-    font-size: 5rem; 
+  .jam-digital {
+    font-size: 5rem;
   }
-  .kontak { 
-    padding: 4rem 1.5rem; 
-    }
-  .kontak-grid { 
-    grid-template-columns: repeat(3, 1fr); max-width: 600px; 
+  .kontak {
+    padding: 4rem 1.5rem;
+  }
+  .kontak-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 600px;
   }
 }
 
 /* ===== DESKTOP (≥ 768px) ===== */
 @media (min-width: 768px) {
-
   /* Navbar */
   .navbar {
     padding: 0.5rem 2rem;
@@ -1994,44 +2084,46 @@ onUnmounted(() => {
     max-height: 340px;
   }
 
-  .jam-layanan { 
-    padding: 4rem 2rem; 
+  .jam-layanan {
+    padding: 4rem 2rem;
   }
-  .jam-digital { 
-    font-size: 5.5rem; 
+  .jam-digital {
+    font-size: 5.5rem;
   }
-  .jam-grid { 
-    max-width: 520px; gap: 1.25rem; 
+  .jam-grid {
+    max-width: 520px;
+    gap: 1.25rem;
   }
-  .jam-card { 
-    padding: 1.5rem 1.25rem; 
+  .jam-card {
+    padding: 1.5rem 1.25rem;
   }
-  .jam-card-waktu { 
-    font-size: 1.1rem; 
+  .jam-card-waktu {
+    font-size: 1.1rem;
   }
-  .kontak { 
-    padding: 4rem 2rem; 
+  .kontak {
+    padding: 4rem 2rem;
   }
-  .kontak-grid { 
-    max-width: 700px; 
+  .kontak-grid {
+    max-width: 700px;
   }
-  .kontak-icon { 
-    width: 56px; height: 56px; 
+  .kontak-icon {
+    width: 56px;
+    height: 56px;
   }
-  .kontak-icon svg { 
-    width: 28px; height: 28px; 
+  .kontak-icon svg {
+    width: 28px;
+    height: 28px;
   }
-  .kontak-name { 
-    font-size: 1rem; 
+  .kontak-name {
+    font-size: 1rem;
   }
-  .kontak-handle { 
-    font-size: 0.82rem; 
+  .kontak-handle {
+    font-size: 0.82rem;
   }
 }
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
-
   .navbar {
     padding: 0.5rem 3rem;
   }
@@ -2085,11 +2177,11 @@ onUnmounted(() => {
     font-size: 2rem;
   }
 
-  .jam-digital { 
-    font-size: 6rem; 
+  .jam-digital {
+    font-size: 6rem;
   }
-  .kontak-grid { 
-    max-width: 780px; 
+  .kontak-grid {
+    max-width: 780px;
   }
 }
 </style>
