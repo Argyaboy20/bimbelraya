@@ -684,7 +684,6 @@ const tickTesti = (timestamp) => {
 
     // Cari card mana yang paling dekat ke tengah viewport
     const vpHalf = window.innerWidth / 2
-    const beltRect = testiBelt.value.getBoundingClientRect()
     let closestIdx = 0
     let closestDist = Infinity
     const cards = testiBelt.value.children

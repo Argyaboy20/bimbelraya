@@ -1,12 +1,10 @@
 <!-- Dashboard.vue -->
 <template>
   <div class="dashboard-page">
-
     <!-- ===== NAVBAR UNIVERSAL ADMIN ===== -->
     <Navbar />
 
     <div class="dashboard-content">
-
       <!-- ===== CARD STATISTIK (data dummy dikirim lewat props) ===== -->
       <CardStatistik
         :tentor-aktif="dummyStats.tentorAktif"
@@ -18,13 +16,12 @@
       <section class="dashboard-section">
         <h2 class="section-title">Buat Kode Tentor</h2>
         <p class="section-desc">
-          Generate kode unik 4 digit untuk tentor baru. Kode ini digunakan tentor
-          saat mendaftar di halaman daftar dan akan menjadi ID mereka di database.
+          Generate kode unik 4 digit untuk tentor baru. Kode ini digunakan tentor saat mendaftar di
+          halaman daftar dan akan menjadi ID mereka di database.
         </p>
 
         <!-- Area generate -->
         <div class="kode-box">
-
           <!-- State awal: tombol generate -->
           <div v-if="kodeState === 'idle'" class="kode-idle">
             <button class="btn-generate" @click="generateKode">✦ Generate Kode</button>
@@ -45,13 +42,10 @@
               <button class="btn-kode setuju" @click="setujuKode">✓ SETUJU</button>
             </div>
           </div>
-
         </div>
 
         <!-- Riwayat Generate -->
-        <button class="btn-riwayat" @click="showRiwayat = true">
-          📋 Riwayat Generate
-        </button>
+        <button class="btn-riwayat" @click="showRiwayat = true">📋 Riwayat Generate</button>
       </section>
 
       <!-- ===== MODAL RIWAYAT ===== -->
@@ -113,12 +107,13 @@
           <span class="card-arrow">→</span>
         </router-link>
       </section>
-
     </div>
   </div>
 </template>
 
 <script setup>
+// give component a multi-word name to satisfy linter
+defineOptions({ name: 'AdminDashboard' })
 import { reactive, ref } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
@@ -139,7 +134,7 @@ import CardStatistik from '@/components/CardStatistik.vue'
 const dummyStats = reactive({
   tentorAktif: 24,
   walimuridAktif: 38,
-  frekuensiPresensi: 19
+  frekuensiPresensi: 19,
 })
 
 // ===== KODE TENTOR GENERATOR =====
@@ -177,8 +172,11 @@ const setujuKode = () => {
   // })
   // ============================================
   const tanggalSekarang = new Date().toLocaleDateString('id-ID', {
-    day: 'numeric', month: 'long', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   })
   riwayatKode.value.unshift({ kode: generatedKode.value, tanggal: tanggalSekarang })
   generatedKode.value = ''
@@ -198,10 +196,10 @@ const setujuKode = () => {
   width: 100%;
   min-height: 100vh;
   /* Background kombinasi warna brand, bukan gradien penuh — campuran solid + sedikit blend */
-  background-color: #F9ECCC;
+  background-color: #f9eccc;
   background-image:
-    radial-gradient(circle at 10% 15%, rgba(46, 135, 246, 0.10) 0%, transparent 45%),
-    radial-gradient(circle at 90% 10%, rgba(243, 92, 43, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 10% 15%, rgba(46, 135, 246, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(243, 92, 43, 0.1) 0%, transparent 40%),
     radial-gradient(circle at 50% 90%, rgba(46, 135, 246, 0.08) 0%, transparent 50%);
 }
 
@@ -243,7 +241,9 @@ const setujuKode = () => {
   letter-spacing: 0.02em;
   color: #fff;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .section-card:hover {
   transform: translateY(-2px);
@@ -264,13 +264,13 @@ const setujuKode = () => {
 }
 
 .card-blue {
-  background: linear-gradient(135deg, #2E87F6 0%, #1d6fd4 100%);
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
 }
 .card-orange {
-  background: linear-gradient(135deg, #F35C2B 0%, #d6481c 100%);
+  background: linear-gradient(135deg, #f35c2b 0%, #d6481c 100%);
 }
 .card-cream {
-  background: linear-gradient(135deg, #F9ECCC 0%, #f3dfa8 100%);
+  background: linear-gradient(135deg, #f9eccc 0%, #f3dfa8 100%);
   color: #5a4a1f;
 }
 
@@ -279,7 +279,7 @@ const setujuKode = () => {
   background: #fff;
   border-radius: 14px;
   padding: 1.25rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   margin-bottom: 0.85rem;
   min-height: 100px;
   display: flex;
@@ -292,17 +292,19 @@ const setujuKode = () => {
   padding: 0.75rem 2rem;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #2E87F6 0%, #1d6fd4 100%);
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(46,135,246,0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px rgba(46, 135, 246, 0.3);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .btn-generate:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(46,135,246,0.4);
+  box-shadow: 0 12px 26px rgba(46, 135, 246, 0.4);
 }
 
 /* Loading */
@@ -316,12 +318,14 @@ const setujuKode = () => {
   width: 36px;
   height: 36px;
   border: 3.5px solid #e5e7eb;
-  border-top-color: #2E87F6;
+  border-top-color: #2e87f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .loading-text {
   font-size: 0.82rem;
@@ -348,7 +352,7 @@ const setujuKode = () => {
   letter-spacing: 0.4em;
   color: #1f2937;
   background: #f0f7ff;
-  border: 2px dashed #2E87F6;
+  border: 2px dashed #2e87f6;
   border-radius: 12px;
   padding: 0.6rem 2rem;
 }
@@ -366,7 +370,9 @@ const setujuKode = () => {
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .btn-kode:hover {
   opacity: 0.87;
@@ -377,7 +383,7 @@ const setujuKode = () => {
   color: #b91c1c;
 }
 .btn-kode.setuju {
-  background: linear-gradient(135deg, #2E87F6, #1d6fd4);
+  background: linear-gradient(135deg, #2e87f6, #1d6fd4);
   color: #fff;
 }
 
@@ -391,19 +397,21 @@ const setujuKode = () => {
   font-weight: 600;
   color: #374151;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
   margin-top: 0.25rem;
 }
 .btn-riwayat:hover {
-  border-color: #2E87F6;
-  color: #2E87F6;
+  border-color: #2e87f6;
+  color: #2e87f6;
 }
 
 /* ===== MODAL ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -419,7 +427,7 @@ const setujuKode = () => {
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 .modal-header {
@@ -469,7 +477,7 @@ const setujuKode = () => {
   padding: 0.65rem 0.9rem;
   background: #f9fafb;
   border-radius: 10px;
-  border-left: 3px solid #2E87F6;
+  border-left: 3px solid #2e87f6;
 }
 .riwayat-kode {
   font-size: 1rem;
@@ -492,7 +500,6 @@ const setujuKode = () => {
 
 /* ===== TABLET (≥ 641px) ===== */
 @media (min-width: 641px) {
-
   .dashboard-content {
     padding-bottom: 2.75rem;
   }
@@ -559,7 +566,6 @@ const setujuKode = () => {
 
 /* ===== DESKTOP (≥ 768px) ===== */
 @media (min-width: 768px) {
-
   .dashboard-content {
     padding-bottom: 3rem;
   }
@@ -650,7 +656,6 @@ const setujuKode = () => {
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
-
   .dashboard-content {
     padding-bottom: 3.5rem;
   }
