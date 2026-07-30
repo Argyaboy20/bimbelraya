@@ -552,20 +552,20 @@ const howItWorks = ref([
 
 // ===== CAROUSEL =====
 const carouselImages = ref([
-  { src: '/assets/dokumentasi/dokumentasi1.jpeg', alt: 'Dokumentasi 1' },
-  { src: '/assets/dokumentasi/dokumentasi2.jpeg', alt: 'Dokumentasi 2' },
-  { src: '/assets/dokumentasi/dokumentasi3.jpeg', alt: 'Dokumentasi 3' },
-  { src: '/assets/dokumentasi/dokumentasi4.jpeg', alt: 'Dokumentasi 4' },
-  { src: '/assets/dokumentasi/dokumentasi5.jpeg', alt: 'Dokumentasi 5' },
-  { src: '/assets/dokumentasi/dokumentasi6.jpeg', alt: 'Dokumentasi 6' },
-  { src: '/assets/dokumentasi/dokumentasi7.jpeg', alt: 'Dokumentasi 7' },
-  { src: '/assets/dokumentasi/dokumentasi8.jpeg', alt: 'Dokumentasi 8' },
-  { src: '/assets/dokumentasi/dokumentasi9.jpeg', alt: 'Dokumentasi 9' },
-  { src: '/assets/dokumentasi/dokumentasi10.jpeg', alt: 'Dokumentasi 10' },
-  { src: '/assets/dokumentasi/dokumentasi11.jpeg', alt: 'Dokumentasi 11' },
-  { src: '/assets/dokumentasi/dokumentasi12.jpeg', alt: 'Dokumentasi 12' },
-  { src: '/assets/dokumentasi/dokumentasi13.jpeg', alt: 'Dokumentasi 13' },
-  { src: '/assets/dokumentasi/dokumentasi14.jpeg', alt: 'Dokumentasi 14' },
+  { src: 'dokumentasi/dokumentasi1.jpeg', alt: 'Dokumentasi 1' },
+  { src: 'dokumentasi/dokumentasi2.jpeg', alt: 'Dokumentasi 2' },
+  { src: 'dokumentasi/dokumentasi3.jpeg', alt: 'Dokumentasi 3' },
+  { src: 'dokumentasi/dokumentasi4.jpeg', alt: 'Dokumentasi 4' },
+  { src: 'dokumentasi/dokumentasi5.jpeg', alt: 'Dokumentasi 5' },
+  { src: 'dokumentasi/dokumentasi6.jpeg', alt: 'Dokumentasi 6' },
+  { src: 'dokumentasi/dokumentasi7.jpeg', alt: 'Dokumentasi 7' },
+  { src: 'dokumentasi/dokumentasi8.jpeg', alt: 'Dokumentasi 8' },
+  { src: 'dokumentasi/dokumentasi9.jpeg', alt: 'Dokumentasi 9' },
+  { src: 'dokumentasi/dokumentasi10.jpeg', alt: 'Dokumentasi 10' },
+  { src: 'dokumentasi/dokumentasi11.jpeg', alt: 'Dokumentasi 11' },
+  { src: 'dokumentasi/dokumentasi12.jpeg', alt: 'Dokumentasi 12' },
+  { src: 'dokumentasi/dokumentasi13.jpeg', alt: 'Dokumentasi 13' },
+  { src: 'dokumentasi/dokumentasi14.jpeg', alt: 'Dokumentasi 14' },
 ])
 
 const current = ref(0)
