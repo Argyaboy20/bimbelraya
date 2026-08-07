@@ -196,7 +196,7 @@ const setujuKode = () => {
   width: 100%;
   min-height: 100vh;
   /* Background kombinasi warna brand, bukan gradien penuh — campuran solid + sedikit blend */
-  background-color: #f9eccc;
+  background-color: #fafafa;
   background-image:
     radial-gradient(circle at 10% 15%, rgba(46, 135, 246, 0.1) 0%, transparent 45%),
     radial-gradient(circle at 90% 10%, rgba(243, 92, 43, 0.1) 0%, transparent 40%),

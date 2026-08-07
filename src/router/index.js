@@ -6,6 +6,7 @@ import LandingPage from '@/views/LandingPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
 import SignInPage from '@/views/SignInPage.vue'
 import LoginAdmin from '@/views/LoginAdmin.vue'
+import LowonganTentor from '@/views/Lowongan.vue'
 
 // Admin
 import AdminDashboard from '@/views/admin/Dashboard.vue'
@@ -41,6 +42,11 @@ const routes = [
     path: '/loginadmin',
     component: LoginAdmin,
     meta: { title: 'Bimbel Raya - Portal Admin' },
+  },
+  {
+    path: '/lowongan',
+    component: LowonganTentor,
+    meta: { title: 'Bimbel Raya - Lowongan Tentor' },
   },
 
   // ===== ADMIN (butuh login + role admin) =====
@@ -88,17 +94,19 @@ const routes = [
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Dashboard Tentor' },
       },
       {
-        path: 'biodata',
+        // :id = kode tentor, dummy sekarang "1001", nanti diisi otomatis dari auth.kodeTentor
+        // saat komponen membuat link (lihat DashboardTentor.vue)
+        path: 'biodata/:id',
         component: TentorBiodata,
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Biodata Tentor' },
       },
       {
-        path: 'presensi',
+        path: 'presensi/:id',
         component: TentorPresensi,
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Presensi Tentor' },
       },
       {
-        path: 'kontrak',
+        path: 'kontrak/:id',
         component: PerpanjangKontrak,
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Perpanjang Kontrak' },
       },
