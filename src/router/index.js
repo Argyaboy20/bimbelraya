@@ -129,20 +129,21 @@ router.beforeEach((to, from, next) => {
     auth.restoreSession()
   }
 
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    if (to.path.startsWith('/admin')) {
-      next('/daftar') // ← pastikan ini '/daftar', BUKAN '/'
-    } else {
+  if (to.meta.requiresAuth) {
+    if (!auth.isLoggedIn) {
+      // Belum login sama sekali → selalu ke /login
       next('/login')
-    }
-  } else if (to.meta.role && auth.role !== to.meta.role) {
-    // Sudah login tapi role salah → redirect ke halaman masing-masing
-    if (auth.role === 'tentor') {
-      next(`/tentor/dashboardtentor/${auth.kodeTentor}`)
-    } else if (auth.role === 'admin') {
-      next('/admin/dashboard')
+    } else if (to.meta.role && auth.role !== to.meta.role) {
+      // Sudah login tapi role salah → redirect ke halaman rolenya
+      if (auth.role === 'tentor') {
+        next(`/tentor/dashboardtentor/${auth.kodeTentor}`)
+      } else if (auth.role === 'admin') {
+        next('/admin/dashboard')
+      } else {
+        next('/login')
+      }
     } else {
-      next('/login')
+      next()
     }
   } else {
     next()
