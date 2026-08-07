@@ -107,6 +107,29 @@
           <span class="card-arrow">→</span>
         </router-link>
       </section>
+
+      <!-- ===== SECTION: KELUAR AKUN ===== -->
+      <section class="logout-section">
+        <button type="button" class="btn-logout" @click="showLogoutConfirm = true">
+          <span class="card-icon">🚪</span>
+          <span class="card-text">KELUAR AKUN</span>
+        </button>
+      </section>
+    </div>
+
+    <!-- ===== MODAL KONFIRMASI LOGOUT ===== -->
+    <div v-if="showLogoutConfirm" class="modal-overlay" @click.self="showLogoutConfirm = false">
+      <div class="modal-box modal-confirm">
+        <div class="modal-body confirm-body">
+          <p class="confirm-text">Mau beneran logout nih?</p>
+          <div class="confirm-actions">
+            <button type="button" class="btn-confirm btn-no" @click="showLogoutConfirm = false">
+              Tidak
+            </button>
+            <button type="button" class="btn-confirm btn-yes" @click="handleLogout">Ya</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -115,8 +138,27 @@
 // give component a multi-word name to satisfy linter
 defineOptions({ name: 'AdminDashboard' })
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+// ===== LOGOUT (dengan modal konfirmasi) =====
+// Tombol "KELUAR AKUN" cuma buka modal (showLogoutConfirm = true).
+// - Tombol "Tidak" → tutup modal saja, tetap di /admin/dashboard, tidak ada aksi apa pun.
+// - Tombol "Ya"    → handleLogout() dijalankan: hapus SESI yang tersimpan
+//   (authStore.logout() sudah benar hanya menghapus key 'authSession' dari
+//   localStorage, bukan menghapus seluruh data), lalu redirect ke /loginadmin.
+const showLogoutConfirm = ref(false)
+
+const handleLogout = () => {
+  authStore.logout()
+  showLogoutConfirm.value = false
+  router.push('/loginadmin')
+}
 
 // ============================================
 // DUMMY DATA — nanti diganti hasil fetch API backend, contoh:
@@ -214,6 +256,9 @@ const setujuKode = () => {
 .dashboard-section {
   padding: 1.5rem 0.85rem 0;
 }
+.logout-section {
+  padding: 4rem 0.85rem 0;
+}
 .section-title {
   font-size: 1rem;
   font-weight: 700;
@@ -272,6 +317,42 @@ const setujuKode = () => {
 .card-cream {
   background: linear-gradient(135deg, #f9eccc 0%, #f3dfa8 100%);
   color: #5a4a1f;
+}
+
+/* ===== TOMBOL LOGOUT (sengaja dibuat kecil, beda dari section-card lain) ===== */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #f35c2b;
+  background: #fff;
+  color: #f35c2b;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.btn-logout .card-icon {
+  font-size: 0.85rem;
+}
+.btn-logout:hover {
+  background: #ff0000;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(243, 92, 43, 0.28);
+}
+.btn-logout:active {
+  transform: translateY(0);
 }
 
 /* ===== SECTION KODE TENTOR ===== */
@@ -490,6 +571,54 @@ const setujuKode = () => {
   color: #6b7280;
 }
 
+/* ===== MODAL KONFIRMASI LOGOUT ===== */
+.modal-confirm {
+  max-width: 340px;
+}
+.confirm-body {
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+}
+.confirm-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 1.25rem;
+}
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+.btn-confirm {
+  flex: 1;
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.btn-confirm:hover {
+  transform: translateY(-2px);
+}
+.btn-no {
+  background: #f3f4f6;
+  color: #374151;
+}
+.btn-no:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+.btn-yes {
+  background: linear-gradient(135deg, #f35c2b 0%, #d6481c 100%);
+  color: #fff;
+}
+.btn-yes:hover {
+  box-shadow: 0 8px 18px rgba(243, 92, 43, 0.35);
+}
+
 /* =====================================================
    BREAKPOINTS (sama seperti LandingPage.vue, LoginPage.vue,
    SignInPage.vue, LoginAdmin.vue)
@@ -519,6 +648,14 @@ const setujuKode = () => {
     gap: 0.8rem;
     padding: 1.1rem 1.25rem;
     font-size: 0.88rem;
+  }
+  .btn-logout {
+    gap: 0.45rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.76rem;
+  }
+  .btn-logout .card-icon {
+    font-size: 0.9rem;
   }
   .card-icon {
     font-size: 1.25rem;
@@ -585,6 +722,15 @@ const setujuKode = () => {
     gap: 0.85rem;
     padding: 1.25rem 1.5rem;
     font-size: 0.92rem;
+  }
+  .btn-logout {
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+    border-radius: 11px;
+  }
+  .btn-logout .card-icon {
+    font-size: 0.95rem;
   }
   .card-icon {
     font-size: 1.3rem;
@@ -674,6 +820,11 @@ const setujuKode = () => {
 
   .section-card {
     gap: 0.9rem;
+    padding: 1.35rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  .btn-logout {
+    gap: 0.8rem;
     padding: 1.35rem 1.75rem;
     font-size: 0.95rem;
   }
