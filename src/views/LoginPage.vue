@@ -1,7 +1,6 @@
 <!-- LoginPage.vue -->
 <template>
   <div class="login-page">
-
     <!-- ===== BACKGROUND DEKORASI BERGERAK (mobile/tablet) ===== -->
     <div class="bg-decoration">
       <div class="blob blob-1"></div>
@@ -12,7 +11,6 @@
 
     <!-- ===== WRAPPER UTAMA ===== -->
     <div class="login-wrapper">
-
       <!-- ===== FORM CARD (kiri di desktop) ===== -->
       <div class="form-card">
         <img src="/assets/logobimbel.png" alt="Logo Bimbel Raya" class="form-logo" />
@@ -21,7 +19,6 @@
         <p class="form-subtitle">Masuk untuk melanjutkan ke akun kamu</p>
 
         <form @submit.prevent="handleSubmit" class="form-body" novalidate>
-
           <!-- Email -->
           <div class="field-group">
             <label class="field-label">Email</label>
@@ -58,15 +55,12 @@
           </div>
 
           <!-- Tombol Masuk -->
-          <button type="submit" class="btn-submit" :disabled="!isFormValid">
-            Masuk
-          </button>
+          <button type="submit" class="btn-submit" :disabled="!isFormValid">Masuk</button>
 
           <p class="login-redirect">
             Belum punya akun?
             <router-link to="/daftar" class="login-link">Daftar ke sini</router-link>
           </p>
-
         </form>
       </div>
 
@@ -87,7 +81,6 @@
           </p>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -100,7 +93,7 @@ import { useAuthStore } from '@/stores/auth'
 // ===== STATE FORM =====
 const form = reactive({
   email: '',
-  password: ''
+  password: '',
 })
 
 const showPassword = ref(false)
@@ -113,7 +106,7 @@ const dummyKodeTentor = '1001'
 // Lacak field mana saja yang sudah pernah disentuh (untuk tampil/hilang alert)
 const touched = reactive({
   email: false,
-  password: false
+  password: false,
 })
 
 // ===== VALIDASI: EMAIL =====
@@ -145,7 +138,7 @@ const handleSubmit = () => {
 
   const payload = {
     email: form.email,
-    password: form.password
+    password: form.password,
   }
 
   // ============================================
@@ -200,7 +193,7 @@ const handleSubmit = () => {
 .blob-1 {
   width: 280px;
   height: 280px;
-  background: #2E87F6;
+  background: #2e87f6;
   top: -80px;
   right: -80px;
   animation: floatBlob1 15s ease-in-out infinite;
@@ -208,7 +201,7 @@ const handleSubmit = () => {
 .blob-2 {
   width: 240px;
   height: 240px;
-  background: #F9ECCC;
+  background: #f9eccc;
   bottom: -60px;
   left: -50px;
   animation: floatBlob2 17s ease-in-out infinite;
@@ -216,7 +209,7 @@ const handleSubmit = () => {
 .blob-3 {
   width: 180px;
   height: 180px;
-  background: #F35C2B;
+  background: #f35c2b;
   top: 38%;
   left: 8%;
   opacity: 0.22;
@@ -225,7 +218,7 @@ const handleSubmit = () => {
 .blob-4 {
   width: 200px;
   height: 200px;
-  background: #2E87F6;
+  background: #2e87f6;
   bottom: 8%;
   right: 6%;
   opacity: 0.25;
@@ -233,26 +226,55 @@ const handleSubmit = () => {
 }
 
 @keyframes floatBlob1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-40px, 30px) scale(1.1); }
-  66% { transform: translate(20px, 50px) scale(0.95); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 30px) scale(1.1);
+  }
+  66% {
+    transform: translate(20px, 50px) scale(0.95);
+  }
 }
 @keyframes floatBlob2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(50px, -30px) scale(1.15); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, -30px) scale(1.15);
+  }
 }
 @keyframes floatBlob3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-30px, -40px) scale(1.2); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-30px, -40px) scale(1.2);
+  }
 }
 @keyframes floatRing1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(20px, -25px) scale(1.1); }
-  66% { transform: translate(-15px, 15px) scale(0.95); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(20px, -25px) scale(1.1);
+  }
+  66% {
+    transform: translate(-15px, 15px) scale(0.95);
+  }
 }
 @keyframes floatRing2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-20px, 20px) scale(1.15); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(1.15);
+  }
 }
 
 /* ===== WRAPPER ===== */
@@ -276,7 +298,9 @@ const handleSubmit = () => {
   backdrop-filter: blur(10px);
   border-radius: 22px;
   padding: 2.25rem 1.5rem;
-  box-shadow: 0 20px 60px rgba(46, 135, 246, 0.12), 0 4px 16px rgba(0,0,0,0.04);
+  box-shadow:
+    0 20px 60px rgba(46, 135, 246, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -328,15 +352,17 @@ const handleSubmit = () => {
   border: 1.5px solid #e5e7eb;
   font-size: 0.88rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   background: #fff;
 }
 .field-input:focus {
-  border-color: #2E87F6;
+  border-color: #2e87f6;
   box-shadow: 0 0 0 3px rgba(46, 135, 246, 0.12);
 }
 .field-input.is-error {
-  border-color: #F35C2B;
+  border-color: #f35c2b;
 }
 .field-input.is-error:focus {
   box-shadow: 0 0 0 3px rgba(243, 92, 43, 0.12);
@@ -344,7 +370,7 @@ const handleSubmit = () => {
 
 .field-alert {
   font-size: 0.72rem;
-  color: #F35C2B;
+  color: #f35c2b;
   margin-top: 0.35rem;
   line-height: 1.3;
 }
@@ -375,13 +401,16 @@ const handleSubmit = () => {
   padding: 0.8rem;
   border-radius: 12px;
   border: none;
-  background: #2E87F6;
+  background: #2e87f6;
   color: #fff;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    opacity 0.2s,
+    box-shadow 0.2s;
   box-shadow: 0 8px 20px rgba(46, 135, 246, 0.3);
 }
 .btn-submit:hover:not(:disabled) {
@@ -401,7 +430,7 @@ const handleSubmit = () => {
   margin-top: 0.75rem;
 }
 .login-link {
-  color: #2E87F6;
+  color: #2e87f6;
   font-weight: 600;
   text-decoration: none;
   margin-left: 0.25rem;
@@ -418,15 +447,26 @@ const handleSubmit = () => {
 
 /* ===== TABLET (≥ 641px) ===== */
 @media (min-width: 641px) {
-
   .login-page {
     padding: 2.5rem 1.5rem;
   }
 
-  .blob-1 { width: 320px; height: 320px; }
-  .blob-2 { width: 270px; height: 270px; }
-  .blob-3 { width: 200px; height: 200px; }
-  .blob-4 { width: 230px; height: 230px; }
+  .blob-1 {
+    width: 320px;
+    height: 320px;
+  }
+  .blob-2 {
+    width: 270px;
+    height: 270px;
+  }
+  .blob-3 {
+    width: 200px;
+    height: 200px;
+  }
+  .blob-4 {
+    width: 230px;
+    height: 230px;
+  }
 
   .login-wrapper {
     max-width: 480px;
@@ -473,7 +513,6 @@ const handleSubmit = () => {
 
 /* ===== DESKTOP (≥ 768px) — layout 2 kolom mulai aktif ===== */
 @media (min-width: 768px) {
-
   .login-page {
     padding: 3rem 2rem;
   }
@@ -482,7 +521,9 @@ const handleSubmit = () => {
     max-width: 760px;
     border-radius: 26px;
     overflow: hidden;
-    box-shadow: 0 28px 70px rgba(46, 135, 246, 0.14), 0 6px 20px rgba(0,0,0,0.05);
+    box-shadow:
+      0 28px 70px rgba(46, 135, 246, 0.14),
+      0 6px 20px rgba(0, 0, 0, 0.05);
   }
 
   /* Form di kiri */
@@ -515,7 +556,7 @@ const handleSubmit = () => {
     justify-content: center;
     position: relative;
     width: 44%;
-    background: linear-gradient(200deg, #F35C2B 0%, #d6441a 60%, #a8330f 100%);
+    background: linear-gradient(200deg, #f35c2b 0%, #d6441a 60%, #a8330f 100%);
     overflow: hidden;
     padding: 2.5rem 1.5rem;
   }
@@ -531,7 +572,7 @@ const handleSubmit = () => {
   .side-blob-1 {
     width: 200px;
     height: 200px;
-    background: #2E87F6;
+    background: #2e87f6;
     top: -50px;
     right: -50px;
     animation: floatBlob1 14s ease-in-out infinite;
@@ -539,7 +580,7 @@ const handleSubmit = () => {
   .side-blob-2 {
     width: 170px;
     height: 170px;
-    background: #F9ECCC;
+    background: #f9eccc;
     bottom: -50px;
     left: -40px;
     opacity: 0.4;
@@ -548,7 +589,7 @@ const handleSubmit = () => {
   .side-blob-3 {
     width: 120px;
     height: 120px;
-    background: #F9ECCC;
+    background: #f9eccc;
     top: 55%;
     right: 58%;
     opacity: 0.25;
@@ -603,10 +644,11 @@ const handleSubmit = () => {
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
 @media (min-width: 1024px) {
-
   .login-wrapper {
     max-width: 920px;
-    box-shadow: 0 30px 80px rgba(46, 135, 246, 0.15), 0 8px 24px rgba(0,0,0,0.06);
+    box-shadow:
+      0 30px 80px rgba(46, 135, 246, 0.15),
+      0 8px 24px rgba(0, 0, 0, 0.06);
   }
 
   .form-card {
