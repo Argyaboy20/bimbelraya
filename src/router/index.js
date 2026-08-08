@@ -139,8 +139,12 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAuth) {
     if (!auth.isLoggedIn) {
-      // Belum login sama sekali → selalu ke /login
-      next('/login')
+      // Belum login sama sekali → arahkan sesuai area yang dituju
+      if (to.path.startsWith('/admin')) {
+        next('/daftar') // ← area admin → ke /daftar, /loginadmin tetap tersembunyi
+      } else {
+        next('/login') // ← area tentor → ke login tentor
+      }
     } else if (to.meta.role && auth.role !== to.meta.role) {
       // Sudah login tapi role salah → redirect ke halaman rolenya
       if (auth.role === 'tentor') {
