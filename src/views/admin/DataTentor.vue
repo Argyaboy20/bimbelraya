@@ -29,11 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(row, index) in rows"
-              :key="row.rowId"
-              :class="{ 'row-saved': row.isSaved }"
-            >
+            <tr v-for="(row, index) in rows" :key="row.rowId" :class="{ 'row-saved': row.isSaved }">
               <!-- Nomor — hanya tampil setelah baris dikonfirmasi simpan -->
               <td class="col-no">
                 <span v-if="row.isSaved">{{ row.savedNumber }}</span>
@@ -46,12 +42,14 @@
                   class="cell-input"
                   :class="{ 'cell-error': row.touched.nama && namaError(row) }"
                   v-model="row.nama"
-                  @input="onNamaInput(row); onRowChanged(index)"
+                  @input="(onNamaInput(row), onRowChanged(index))"
                   @focus="row.touched.nama = true"
                   :disabled="row.isSaved"
                   placeholder="Nama lengkap"
                 />
-                <p v-if="row.touched.nama && namaError(row)" class="cell-alert">{{ namaError(row) }}</p>
+                <p v-if="row.touched.nama && namaError(row)" class="cell-alert">
+                  {{ namaError(row) }}
+                </p>
               </td>
 
               <!-- Panggilan: huruf & spasi saja -->
@@ -61,12 +59,14 @@
                   class="cell-input"
                   :class="{ 'cell-error': row.touched.panggilan && panggilanError(row) }"
                   v-model="row.panggilan"
-                  @input="onPanggilanInput(row); onRowChanged(index)"
+                  @input="(onPanggilanInput(row), onRowChanged(index))"
                   @focus="row.touched.panggilan = true"
                   :disabled="row.isSaved"
                   placeholder="Panggilan"
                 />
-                <p v-if="row.touched.panggilan && panggilanError(row)" class="cell-alert">{{ panggilanError(row) }}</p>
+                <p v-if="row.touched.panggilan && panggilanError(row)" class="cell-alert">
+                  {{ panggilanError(row) }}
+                </p>
               </td>
 
               <!-- Nomor Telepon: format wa.me/62... -->
@@ -81,7 +81,9 @@
                   :disabled="row.isSaved"
                   placeholder="wa.me/62812xxxxxxx"
                 />
-                <p v-if="row.touched.telepon && teleponError(row)" class="cell-alert">{{ teleponError(row) }}</p>
+                <p v-if="row.touched.telepon && teleponError(row)" class="cell-alert">
+                  {{ teleponError(row) }}
+                </p>
               </td>
 
               <!-- Email -->
@@ -96,7 +98,9 @@
                   :disabled="row.isSaved"
                   placeholder="nama@email.com"
                 />
-                <p v-if="row.touched.email && emailError(row)" class="cell-alert">{{ emailError(row) }}</p>
+                <p v-if="row.touched.email && emailError(row)" class="cell-alert">
+                  {{ emailError(row) }}
+                </p>
               </td>
 
               <!-- Lulusan: huruf, angka, simbol -->
@@ -130,12 +134,14 @@
                   class="cell-input"
                   :class="{ 'cell-error': row.touched.kode && kodeError(row) }"
                   v-model="row.kodeTentor"
-                  @input="onKodeInput(row); onRowChanged(index)"
+                  @input="(onKodeInput(row), onRowChanged(index))"
                   @focus="row.touched.kode = true"
                   :disabled="row.isSaved"
                   placeholder="Contoh: TR1001"
                 />
-                <p v-if="row.touched.kode && kodeError(row)" class="cell-alert">{{ kodeError(row) }}</p>
+                <p v-if="row.touched.kode && kodeError(row)" class="cell-alert">
+                  {{ kodeError(row) }}
+                </p>
               </td>
 
               <!-- Gaji per pertemuan: format Rp -->
@@ -144,7 +150,7 @@
                   type="text"
                   class="cell-input"
                   v-model="row.gajiDisplay"
-                  @input="onGajiInput(row); onRowChanged(index)"
+                  @input="(onGajiInput(row), onRowChanged(index))"
                   :disabled="row.isSaved"
                   placeholder="Rp 50.000"
                 />
@@ -162,12 +168,19 @@
                   :disabled="row.isSaved"
                   placeholder="wa.me/62812xxxxxxx"
                 />
-                <p v-if="row.touched.darurat && teleponDaruratError(row)" class="cell-alert">{{ teleponDaruratError(row) }}</p>
+                <p v-if="row.touched.darurat && teleponDaruratError(row)" class="cell-alert">
+                  {{ teleponDaruratError(row) }}
+                </p>
               </td>
 
               <!-- CV: dropdown -->
               <td>
-                <select class="cell-select" v-model="row.cv" @change="onRowChanged(index)" :disabled="row.isSaved">
+                <select
+                  class="cell-select"
+                  v-model="row.cv"
+                  @change="onRowChanged(index)"
+                  :disabled="row.isSaved"
+                >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
                   <option value="Belum">Belum</option>
@@ -176,7 +189,12 @@
 
               <!-- Pas Photo: dropdown -->
               <td>
-                <select class="cell-select" v-model="row.pasPhoto" @change="onRowChanged(index)" :disabled="row.isSaved">
+                <select
+                  class="cell-select"
+                  v-model="row.pasPhoto"
+                  @change="onRowChanged(index)"
+                  :disabled="row.isSaved"
+                >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
                   <option value="Belum">Belum</option>
@@ -185,7 +203,12 @@
 
               <!-- Surat Kontrak: dropdown -->
               <td>
-                <select class="cell-select" v-model="row.suratKontrak" @change="onRowChanged(index)" :disabled="row.isSaved">
+                <select
+                  class="cell-select"
+                  v-model="row.suratKontrak"
+                  @change="onRowChanged(index)"
+                  :disabled="row.isSaved"
+                >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
                   <option value="Belum">Belum</option>
@@ -220,9 +243,9 @@
                   </div>
                 </div>
 
-                  <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
-                    🗑️ Hapus
-                  </button>
+                <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
+                  🗑️ Hapus
+                </button>
               </td>
             </tr>
           </tbody>
@@ -234,6 +257,7 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
+import { useTentorStore } from '@/stores/tentor'
 import Navbar from '@/components/Navbar.vue'
 
 // ============================================
@@ -269,10 +293,11 @@ const createEmptyRow = () => ({
     telepon: false,
     email: false,
     kode: false,
-    darurat: false
-  }
+    darurat: false,
+  },
 })
 
+const tentorStore = useTentorStore()
 // ============================================
 // State tabel — dimulai dengan 1 baris kosong
 // ============================================
@@ -328,9 +353,7 @@ const onKodeInput = (row) => {
 const onGajiInput = (row) => {
   const angkaSaja = row.gajiDisplay.replace(/[^0-9]/g, '')
   row.gajiRaw = Number(angkaSaja) || 0
-  row.gajiDisplay = angkaSaja
-    ? 'Rp ' + Number(angkaSaja).toLocaleString('id-ID')
-    : ''
+  row.gajiDisplay = angkaSaja ? 'Rp ' + Number(angkaSaja).toLocaleString('id-ID') : ''
 }
 
 // ============================================
@@ -397,9 +420,19 @@ const onRowChanged = (index) => {
 
   // Cek apakah baris ini sudah mulai diisi (minimal satu field tidak kosong)
   const hasContent =
-    row.nama || row.panggilan || row.telepon || row.email ||
-    row.lulusan || row.alamat || row.kodeTentor || row.gajiDisplay ||
-    row.kontakDarurat || row.cv || row.pasPhoto || row.suratKontrak || row.habisKontrak
+    row.nama ||
+    row.panggilan ||
+    row.telepon ||
+    row.email ||
+    row.lulusan ||
+    row.alamat ||
+    row.kodeTentor ||
+    row.gajiDisplay ||
+    row.kontakDarurat ||
+    row.cv ||
+    row.pasPhoto ||
+    row.suratKontrak ||
+    row.habisKontrak
 
   if (isLastRow && hasContent) {
     rows.push(createEmptyRow())
@@ -414,6 +447,7 @@ const confirmSave = (index) => {
   savedCounter += 1
   row.isSaved = true
   row.savedNumber = savedCounter
+  tentorStore.addRow({ ...row })
 
   // ============================================
   // Nanti diganti dengan API call sungguhan, contoh:
@@ -438,6 +472,7 @@ const deleteRow = (index) => {
   // Konfirmasi browser sederhana dulu, biar tidak kehapus tidak sengaja
   const yakin = confirm('Yakin mau hapus data tentor ini?')
   if (!yakin) return
+  tentorStore.removeByKode(rows[index].kodeTentor)
 
   // ============================================
   // Nanti diganti dengan API call sungguhan, contoh:
@@ -457,7 +492,7 @@ watch(
         row._cancelledOnce = false
       }
     })
-  }
+  },
 )
 </script>
 
@@ -494,7 +529,7 @@ watch(
   width: 100%;
   overflow-x: auto;
   border-radius: 0; /* full-bleed dari tepi ke tepi, tanpa rounded corner mepet layar */
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border-top: 1px solid #e5e7eb;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -507,7 +542,7 @@ watch(
 }
 
 .sheet-table th {
-  background: #2E87F6;
+  background: #2e87f6;
   color: #fff;
   font-size: 0.76rem;
   font-weight: 700;
@@ -530,7 +565,7 @@ watch(
   min-width: 50px;
   text-align: center;
   font-weight: 700;
-  color: #2E87F6;
+  color: #2e87f6;
 }
 .col-confirm {
   min-width: 160px;
@@ -555,7 +590,7 @@ watch(
 }
 .cell-input:focus,
 .cell-select:focus {
-  border-color: #2E87F6;
+  border-color: #2e87f6;
   background: #f0f7ff;
 }
 .cell-input:disabled,
@@ -565,7 +600,7 @@ watch(
   cursor: default;
 }
 .cell-error {
-  border-color: #F35C2B;
+  border-color: #f35c2b;
   background: #fff5f2;
 }
 .cell-date {
@@ -574,7 +609,7 @@ watch(
 
 .cell-alert {
   font-size: 0.64rem;
-  color: #F35C2B;
+  color: #f35c2b;
   margin-top: 0.15rem;
   line-height: 1.2;
 }
@@ -604,7 +639,7 @@ watch(
 /* ===== POPUP KONFIRMASI ===== */
 .confirm-popup {
   background: #fff;
-  border: 1.5px solid #2E87F6;
+  border: 1.5px solid #2e87f6;
   border-radius: 10px;
   padding: 0.6rem 0.7rem;
   box-shadow: 0 6px 18px rgba(46, 135, 246, 0.25);
@@ -635,7 +670,7 @@ watch(
   opacity: 0.85;
 }
 .btn-confirm.yes {
-  background: #2E87F6;
+  background: #2e87f6;
   color: #fff;
 }
 .btn-confirm.no {
@@ -647,16 +682,18 @@ watch(
   width: 100%;
   padding: 0.4rem 0.6rem;
   border-radius: 8px;
-  border: 1.5px solid #F35C2B;
+  border: 1.5px solid #f35c2b;
   background: #fff;
-  color: #F35C2B;
+  color: #f35c2b;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 .btn-delete-row:hover {
-  background: #F35C2B;
+  background: #f35c2b;
   color: #fff;
 }
 

@@ -1,6 +1,20 @@
 <!-- DashboardTentor.vue -->
 <template>
   <div class="dashboard-tentor-page">
+    <div
+      v-if="sisaHariKontrak !== null && sisaHariKontrak <= 5 && sisaHariKontrak >= 0 && showAlert"
+      class="kontrak-alert"
+    >
+      <span class="alert-text">
+        {{
+          sisaHariKontrak === 0
+            ? 'Hari ini masa kontrak akan habis pukul 23.59, segera perbarui kontraknya'
+            : `Kontrakmu tinggal ${sisaHariKontrak} hari lagi, segera perpanjang!`
+        }}
+      </span>
+      <router-link :to="`/tentor/kontrak/${kodeTentor}`" class="alert-btn">Perpanjang</router-link>
+      <button class="alert-close" @click="showAlert = false">✕</button>
+    </div>
     <!-- =====================================================
          NAVBAR KHUSUS TENTOR
          (mirip Navbar.vue admin, tapi sudut kiri berisi
@@ -90,8 +104,34 @@
 defineOptions({ name: 'DashboardTentor' })
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useTentorStore } from '@/stores/tentor'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
+const tentorStore = useTentorStore()
+const authStore = useAuthStore()
+
+const sisaHariKontrak = ref(null)
+onMounted(() => {
+  const kodeDihapus = tentorStore.checkExpiredContracts()
+  if (kodeDihapus.includes(kodeTentor)) {
+    alert('Masa kontrakmu sudah habis dan tidak diperpanjang. Akun telah dinonaktifkan.')
+    authStore.logout()
+    router.push('/daftar')
+    return
+  }
+  const data = tentorStore.getByKode(kodeTentor)
+  if (data && data.habisKontrak) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const target = new Date(data.habisKontrak + 'T00:00:00')
+    sisaHariKontrak.value = Math.round((target - today) / (1000 * 60 * 60 * 24))
+  }
+})
+
+const showAlert = ref(true)
 // kodeTentor diambil dari URL /tentor/dashboardtentor/:id (dummy sekarang: "1001")
 // dipakai untuk: (1) fetch data tentor dari backend nanti,
 // (2) disisipkan ke link biodata/presensi/kontrak di bawah supaya tiap tentor
@@ -159,6 +199,50 @@ onUnmounted(() => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+kontrak-alert {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: linear-gradient(135deg, #f35c2b, #d6481c);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  animation: slideDown 0.4s ease;
+}
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.alert-text {
+  flex: 1;
+}
+.alert-btn {
+  background: #fff;
+  color: #d6481c;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.74rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.alert-close {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
 
 * {
   font-family: 'DM Sans', sans-serif;

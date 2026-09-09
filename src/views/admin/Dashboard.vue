@@ -56,11 +56,11 @@
             <button class="modal-close" @click="showRiwayat = false">✕</button>
           </div>
           <div class="modal-body">
-            <p v-if="riwayatKode.length === 0" class="riwayat-empty">
+            <p v-if="tentorStore.kodeHistory.length === 0" class="riwayat-empty">
               Belum ada kode tentor yang di-generate
             </p>
             <div v-else class="riwayat-list">
-              <div v-for="(item, i) in riwayatKode" :key="i" class="riwayat-item">
+              <div v-for="(item, i) in tentorStore.kodeHistory" :key="i" class="riwayat-item">
                 <span class="riwayat-kode">{{ item.kode }}</span>
                 <span class="riwayat-tanggal">{{ item.tanggal }}</span>
               </div>
@@ -142,9 +142,11 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
+import { useTentorStore } from '@/stores/tentor'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const tentorStore = useTentorStore()
 
 // ===== LOGOUT (dengan modal konfirmasi) =====
 // Tombol "KELUAR AKUN" cuma buka modal (showLogoutConfirm = true).
@@ -186,7 +188,6 @@ const tahunSingkat = new Date().getFullYear().toString().slice(-2)
 const kodeState = ref('idle') // 'idle' | 'loading' | 'result'
 const generatedKode = ref('')
 const showRiwayat = ref(false)
-const riwayatKode = ref([])
 
 // Generate: 2 digit random (10-99) + 2 digit tahun, misal "1726"
 const generateKode = () => {
@@ -212,15 +213,8 @@ const setujuKode = () => {
   //   method: 'POST',
   //   body: JSON.stringify({ kode: generatedKode.value })
   // })
-  // ============================================
-  const tanggalSekarang = new Date().toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  riwayatKode.value.unshift({ kode: generatedKode.value, tanggal: tanggalSekarang })
+
+  tentorStore.addKodeHistory(generatedKode.value)
   generatedKode.value = ''
   kodeState.value = 'idle'
 }
