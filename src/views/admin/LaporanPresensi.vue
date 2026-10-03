@@ -66,9 +66,7 @@
                 ✅ Sudah melakukan absensi pada pukul
                 <strong>{{ item.jamPresensi }} WIB</strong>
               </p>
-              <p class="presensi-walimurid">
-                👨‍👩‍👧 Bersama walimurid: <strong>{{ item.namaWalimurid }}</strong>
-              </p>
+              <p class="presensi-materi">📖 <strong>Materi:</strong> {{ item.materi }}</p>
               <!-- Foto bukti presensi (selfie) — nanti dari URL yang disimpan di database -->
               <div class="foto-wrapper" v-if="item.fotoUrl">
                 <img :src="item.fotoUrl" alt="Bukti presensi" class="foto-presensi" />
@@ -88,6 +86,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import Navbar from '@/components/Navbar.vue'
+import { usePresensiStore } from '@/stores/presensi'
+import { useTentorStore } from '@/stores/tentor'
+
+const presensiStore = usePresensiStore()
+const tentorStore = useTentorStore()
 
 // ============================================
 // TANGGAL — navigasi per hari
@@ -109,8 +112,13 @@ const formatDate = (date) => {
   })
 }
 
+// "YYYY-MM-DD" dari tanggal LOKAL. Jangan pakai toISOString(): dia mengubah ke UTC,
+// jadi di WIB (UTC+7) hasilnya mundur 1 hari.
 const toDateKey = (date) => {
-  return date.toISOString().split('T')[0] // "YYYY-MM-DD" sebagai key
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 const formattedToday = computed(() => `Hari ini: ${formatDate(today)}`)
@@ -129,71 +137,24 @@ const nextDay = () => {
 }
 
 // ============================================
-// DUMMY DATA — simulasi data presensi dari database
-// Strukturnya sudah disiapkan agar nanti tinggal ganti
-// dengan hasil fetch ke backend:
-//
-// const allPresensi = ref([])
-// onMounted(async () => {
-//   const res = await fetch('/api/admin/presensi')
-//   allPresensi.value = await res.json()
-// })
-//
-// Setiap item presensi dari backend nanti harus punya field:
-// { namaTentor, kodeTentor, namaWalimurid, jamPresensi, tanggal, fotoUrl }
-// ============================================
-const allPresensi = ref([
-  {
-    namaTentor: 'Andi Pratama',
-    kodeTentor: 'TR1001',
-    namaWalimurid: 'Budi Santoso',
-    jamPresensi: '09:14',
-    tanggal: toDateKey(today),    // hari ini
-    fotoUrl: ''
-  },
-  {
-    namaTentor: 'Sari Dewi',
-    kodeTentor: 'TR1002',
-    namaWalimurid: 'Citra Lestari',
-    jamPresensi: '10:32',
-    tanggal: toDateKey(today),
-    fotoUrl: ''
-  },
-  {
-    namaTentor: 'Rizky Halim',
-    kodeTentor: 'TR1003',
-    namaWalimurid: 'Doni Irawan',
-    jamPresensi: '13:05',
-    tanggal: toDateKey(today),
-    fotoUrl: ''
-  },
-  {
-    // Contoh data kemarin — untuk test navigasi hari
-    namaTentor: 'Maya Anggraini',
-    kodeTentor: 'TR1004',
-    namaWalimurid: 'Eko Purnomo',
-    jamPresensi: '15:20',
-    tanggal: (() => {
-      const kemarin = new Date(today)
-      kemarin.setDate(kemarin.getDate() - 1)
-      return toDateKey(kemarin)
-    })(),
-    fotoUrl: ''
-  }
-])
-
-// Dummy total tentor aktif (nanti dari API /api/admin/statistik)
-const totalTentor = ref(12)
-
-// ============================================
-// FILTER DATA SESUAI HARI YANG DIPILIH
+// DATA: dibaca dari store yang sama dengan yang ditulis Presensi.vue (tentor)
 // ============================================
 const presensiHariIni = computed(() => {
   const key = toDateKey(selectedDate.value)
-  return allPresensi.value.filter((p) => p.tanggal === key)
+  return presensiStore.records.filter((p) => p.tanggalKey === key)
 })
 
-const sudahPresensi = computed(() => presensiHariIni.value.length)
+// Dihitung per tentor, bukan per entri, karena 1 tentor boleh mengisi lebih dari sekali sehari
+const sudahPresensi = computed(
+  () => new Set(presensiHariIni.value.map((p) => p.kodeTentor)).size
+)
+
+// Tentor aktif = kontrak belum lewat (hari terakhir kontrak masih dihitung aktif)
+const totalTentor = computed(() => {
+  const hariIni = toDateKey(today)
+  return tentorStore.rows.filter((r) => !r.habisKontrak || r.habisKontrak >= hariIni).length
+})
+
 const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresensi.value))
 </script>
 
@@ -399,6 +360,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
 .presensi-waktu {
   font-size: 0.8rem;
@@ -406,10 +368,12 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   margin: 0;
   line-height: 1.4;
 }
-.presensi-walimurid {
-  font-size: 0.78rem;
-  color: #6b7280;
-  margin: 0;
+.presensi-materi {
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 7.5rem;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
 }
 
 /* Foto bukti presensi */
@@ -506,7 +470,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   .presensi-waktu {
     font-size: 0.81rem;
   }
-  .presensi-walimurid {
+  .presensi-materi {
     font-size: 0.79rem;
   }
   .foto-presensi {
@@ -593,7 +557,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   .presensi-waktu {
     font-size: 0.83rem;
   }
-  .presensi-walimurid {
+  .presensi-materi {
     font-size: 0.8rem;
   }
   .foto-presensi {
@@ -662,7 +626,7 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   .presensi-waktu {
     font-size: 0.85rem;
   }
-  .presensi-walimurid {
+  .presensi-materi {
     font-size: 0.82rem;
   }
   .foto-presensi {

@@ -138,16 +138,11 @@ const kodeTentor = route.params.id
 const namaTentor = ref('Ahmad Fauzi')
 
 // ===== HELPER TANGGAL =====
-const toDateKey = (d) => d.toISOString().split('T')[0]
-const formatHariTanggal = (dateKeyStr) => {
-  if (!dateKeyStr) return ''
-  const d = new Date(dateKeyStr + 'T00:00:00')
-  return d.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+const toDateKey = (d) => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 // ===== STATE FORM =====
