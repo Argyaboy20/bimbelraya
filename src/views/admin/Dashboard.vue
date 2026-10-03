@@ -108,6 +108,19 @@
         </router-link>
       </section>
 
+      <!-- ===== SECTION: LOWONGAN TENTOR ===== -->
+      <section class="dashboard-section">
+        <h2 class="section-title">Lowongan Tentor</h2>
+        <p class="section-desc">
+          Kelola lowongan mengajar yang tampil di halaman publik untuk para tentor.
+        </p>
+        <router-link to="/admin/lowongan" class="section-card card-blue">
+          <span class="card-icon">📢</span>
+          <span class="card-text">KELOLA LOWONGAN</span>
+          <span class="card-arrow">→</span>
+        </router-link>
+      </section>
+
       <!-- ===== SECTION: KELUAR AKUN ===== -->
       <section class="logout-section">
         <button type="button" class="btn-logout" @click="showLogoutConfirm = true">

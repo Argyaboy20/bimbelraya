@@ -13,6 +13,7 @@ import AdminDashboard from '@/views/admin/Dashboard.vue'
 import DataTentor from '@/views/admin/DataTentor.vue'
 import DataWaliMurid from '@/views/admin/DataWaliMurid.vue'
 import LaporanPresensi from '@/views/admin/LaporanPresensi.vue'
+import DataLowongan from '@/views/admin/DataLowongan.vue'
 
 // Tentor
 import DashboardTentor from '@/views/tentor/DashboardTentor.vue'
@@ -74,6 +75,11 @@ const routes = [
         path: 'presensi',
         component: LaporanPresensi,
         meta: { requiresAuth: true, role: 'admin', title: 'Laporan Presensi' },
+      },
+      {
+        path: 'lowongan',
+        component: DataLowongan,
+        meta: { requiresAuth: true, role: 'admin', title: 'Kelola Lowongan' },
       },
     ],
   },
