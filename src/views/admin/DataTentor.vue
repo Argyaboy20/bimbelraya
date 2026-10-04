@@ -235,7 +235,7 @@
 
               <!-- Tombol Konfirmasi — muncul kalau semua kolom 1-14 sudah terisi -->
               <td class="col-confirm">
-                <div v-if="isRowComplete(row) && !row.isSaved" class="confirm-popup">
+                <div v-if="isRowComplete(row) && !row.isSaved && !row._cancelledOnce" class="confirm-popup">
                   <p class="confirm-title">Data sudah benar?</p>
                   <div class="confirm-actions">
                     <button class="btn-confirm yes" @click="confirmSave(index)">Iya</button>
@@ -298,14 +298,21 @@ const createEmptyRow = () => ({
 })
 
 const tentorStore = useTentorStore()
-// ============================================
-// State tabel — dimulai dengan 1 baris kosong
-// ============================================
-const rows = reactive([createEmptyRow()])
+tentorStore.checkExpiredContracts() // hapus tentor yang kontraknya lewat SEBELUM tabel dibangun
+savedCounter = tentorStore.rows.length
 
-// ============================================
+// State tabel — dimulai dengan 1 baris kosong
+const rows = reactive([
+  ...tentorStore.rows.map((r, i) => ({
+    ...createEmptyRow(),
+    ...r,
+    isSaved: true,
+    savedNumber: i + 1,
+  })),
+  createEmptyRow(),
+])
+
 // VALIDASI PER KOLOM
-// ============================================
 const namaError = (row) => {
   if (!row.nama) return 'Wajib diisi'
   if (!/^[a-zA-Z\s]+$/.test(row.nama)) return 'Hanya huruf & spasi'
@@ -335,6 +342,8 @@ const emailError = (row) => {
 const kodeError = (row) => {
   if (!row.kodeTentor) return 'Wajib diisi'
   if (!/^[a-zA-Z0-9]+$/.test(row.kodeTentor)) return 'Tanpa spasi/simbol'
+  if (!tentorStore.kodeSudahAda(row.kodeTentor)) return 'Kode belum di-generate di Dashboard'
+  if (!row.isSaved && tentorStore.getByKode(row.kodeTentor)) return 'Kode sudah dipakai tentor lain'
   return ''
 }
 
@@ -485,7 +494,7 @@ const deleteRow = (index) => {
 // Override: popup tidak muncul lagi setelah "Tidak" ditekan,
 // kecuali row diubah lagi (re-trigger lewat onRowChanged)
 watch(
-  () => rows.map((r) => JSON.stringify({ ...r, isSaved: undefined, savedNumber: undefined })),
+  () => rows.map((r) => JSON.stringify({ ...r, isSaved: undefined, savedNumber: undefined, _cancelledOnce: undefined })),
   (newVal, oldVal) => {
     rows.forEach((row, i) => {
       if (oldVal && newVal[i] !== oldVal[i]) {

@@ -151,6 +151,7 @@
             </p>
           </div>
 
+          <p v-if="submitError" class="field-alert">{{ submitError }}</p>
           <!-- Tombol Daftar -->
           <button type="submit" class="btn-submit" :disabled="!isFormValid">
             Daftar Tentor
@@ -172,16 +173,12 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-
-// ============================================
-// DUMMY DATA — kode tentor valid dari "admin"
-// Nanti diganti dengan API call ke backend:
-// const res = await fetch(`/api/tentor/verify-kode/${kode}`)
-// ============================================
-const dummyKodeTentorDariAdmin = ['1001', '1002', '1003', '2024', '8888']
+import { useTentorStore } from '@/stores/tentor'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const tentorStore = useTentorStore()
+const submitError = ref('')
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -268,9 +265,10 @@ const confirmError = computed(() => {
 const kodeError = computed(() => {
   if (!form.kodeTentor) return 'Kode tentor wajib diisi'
   if (form.kodeTentor.length < 4) return 'Kode tentor harus 4 digit'
-  if (!dummyKodeTentorDariAdmin.includes(form.kodeTentor)) {
+  if (!tentorStore.kodeSudahAda(form.kodeTentor)) {
     return 'Kode tentor tidak ditemukan, hubungi admin untuk mendapat kode'
   }
+  if (!tentorStore.kodeTersedia(form.kodeTentor)) return 'Kode tentor ini sudah dipakai'
   return ''
 })
 
@@ -293,28 +291,23 @@ const isFormValid = computed(() => {
 
 // ===== SUBMIT =====
 const handleSubmit = () => {
-  // Tandai semua field sudah disentuh agar semua error tampil jika ada yang terlewat
   Object.keys(touched).forEach((key) => (touched[key] = true))
-
+  submitError.value = ''
   if (!isFormValid.value) return
 
-  const payload = {
-    nama: form.nama.trim(),
-    noWA: `+62${waNumber.value}`,
+  // Nanti: POST /api/auth/register-tentor (password di-hash di server)
+  const hasil = tentorStore.daftarAkun({
+    kodeTentor: form.kodeTentor,
+    nama: form.nama,
+    wa: `+62${waNumber.value}`,
     email: form.email,
     password: form.password,
-    kodeTentor: form.kodeTentor
+  })
+  if (!hasil.ok) {
+    submitError.value = hasil.pesan
+    return
   }
 
-  // ============================================
-  // Nanti diganti dengan API call sungguhan:
-  // await fetch('/api/auth/register-tentor', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(payload)
-  // })
-  // ============================================
-  console.log('Data pendaftaran tentor:', payload)
   authStore.login({ role: 'tentor', kodeTentor: form.kodeTentor })
   router.push(`/tentor/dashboardtentor/${form.kodeTentor}`)
 }

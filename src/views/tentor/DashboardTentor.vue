@@ -138,17 +138,7 @@ const showAlert = ref(true)
 //     tetap di halaman miliknya sendiri (bukan halaman tentor lain)
 const kodeTentor = route.params.id
 
-// ============================================
-// DUMMY DATA NAMA TENTOR — nanti diganti hasil fetch API, contoh:
-//
-// const namaTentor = ref('')
-// onMounted(async () => {
-//   const res = await fetch(`/api/tentor/${kodeTentor}`)
-//   const data = await res.json()
-//   namaTentor.value = data.namaLengkap
-// })
-// ============================================
-const namaTentor = ref('Ahmad Fauzi')
+const namaTentor = computed(() => tentorStore.getNama(kodeTentor) || 'Tentor')
 
 // Inisial untuk icon profil bulat (ambil huruf depan tiap kata, maks 2 huruf)
 const inisialTentor = computed(() => {

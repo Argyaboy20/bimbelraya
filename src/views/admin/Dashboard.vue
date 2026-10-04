@@ -7,9 +7,9 @@
     <div class="dashboard-content">
       <!-- ===== CARD STATISTIK (data dummy dikirim lewat props) ===== -->
       <CardStatistik
-        :tentor-aktif="dummyStats.tentorAktif"
-        :walimurid-aktif="dummyStats.walimuridAktif"
-        :frekuensi-presensi="dummyStats.frekuensiPresensi"
+        :tentor-aktif="stats.tentorAktif"
+        :walimurid-aktif="stats.walimuridAktif"
+        :frekuensi-presensi="stats.frekuensiPresensi"
       />
 
       <!-- ===== SECTION: BUAT KODE TENTOR ===== -->
@@ -150,23 +150,24 @@
 <script setup>
 // give component a multi-word name to satisfy linter
 defineOptions({ name: 'AdminDashboard' })
-import { reactive, ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
 import { useTentorStore } from '@/stores/tentor'
+import { usePresensiStore } from '@/stores/presensi'
+import { useWalimuridStore } from '@/stores/walimurid'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const tentorStore = useTentorStore()
+const presensiStore = usePresensiStore()
+const walimuridStore = useWalimuridStore()
+
+tentorStore.checkExpiredContracts() // admin membuka dashboard ikut menyapu kontrak yang lewat
 
 // ===== LOGOUT (dengan modal konfirmasi) =====
-// Tombol "KELUAR AKUN" cuma buka modal (showLogoutConfirm = true).
-// - Tombol "Tidak" → tutup modal saja, tetap di /admin/dashboard, tidak ada aksi apa pun.
-// - Tombol "Ya"    → handleLogout() dijalankan: hapus SESI yang tersimpan
-//   (authStore.logout() sudah benar hanya menghapus key 'authSession' dari
-//   localStorage, bukan menghapus seluruh data), lalu redirect ke /loginadmin.
 const showLogoutConfirm = ref(false)
 
 const handleLogout = () => {
@@ -175,23 +176,22 @@ const handleLogout = () => {
   router.push('/loginadmin')
 }
 
-// ============================================
-// DUMMY DATA — nanti diganti hasil fetch API backend, contoh:
-//
-// const dummyStats = reactive({ tentorAktif: 0, walimuridAktif: 0, frekuensiPresensi: 0 })
-// onMounted(async () => {
-//   const res = await fetch('/api/admin/statistik')
-//   const data = await res.json()
-//   Object.assign(dummyStats, data)
-// })
-//
-// CardStatistik.vue TIDAK perlu diubah sama sekali saat backend tersambung,
-// karena ia cuma menerima data lewat props.
-// ============================================
-const dummyStats = reactive({
-  tentorAktif: 24,
-  walimuridAktif: 38,
-  frekuensiPresensi: 19,
+// "YYYY-MM-DD" dari tanggal lokal (toISOString() mundur sehari di WIB)
+const toDateKey = (date) => {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+// Nanti dari backend: GET /api/admin/statistik
+const stats = computed(() => {
+  const hariIni = toDateKey(new Date())
+  return {
+    tentorAktif: tentorStore.rows.filter((r) => !r.habisKontrak || r.habisKontrak >= hariIni).length,
+    walimuridAktif: walimuridStore.jumlahAktif,
+    frekuensiPresensi: presensiStore.records.filter((p) => p.tanggalKey === hariIni).length,
+  }
 })
 
 // ===== KODE TENTOR GENERATOR =====
@@ -206,10 +206,20 @@ const showRiwayat = ref(false)
 const generateKode = () => {
   kodeState.value = 'loading'
   setTimeout(() => {
-    const randomDua = Math.floor(Math.random() * 90 + 10).toString()
-    generatedKode.value = randomDua + tahunSingkat
+    // Hanya ada 90 kemungkinan per tahun (10–99). Pilih acak dari yang belum ada di riwayat.
+    const tersedia = []
+    for (let n = 10; n <= 99; n++) {
+      const kode = String(n) + tahunSingkat
+      if (!tentorStore.kodeSudahAda(kode)) tersedia.push(kode)
+    }
+    if (tersedia.length === 0) {
+      alert('Semua kode tahun ini sedang terpakai.')
+      kodeState.value = 'idle'
+      return
+    }
+    generatedKode.value = tersedia[Math.floor(Math.random() * tersedia.length)]
     kodeState.value = 'result'
-  }, 1200) // simulasi proses 1.2 detik
+  }, 1200)
 }
 
 const tolakKode = () => {

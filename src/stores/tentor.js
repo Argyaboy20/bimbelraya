@@ -58,7 +58,7 @@ export const useTentorStore = defineStore('tentor', {
     },
 
     // ============================================
-    // Hapus tentor SEPENUHNYA: baris data induk + akun login + bebaskan kodenya
+    // Hapus tentor SEPENUHNYA: baris data induk + akun login + hapus kodenya dari Riwayat Generate
     // (terpakai: false) supaya bisa dipakai tentor lain.
     // Dipakai oleh: DataTentor.vue (admin hapus), Biodata.vue (Hapus Akun),
     // dan checkExpiredContracts() di bawah.
@@ -66,8 +66,7 @@ export const useTentorStore = defineStore('tentor', {
     removeByKode(kode) {
       this.rows = this.rows.filter((r) => r.kodeTentor !== kode)
       this.akun = this.akun.filter((a) => a.kodeTentor !== kode)
-      const entry = this.kodeHistory.find((k) => k.kode === kode)
-      if (entry) entry.terpakai = false
+      this.kodeHistory = this.kodeHistory.filter((k) => k.kode !== kode)
       // Nanti: await fetch(`/api/tentor/${kode}`, { method: 'DELETE' })
     },
 
@@ -129,7 +128,7 @@ export const useTentorStore = defineStore('tentor', {
     },
 
     // ===== Biodata.vue: tentor mengubah nama / email =====
-    updateAkun(kode, { nama, email }) {
+    updateAkun(kode, { nama, email, wa, password }) {
       const akun = this.akun.find((a) => a.kodeTentor === kode)
       if (!akun) return { ok: false, pesan: 'Akun tidak ditemukan' }
       const emailBersih = email.trim().toLowerCase()
@@ -138,6 +137,8 @@ export const useTentorStore = defineStore('tentor', {
       }
       akun.nama = nama.trim()
       akun.email = emailBersih
+      akun.wa = wa
+      akun.password = password
       return { ok: true }
     },
 

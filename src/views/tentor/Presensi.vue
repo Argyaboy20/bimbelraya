@@ -125,17 +125,16 @@ import { ref, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePresensiStore } from '@/stores/presensi'
 import UploadFoto from '@/components/UploadFoto.vue'
+import { useTentorStore } from '@/stores/tentor'
 
 defineOptions({ name: 'TentorPresensi' })
 
 const route = useRoute()
 const presensiStore = usePresensiStore()
+const tentorStore = useTentorStore()
 const kodeTentor = route.params.id
 
-// ============================================
-// DUMMY NAMA TENTOR — nanti diganti fetch API, sama seperti file tentor lain
-// ============================================
-const namaTentor = ref('Ahmad Fauzi')
+const namaTentor = computed(() => tentorStore.getNama(kodeTentor) || 'Tentor')
 
 // ===== HELPER TANGGAL =====
 const toDateKey = (d) => {

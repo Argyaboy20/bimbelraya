@@ -217,7 +217,7 @@
 
                 <!-- Tombol konfirmasi / hapus -->
                 <td class="col-confirm">
-                  <div v-if="isRowComplete(row) && !row.isSaved" class="confirm-popup">
+                  <div v-if="isRowComplete(row) && !row.isSaved && !row._cancelledOnce" class="confirm-popup">
                     <p class="confirm-title">Data sudah benar?</p>
                     <div class="confirm-actions">
                       <button class="btn-confirm yes" @click="confirmSave(index)">Iya</button>
@@ -271,8 +271,11 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import Navbar from '@/components/Navbar.vue'
+import { useWalimuridStore } from '@/stores/walimurid'
 
-let savedCounter = 0
+const walimuridStore = useWalimuridStore()
+
+let savedCounter = walimuridStore.rows.length
 let rowIdCounter = 0
 
 // ============================================
@@ -305,7 +308,15 @@ const createEmptyRow = () => ({
   }
 })
 
-const rows = reactive([createEmptyRow()])
+const rows = reactive([
+  ...walimuridStore.rows.map((r, i) => ({
+    ...createEmptyRow(),
+    ...r,
+    isSaved: true,
+    savedNumber: i + 1,
+  })),
+  createEmptyRow(),
+])
 
 // ============================================
 // VALIDASI PER KOLOM
@@ -313,6 +324,9 @@ const rows = reactive([createEmptyRow()])
 const kodeWaliError = (row) => {
   if (!row.kodeWali) return 'Wajib diisi'
   if (!/^[a-zA-Z0-9]+$/.test(row.kodeWali)) return 'Tanpa spasi/simbol'
+  if (!row.isSaved && walimuridStore.rows.some((r) => r.kodeWali === row.kodeWali)) {
+    return 'Kode walimurid sudah dipakai'
+  }
   return ''
 }
 const namaError = (row) => {
@@ -392,6 +406,7 @@ const isRowComplete = (row) => {
 const onRowChanged = (index) => {
   const isLastRow = index === rows.length - 1
   const row = rows[index]
+  row._cancelledOnce = false
 
   const hasContent =
     row.kodeWali || row.nama || row.kelas || row.asalSekolah ||
@@ -411,6 +426,7 @@ const confirmSave = (index) => {
   savedCounter += 1
   row.isSaved = true
   row.savedNumber = savedCounter
+  walimuridStore.addRow({ ...row })
 
   // ============================================
   // Nanti diganti dengan API call sungguhan, contoh:
@@ -436,6 +452,7 @@ const deleteRow = (index) => {
   // Nanti diganti dengan API call sungguhan:
   // await fetch(`/api/admin/walimurid/${row.kodeWali}`, { method: 'DELETE' })
   // ============================================
+  walimuridStore.removeByKode(rows[index].kodeWali)
   rows.splice(index, 1)
 }
 

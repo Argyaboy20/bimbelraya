@@ -162,32 +162,23 @@
 import { ref, reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useTentorStore } from '@/stores/tentor'
 
 defineOptions({ name: 'TentorBiodata' })
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const tentorStore = useTentorStore()
 const kodeTentor = route.params.id
 
-// ============================================
-// DUMMY DATA BIODATA TENTOR
-// Nanti diganti dengan fetch dari API:
-// onMounted(async () => {
-//   const res = await fetch(`/api/tentor/${kodeTentor}`)
-//   const data = await res.json()
-//   form.nama = data.namaLengkap
-//   form.email = data.email
-//   form.password = data.password   // atau biarkan kosong & hanya update jika diisi
-//   waNumber.value = data.noWA.replace('+62', '')
-// })
-// ============================================
+const akun = tentorStore.getAkunByKode(kodeTentor)
 const form = reactive({
-  nama: 'Ahmad Fauzi',
-  email: 'ahmadfauzi@email.com',
-  password: 'Fauzi123',
+  nama: akun ? akun.nama : '',
+  email: akun ? akun.email : '',
+  password: akun ? akun.password : '',
 })
-const waNumber = ref('81234567890')
+const waNumber = ref(akun ? akun.wa.replace('+62', '') : '')
 
 // ===== INISIAL AVATAR (sama seperti DashboardTentor) =====
 const inisialTentor = computed(() => {
@@ -286,7 +277,17 @@ const simpanData = () => {
   //   })
   // })
   // ============================================
-  console.log('Data tersimpan:', { ...form, noWA: `+62${waNumber.value}` })
+  const hasil = tentorStore.updateAkun(kodeTentor, {
+    nama: form.nama,
+    email: form.email,
+    wa: `+62${waNumber.value}`,
+    password: form.password,
+  })
+  if (!hasil.ok) {
+    showSimpanModal.value = false
+    alert(hasil.pesan)
+    return
+  }
   isEditing.value = false
   showSimpanModal.value = false
   // Reset touched
@@ -312,7 +313,7 @@ const hapusAkun = () => {
   // await fetch(`/api/tentor/${kodeTentor}`, { method: 'DELETE' })
   // — menghapus: data tentor, presensi, kontrak, semua record terkait kodeTentor
   // ============================================
-  console.log(`Akun tentor ${kodeTentor} dihapus`)
+  tentorStore.removeByKode(kodeTentor)
   authStore.logout()
   showHapusModal.value = false
   router.push('/daftar')
