@@ -143,6 +143,16 @@ const toDateKey = (d) => {
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
 }
+const formatHariTanggal = (dateKeyStr) => {
+  if (!dateKeyStr) return ''
+  const d = new Date(dateKeyStr + 'T00:00:00')
+  return d.toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
 // ===== STATE FORM =====
 const form = reactive({

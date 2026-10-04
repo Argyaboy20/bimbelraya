@@ -54,6 +54,7 @@
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
 
+          <p v-if="loginError" class="field-alert">{{ loginError }}</p>
           <!-- Tombol Masuk -->
           <button type="submit" class="btn-submit" :disabled="!isFormValid">Masuk</button>
 
@@ -89,6 +90,7 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useTentorStore } from '@/stores/tentor'
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -101,7 +103,8 @@ const showPassword = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
 
-const dummyKodeTentor = '1001'
+const tentorStore = useTentorStore()
+const loginError = ref('')
 
 // Lacak field mana saja yang sudah pernah disentuh (untuk tampil/hilang alert)
 const touched = reactive({
@@ -133,26 +136,19 @@ const isFormValid = computed(() => {
 const handleSubmit = () => {
   touched.email = true
   touched.password = true
-
+  loginError.value = ''
   if (!isFormValid.value) return
 
-  const payload = {
-    email: form.email,
-    password: form.password,
+  // Nanti: POST /api/auth/login → server cek hash password, balas token JWT
+  const akun = tentorStore.loginTentor(form.email, form.password)
+  if (!akun) {
+    loginError.value = 'Email atau password salah'
+    return
   }
 
-  // ============================================
-  // Nanti diganti dengan API call sungguhan:
-  // await fetch('/api/auth/login', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(payload)
-  // })
-  // Lalu simpan token & role ke stores/auth.js, redirect sesuai role
-  // ============================================
-  console.log('Data login:', payload)
-  authStore.login({ role: 'tentor', kodeTentor: dummyKodeTentor })
-  router.push(`/tentor/dashboardtentor/${dummyKodeTentor}`)
+  // Jangan kirim objek `akun` utuh ke authStore: dia menyimpan `user` ke localStorage
+  authStore.login({ role: 'tentor', kodeTentor: akun.kodeTentor })
+  router.push(`/tentor/dashboardtentor/${akun.kodeTentor}`)
 }
 </script>
 
