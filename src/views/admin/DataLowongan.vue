@@ -97,19 +97,20 @@
 
 <script setup>
 defineOptions({ name: 'DataLowongan' })
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
+import { ApiError } from '@/api/http'
 import Navbar from '@/components/Navbar.vue'
 import { useLowonganStore, KOLOM_LOWONGAN, STATUS_LOWONGAN } from '@/stores/lowongan'
 
 const lowonganStore = useLowonganStore()
 
 let rowIdCounter = 0
-const newId = () => `${Date.now()}-${Math.floor(Math.random() * 1000000)}`
 
 // ===== Buat baris kosong baru =====
 const createEmptyRow = () => ({
   rowId: rowIdCounter++, // key untuk v-for
-  id: newId(), // id unik, jadi penghubung dengan data di store
+   id: null, // id angka dari server, terisi setelah baris disimpan
+   isSaving: false, // true selama menunggu jawaban server (cegah klik "Iya" dua kali)
   ...Object.fromEntries(KOLOM_LOWONGAN.map((k) => [k.key, ''])),
   guru: '',
   status: 'Tersedia',
@@ -118,15 +119,20 @@ const createEmptyRow = () => ({
   touched: {}
 })
 
-// ============================================
-// Saat halaman dibuka, baris yang sudah tersimpan di store ikut
-// ditampilkan lagi (supaya tidak "hilang" dari tampilan admin saat
-// pindah halaman), lalu ditutup dengan 1 baris kosong untuk input baru.
-// ============================================
-const rows = reactive([
-  ...lowonganStore.items.map((item) => ({ ...createEmptyRow(), ...item, isSaved: true })),
-  createEmptyRow()
-])
+// Saat halaman dibuka, daftar lowongan dimuat dari server dan ditampilkan sebagai baris
+// tersimpan, lalu ditutup dengan 1 baris kosong untuk input baru.
+const rows = reactive([createEmptyRow()])
+
+onMounted(async () => {
+  await lowonganStore.fetchAdmin()
+  if (lowonganStore.error) alert(lowonganStore.error)
+  rows.splice(
+    0,
+    rows.length,
+    ...lowonganStore.items.map((item) => ({ ...createEmptyRow(), ...item, isSaved: true })),
+    createEmptyRow()
+  )
+})
 
 // ===== Nomor urut: hitung posisi di antara baris yang sudah tersimpan =====
 const nomorUrut = (index) => rows.slice(0, index + 1).filter((r) => r.isSaved).length
@@ -153,38 +159,59 @@ const onFieldInput = (index) => {
 
 // ===== Data bersih yang disimpan ke store =====
 const toItem = (row) => ({
-  id: row.id,
   ...Object.fromEntries(KOLOM_LOWONGAN.map((k) => [k.key, row[k.key].trim()])),
   guru: row.guru,
   status: row.status
 })
 
-// ===== KONFIRMASI "Iya" → simpan, otomatis tampil di halaman publik =====
-const confirmSave = (index) => {
+// ===== KONFIRMASI "Iya" → simpan ke server, otomatis tampil di halaman publik =====
+const confirmSave = async (index) => {
   const row = rows[index]
-  row.isSaved = true
-  lowonganStore.addLowongan(toItem(row))
+  if (row.isSaving) return
+  row.isSaving = true
+  try {
+    const dibuat = await lowonganStore.addLowongan(toItem(row))
+    row.id = dibuat.id
+    row.isSaved = true
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan lowongan. Coba lagi.')
+  } finally {
+    row.isSaving = false
+  }
+}
+
+// ===== Ganti status: kalau baris sudah tersimpan, ikut diperbarui di server =====
+const onStatusChange = async (index) => {
+  const row = rows[index]
+  if (!row.isSaved) return
+  const baru = row.status
+  const item = lowonganStore.items.find((i) => i.id === row.id)
+  const lama = item ? item.status : 'Tersedia'
+  try {
+    await lowonganStore.updateStatus(row.id, baru)
+  } catch (err) {
+    row.status = lama // gagal → kembalikan pilihan semula
+    alert(err instanceof ApiError ? err.message : 'Gagal mengubah status. Coba lagi.')
+  }
+}
+
+// ===== HAPUS baris (hilang juga dari halaman publik) =====
+const deleteRow = async (index) => {
+  const yakin = confirm('Yakin mau hapus lowongan ini?')
+  if (!yakin) return
+  const row = rows[index]
+  try {
+    await lowonganStore.removeLowongan(row.id)
+    const posisi = rows.indexOf(row)
+    if (posisi !== -1) rows.splice(posisi, 1)
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menghapus lowongan. Coba lagi.')
+  }
 }
 
 // ===== KONFIRMASI "Tidak" → popup hilang, isian tetap ada, tidak tersimpan =====
 const confirmCancel = (index) => {
   rows[index].dismissed = true
-}
-
-// ===== Ganti status: kalau baris sudah tersimpan, ikut diperbarui di store =====
-const onStatusChange = (index) => {
-  const row = rows[index]
-  if (row.isSaved) {
-    lowonganStore.updateStatus(row.id, row.status)
-  }
-}
-
-// ===== HAPUS baris (hilang juga dari halaman publik) =====
-const deleteRow = (index) => {
-  const yakin = confirm('Yakin mau hapus lowongan ini?')
-  if (!yakin) return
-  lowonganStore.removeLowongan(rows[index].id)
-  rows.splice(index, 1)
 }
 </script>
 

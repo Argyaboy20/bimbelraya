@@ -136,7 +136,7 @@
             <input
               type="text"
               class="field-input code-input"
-              :class="{ 'is-error': touched.kode && kodeError, 'is-valid': touched.kode && kodeValidState }"
+              :class="{ 'is-error': touched.kode && kodeError }"
               v-model="form.kodeTentor"
               @input="onKodeInput"
               @focus="touched.kode = true"
@@ -146,14 +146,11 @@
               inputmode="numeric"
             />
             <p v-if="touched.kode && kodeError" class="field-alert">{{ kodeError }}</p>
-            <p v-if="touched.kode && kodeValidState" class="field-alert field-success">
-              ✓ Kode terverifikasi, kode ini akan ditautkan ke data kamu
-            </p>
           </div>
 
           <p v-if="submitError" class="field-alert">{{ submitError }}</p>
           <!-- Tombol Daftar -->
-          <button type="submit" class="btn-submit" :disabled="!isFormValid">
+          <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">
             Daftar Tentor
           </button>
 
@@ -173,12 +170,12 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useTentorStore } from '@/stores/tentor'
+import { api, ApiError } from '@/api/http'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const tentorStore = useTentorStore()
 const submitError = ref('')
+const isSubmitting = ref(false)
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -265,16 +262,7 @@ const confirmError = computed(() => {
 const kodeError = computed(() => {
   if (!form.kodeTentor) return 'Kode tentor wajib diisi'
   if (form.kodeTentor.length < 4) return 'Kode tentor harus 4 digit'
-  if (!tentorStore.kodeSudahAda(form.kodeTentor)) {
-    return 'Kode tentor tidak ditemukan, hubungi admin untuk mendapat kode'
-  }
-  if (!tentorStore.kodeTersedia(form.kodeTentor)) return 'Kode tentor ini sudah dipakai'
   return ''
-})
-
-// State sukses verifikasi kode (dipisah dari error agar bisa tampil pesan hijau)
-const kodeValidState = computed(() => {
-  return form.kodeTentor.length === 4 && !kodeError.value
 })
 
 // ===== VALIDASI KESELURUHAN FORM =====
@@ -290,26 +278,50 @@ const isFormValid = computed(() => {
 })
 
 // ===== SUBMIT =====
-const handleSubmit = () => {
+const handleSubmit = async () => {
   Object.keys(touched).forEach((key) => (touched[key] = true))
   submitError.value = ''
-  if (!isFormValid.value) return
+  if (!isFormValid.value || isSubmitting.value) return
 
-  // Nanti: POST /api/auth/register-tentor (password di-hash di server)
-  const hasil = tentorStore.daftarAkun({
-    kodeTentor: form.kodeTentor,
-    nama: form.nama,
-    wa: `+62${waNumber.value}`,
-    email: form.email,
-    password: form.password,
-  })
-  if (!hasil.ok) {
-    submitError.value = hasil.pesan
+  isSubmitting.value = true
+  try {
+    await api('/api/auth/tentor/register', {
+      method: 'POST',
+      auth: false,
+      body: {
+        nama: form.nama.trim(),
+        wa: waNumber.value, // angka saja, tanpa +62
+        email: form.email,
+        password: form.password,
+        kodeTentor: form.kodeTentor,
+      },
+    })
+  } catch (err) {
+    submitError.value = err instanceof ApiError ? err.message : 'Terjadi kesalahan. Coba lagi.'
+    isSubmitting.value = false
     return
   }
 
-  authStore.login({ role: 'tentor', kodeTentor: form.kodeTentor })
-  router.push(`/tentor/dashboardtentor/${form.kodeTentor}`)
+  // Akun sudah jadi → langsung masuk dengan email & password yang sama
+  try {
+    const data = await api('/api/auth/tentor/login', {
+      method: 'POST',
+      auth: false,
+      body: { email: form.email, password: form.password },
+    })
+    authStore.login({
+      role: 'tentor',
+      kodeTentor: data.tentor.kodeTentor,
+      nama: data.tentor.nama,
+      token: data.token,
+      expiresInSeconds: data.expiresInSeconds,
+    })
+    router.push(`/tentor/dashboardtentor/${data.tentor.kodeTentor}`)
+  } catch {
+    router.push('/login') // akun sudah dibuat; tinggal login manual
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 

@@ -256,7 +256,8 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, onMounted } from 'vue'
+import { ApiError } from '@/api/http'
 import { useTentorStore } from '@/stores/tentor'
 import Navbar from '@/components/Navbar.vue'
 
@@ -287,6 +288,7 @@ const createEmptyRow = () => ({
   habisKontrak: '',
   isSaved: false,
   savedNumber: null,
+  isSaving: false,
   touched: {
     nama: false,
     panggilan: false,
@@ -298,19 +300,31 @@ const createEmptyRow = () => ({
 })
 
 const tentorStore = useTentorStore()
-tentorStore.checkExpiredContracts() // hapus tentor yang kontraknya lewat SEBELUM tabel dibangun
-savedCounter = tentorStore.rows.length
 
-// State tabel — dimulai dengan 1 baris kosong
-const rows = reactive([
-  ...tentorStore.rows.map((r, i) => ({
-    ...createEmptyRow(),
-    ...r,
-    isSaved: true,
-    savedNumber: i + 1,
-  })),
-  createEmptyRow(),
-])
+// State tabel — dimulai dengan 1 baris kosong; baris tersimpan dimuat dari server
+const rows = reactive([createEmptyRow()])
+
+onMounted(async () => {
+  try {
+    await Promise.all([tentorStore.fetchRows(), tentorStore.fetchKodeHistory()])
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat data tentor.')
+    return
+  }
+  savedCounter = tentorStore.rows.length
+  rows.splice(
+    0,
+    rows.length,
+    ...tentorStore.rows.map((r, i) => ({
+      ...createEmptyRow(),
+      ...r,
+      isSaved: true,
+      savedNumber: i + 1,
+    })),
+    createEmptyRow(),
+  )
+})
 
 // VALIDASI PER KOLOM
 const namaError = (row) => {
@@ -451,50 +465,48 @@ const onRowChanged = (index) => {
 // ============================================
 // KONFIRMASI SIMPAN
 // ============================================
-const confirmSave = (index) => {
+const confirmSave = async (index) => {
   const row = rows[index]
-  savedCounter += 1
-  row.isSaved = true
-  row.savedNumber = savedCounter
-  tentorStore.addRow({ ...row })
-
-  // ============================================
-  // Nanti diganti dengan API call sungguhan, contoh:
-  // await fetch('/api/admin/tentor', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ ...row })
-  // })
-  // ============================================
-  console.log('Data tersimpan:', { ...row })
+  if (row.isSaving) return
+  row.isSaving = true
+  try {
+    await tentorStore.simpanTentor(row)
+    savedCounter += 1
+    row.isSaved = true
+    row.savedNumber = savedCounter
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan data tentor. Coba lagi.')
+  } finally {
+    row.isSaving = false
+  }
 }
 
 const confirmCancel = (index) => {
   // Batal simpan — data di kolom TETAP ADA, hanya popup konfirmasi yang hilang.
-  // Trik: toggle sebuah flag sementara supaya isRowComplete tetap true tapi
-  // popup tidak otomatis muncul lagi sampai ada perubahan baru di baris ini.
+  // Trik: toggle sebuah flag sementara supaya isRowComplete tetap true tapi popup tidak otomatis muncul lagi sampai ada perubahan baru di baris ini.
   const row = rows[index]
   row._cancelledOnce = true
 }
 
-const deleteRow = (index) => {
-  // Konfirmasi browser sederhana dulu, biar tidak kehapus tidak sengaja
-  const yakin = confirm('Yakin mau hapus data tentor ini?')
+const deleteRow = async (index) => {
+  const yakin = confirm(
+    'Yakin mau hapus data tentor ini? Akun login dan kodenya ikut terhapus. Riwayat presensi tetap tersimpan sebagai rekap.',
+  )
   if (!yakin) return
-  tentorStore.removeByKode(rows[index].kodeTentor)
-
-  // ============================================
-  // Nanti diganti dengan API call sungguhan, contoh:
-  // await fetch(`/api/admin/tentor/${row.kodeTentor}`, { method: 'DELETE' })
-  // ============================================
-
-  rows.splice(index, 1)
+  const row = rows[index]
+  try {
+    await tentorStore.hapusTentor(row.kodeTentor)
+    const posisi = rows.indexOf(row)
+    if (posisi !== -1) rows.splice(posisi, 1)
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menghapus data tentor. Coba lagi.')
+  }
 }
 
 // Override: popup tidak muncul lagi setelah "Tidak" ditekan,
 // kecuali row diubah lagi (re-trigger lewat onRowChanged)
 watch(
-  () => rows.map((r) => JSON.stringify({ ...r, isSaved: undefined, savedNumber: undefined, _cancelledOnce: undefined })),
+  () => rows.map((r) => JSON.stringify({ ...r, isSaved: undefined, savedNumber: undefined, isSaving: undefined, _cancelledOnce: undefined })),
   (newVal, oldVal) => {
     rows.forEach((row, i) => {
       if (oldVal && newVal[i] !== oldVal[i]) {

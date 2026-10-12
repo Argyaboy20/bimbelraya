@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { api, ApiError } from '@/api/http'
 
 // ============================================
 // Daftar kolom teks lowongan. Dipakai bersama oleh
@@ -21,39 +22,54 @@ export const STATUS_LOWONGAN = ['Tersedia', 'Sudah Diambil']
 
 export const useLowonganStore = defineStore('lowongan', {
   state: () => ({
-    // ============================================
-    // Struktur 1 lowongan:
+    // Struktur 1 lowongan (id angka dari server):
     // { id, kelas, alamat, paket, hari, jam, durasi, periode, mapel, guru, status }
-    //
-    // Ditulis dari DataLowongan.vue (admin), hanya dibaca oleh Lowongan.vue (publik).
-    //
-    // Nanti diganti fetch dari backend:
-    // async fetchLowongan() {
-    //   const res = await fetch('/api/lowongan')   // endpoint publik, tanpa login
-    //   this.items = await res.json()
-    // }
-    // ============================================
-    items: []
+    items: [],
+    loading: false,
+    error: ''
   }),
 
   actions: {
-    // Dipanggil DataLowongan.vue saat admin tekan "Iya" di konfirmasi baris
-    addLowongan(data) {
-      this.items.push({ ...data })
-      // Nanti: await fetch('/api/admin/lowongan', { method: 'POST', body: JSON.stringify(data) })
+    async _muat(path, auth) {
+      this.loading = true
+      this.error = ''
+      try {
+        this.items = await api(path, { auth })
+      } catch (err) {
+        this.error = err instanceof ApiError ? err.message : 'Gagal memuat lowongan'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Halaman publik /lowongan (tanpa login)
+    fetchPublik() {
+      return this._muat('/api/lowongan', false)
+    },
+
+    // Halaman admin DataLowongan.vue
+    fetchAdmin() {
+      return this._muat('/api/admin/lowongan', true)
+    },
+
+    // Dipanggil DataLowongan.vue saat admin tekan "Iya". Melempar ApiError kalau ditolak server.
+    async addLowongan(data) {
+      const dibuat = await api('/api/admin/lowongan', { method: 'POST', body: data })
+      this.items.push(dibuat)
+      return dibuat
     },
 
     // Dipanggil DataLowongan.vue saat admin mengganti status baris yang sudah tersimpan
-    updateStatus(id, status) {
+    async updateStatus(id, status) {
+      const diubah = await api(`/api/admin/lowongan/${id}`, { method: 'PATCH', body: { status } })
       const item = this.items.find((i) => i.id === id)
-      if (item) item.status = status
-      // Nanti: await fetch(`/api/admin/lowongan/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) })
+      if (item) item.status = diubah.status
     },
 
     // Dipanggil DataLowongan.vue saat admin hapus baris
-    removeLowongan(id) {
+    async removeLowongan(id) {
+      await api(`/api/admin/lowongan/${id}`, { method: 'DELETE' })
       this.items = this.items.filter((i) => i.id !== id)
-      // Nanti: await fetch(`/api/admin/lowongan/${id}`, { method: 'DELETE' })
     }
   }
 })

@@ -56,7 +56,7 @@
 
           <p v-if="loginError" class="field-alert">{{ loginError }}</p>
           <!-- Tombol Masuk -->
-          <button type="submit" class="btn-submit" :disabled="!isFormValid">Masuk</button>
+          <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">Masuk</button>
 
           <p class="login-redirect">
             Belum punya akun?
@@ -90,7 +90,7 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useTentorStore } from '@/stores/tentor'
+import { api, ApiError } from '@/api/http'
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -103,8 +103,8 @@ const showPassword = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
 
-const tentorStore = useTentorStore()
 const loginError = ref('')
+const isSubmitting = ref(false)
 
 // Lacak field mana saja yang sudah pernah disentuh (untuk tampil/hilang alert)
 const touched = reactive({
@@ -133,22 +133,32 @@ const isFormValid = computed(() => {
 })
 
 // ===== SUBMIT =====
-const handleSubmit = () => {
+const handleSubmit = async () => {
   touched.email = true
   touched.password = true
   loginError.value = ''
-  if (!isFormValid.value) return
+  if (!isFormValid.value || isSubmitting.value) return
 
-  // Nanti: POST /api/auth/login → server cek hash password, balas token JWT
-  const akun = tentorStore.loginTentor(form.email, form.password)
-  if (!akun) {
-    loginError.value = 'Email atau password salah'
-    return
+  isSubmitting.value = true
+  try {
+    const data = await api('/api/auth/tentor/login', {
+      method: 'POST',
+      auth: false,
+      body: { email: form.email, password: form.password },
+    })
+    authStore.login({
+      role: 'tentor',
+      kodeTentor: data.tentor.kodeTentor,
+      nama: data.tentor.nama,
+      token: data.token,
+      expiresInSeconds: data.expiresInSeconds,
+    })
+    router.push(`/tentor/dashboardtentor/${data.tentor.kodeTentor}`)
+  } catch (err) {
+    loginError.value = err instanceof ApiError ? err.message : 'Terjadi kesalahan. Coba lagi.'
+  } finally {
+    isSubmitting.value = false
   }
-
-  // Jangan kirim objek `akun` utuh ke authStore: dia menyimpan `user` ke localStorage
-  authStore.login({ role: 'tentor', kodeTentor: akun.kodeTentor })
-  router.push(`/tentor/dashboardtentor/${akun.kodeTentor}`)
 }
 </script>
 

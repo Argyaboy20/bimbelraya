@@ -132,7 +132,7 @@ const router = createRouter({
 })
 
 // ===== PROTEKSI ROUTING + JUDUL TAB DINAMIS =====
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   document.title = to.meta.title || 'Bimbel Raya'
 
   const auth = useAuthStore()
@@ -143,29 +143,26 @@ router.beforeEach((to, from, next) => {
     auth.restoreSession()
   }
 
-  if (to.meta.requiresAuth) {
-    if (!auth.isLoggedIn) {
-      // Belum login sama sekali → arahkan sesuai area yang dituju
-      if (to.path.startsWith('/admin')) {
-        next('/daftar') // ← area admin → ke /daftar, /loginadmin tetap tersembunyi
-      } else {
-        next('/login') // ← area tentor → ke login tentor
-      }
-    } else if (to.meta.role && auth.role !== to.meta.role) {
-      // Sudah login tapi role salah → redirect ke halaman rolenya
-      if (auth.role === 'tentor') {
-        next(`/tentor/dashboardtentor/${auth.kodeTentor}`)
-      } else if (auth.role === 'admin') {
-        next('/admin/dashboard')
-      } else {
-        next('/login')
-      }
-    } else {
-      next()
-    }
-  } else {
-    next()
+  if (!to.meta.requiresAuth) return true
+
+  // Belum login sama sekali → arahkan sesuai area yang dituju
+  if (!auth.isLoggedIn) {
+    return to.path.startsWith('/admin') ? '/daftar' : '/login' // /loginadmin tetap tersembunyi
   }
+
+  // Sudah login tapi role salah → redirect ke halaman rolenya
+  if (to.meta.role && auth.role !== to.meta.role) {
+    if (auth.role === 'tentor') return `/tentor/dashboardtentor/${auth.kodeTentor}`
+    if (auth.role === 'admin') return '/admin/dashboard'
+    return '/login'
+  }
+
+  // Tentor hanya boleh membuka halaman dengan kodenya sendiri
+  if (auth.role === 'tentor' && to.params.id && to.params.id !== auth.kodeTentor) {
+    return `/tentor/dashboardtentor/${auth.kodeTentor}`
+  }
+
+  return true
 })
 
 export default router

@@ -1,47 +1,53 @@
 <!-- DashboardTentor.vue -->
 <template>
   <div class="dashboard-tentor-page">
-    <div
-      v-if="sisaHariKontrak !== null && sisaHariKontrak <= 5 && sisaHariKontrak >= 0 && showAlert"
-      class="kontrak-alert"
-    >
-      <span class="alert-text">
-        {{
-          sisaHariKontrak === 0
-            ? 'Hari ini masa kontrak akan habis pukul 23.59, segera perbarui kontraknya'
-            : `Kontrakmu tinggal ${sisaHariKontrak} hari lagi, segera perpanjang!`
-        }}
-      </span>
-      <router-link :to="`/tentor/kontrak/${kodeTentor}`" class="alert-btn">Perpanjang</router-link>
-      <button class="alert-close" @click="showAlert = false">✕</button>
-    </div>
-    <!-- =====================================================
-         NAVBAR KHUSUS TENTOR
-         (mirip Navbar.vue admin, tapi sudut kiri berisi
-         icon profil bulat + greeting text tentor)
-         ===================================================== -->
-    <nav class="tentor-navbar">
-      <!-- ===== SUDUT KIRI: Icon Profil Bulat + Sapaan ===== -->
-      <div class="navbar-left">
-        <router-link
-          :to="`/tentor/biodata/${kodeTentor}`"
-          class="profile-icon"
-          aria-label="Lihat Biodata Tentor"
-        >
-          <span class="profile-initial">{{ inisialTentor }}</span>
-        </router-link>
+    <!-- Header menempel di atas: banner kontrak (kalau ada) + navbar -->
+    <header class="tentor-header">
+      <Transition name="banner-turun">
+        <div v-if="banner" class="banner-bungkus">
+          <div class="banner-ruang">
+            <div class="kontrak-banner" :class="`banner-${banner.tipe}`" role="alert">
+              <span class="banner-ikon" aria-hidden="true">{{ banner.ikon }}</span>
+              <div class="banner-isi">
+                <p class="banner-judul">{{ banner.judul }}</p>
+                <p class="banner-pesan">{{ banner.pesan }}</p>
+              </div>
+              <router-link :to="`/tentor/kontrak/${kodeTentor}`" class="banner-btn">
+                Perpanjang
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </Transition>
 
-        <p class="greeting-text">{{ greetingText }}</p>
-      </div>
+      <!-- =====================================================
+          NAVBAR KHUSUS TENTOR
+          (mirip Navbar.vue admin, tapi sudut kiri berisi
+          icon profil bulat + greeting text tentor)
+          ===================================================== -->
+      <nav class="tentor-navbar">
+        <!-- ===== SUDUT KIRI: Icon Profil Bulat + Sapaan ===== -->
+        <div class="navbar-left">
+          <router-link
+            :to="`/tentor/biodata/${kodeTentor}`"
+            class="profile-icon"
+            aria-label="Lihat Biodata Tentor"
+          >
+            <span class="profile-initial">{{ inisialTentor }}</span>
+          </router-link>
 
-      <!-- ===== TENGAH: Logo (selalu center, sama seperti Navbar.vue) ===== -->
-      <div class="logo-area">
-        <img src="/assets/logobimbel.png" alt="Logo Bimbel Raya" class="navbar-logo" />
-      </div>
+          <p class="greeting-text">{{ greetingText }}</p>
+        </div>
 
-      <!-- ===== KANAN: slot kosong, jaga keseimbangan grid ===== -->
-      <div class="right-area"></div>
-    </nav>
+        <!-- ===== TENGAH: Logo (selalu center, sama seperti Navbar.vue) ===== -->
+        <div class="logo-area">
+          <img src="/assets/logobimbel.png" alt="Logo Bimbel Raya" class="navbar-logo" />
+        </div>
+
+        <!-- ===== KANAN: slot kosong, jaga keseimbangan grid ===== -->
+        <div class="right-area"></div>
+      </nav>
+    </header>
 
     <!-- =====================================================
          ISI DASHBOARD TENTOR
@@ -106,39 +112,67 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
+import { ApiError } from '@/api/http'
 
 const route = useRoute()
-const router = useRouter()
 const tentorStore = useTentorStore()
 const authStore = useAuthStore()
 
-const sisaHariKontrak = ref(null)
-onMounted(() => {
-  const kodeDihapus = tentorStore.checkExpiredContracts()
-  if (kodeDihapus.includes(kodeTentor)) {
-    alert('Masa kontrakmu sudah habis dan tidak diperpanjang. Akun telah dinonaktifkan.')
-    authStore.logout()
-    router.push('/daftar')
-    return
-  }
-  const data = tentorStore.getByKode(kodeTentor)
-  if (data && data.habisKontrak) {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const target = new Date(data.habisKontrak + 'T00:00:00')
-    sisaHariKontrak.value = Math.round((target - today) / (1000 * 60 * 60 * 24))
+const kontrak = ref(null) // { status: 'aktif' | 'tenggang', sisaHari, hapusPada? } dari server
+
+onMounted(async () => {
+  try {
+    await tentorStore.fetchProfil()
+    kontrak.value = profil.value?.kontrak ?? null
+  } catch (err) {
+    // 401 = sesi habis atau akun sudah dihapus: sudah otomatis dialihkan ke login
+    if (err instanceof ApiError && err.status === 401) return
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat data. Coba muat ulang halaman.')
   }
 })
 
-const showAlert = ref(true)
-// kodeTentor diambil dari URL /tentor/dashboardtentor/:id (dummy sekarang: "1001")
-// dipakai untuk: (1) fetch data tentor dari backend nanti,
-// (2) disisipkan ke link biodata/presensi/kontrak di bawah supaya tiap tentor
-//     tetap di halaman miliknya sendiri (bukan halaman tentor lain)
+// Banner kontrak: tampil terus (tanpa tombol tutup) selama kontrak tinggal <= 5 hari atau masa tenggang
+const banner = computed(() => {
+  const k = kontrak.value
+  if (!k) return null
+
+  if (k.status === 'tenggang') {
+    let pesan
+    if (k.sisaHari <= 1) {
+      pesan = 'Hari ini hari terakhir! Akunmu dihapus otomatis tengah malam nanti jika belum diperpanjang.'
+    } else {
+      const tanggal = new Date(k.hapusPada + 'T00:00:00').toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+      pesan = `Akunmu akan dihapus otomatis dalam ${k.sisaHari} hari (${tanggal}) jika belum diperpanjang.`
+    }
+    return { tipe: 'tenggang', ikon: '⚠️', judul: 'Masa tenggang kontrak', pesan }
+  }
+
+  if (k.sisaHari <= 5) {
+    return {
+      tipe: 'aktif',
+      ikon: '⏰',
+      judul: 'Kontrak segera berakhir',
+      pesan:
+        k.sisaHari === 0
+          ? 'Hari ini masa kontrak habis pukul 23.59. Perpanjang sekarang!'
+          : `Kontrakmu tinggal ${k.sisaHari} hari lagi. Segera perpanjang!`,
+    }
+  }
+  return null
+})
+
 const kodeTentor = route.params.id
 
-const namaTentor = computed(() => tentorStore.getNama(kodeTentor) || 'Tentor')
+// Profil dipakai hanya kalau milik kode di alamat ini (cegah nama tentor lain sempat tampil)
+const profil = computed(() =>
+  tentorStore.profil?.kodeTentor === kodeTentor ? tentorStore.profil : null,
+)
+
+const namaTentor = computed(() => profil.value?.nama || authStore.user?.nama || 'Tentor')
 
 // Inisial untuk icon profil bulat (ambil huruf depan tiap kata, maks 2 huruf)
 const inisialTentor = computed(() => {
@@ -190,48 +224,160 @@ onUnmounted(() => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-kontrak-alert {
+/* =====================================================
+   HEADER MENEMPEL: banner kontrak + navbar.
+   Banner turun halus dari atas dan terus tampil (tanpa tombol
+   tutup) selama kontrak tinggal <= 5 hari atau masa tenggang.
+   ===================================================== */
+.tentor-header {
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 100;
+}
+
+/* Animasi tinggi 0fr → 1fr: konten di bawah banner ikut bergeser turun dengan mulus */
+.banner-bungkus {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.banner-ruang {
+  min-height: 0;
+  overflow: hidden;
+}
+.banner-turun-enter-active {
+  transition:
+    grid-template-rows 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s ease 0.1s;
+}
+.banner-turun-leave-active {
+  transition:
+    grid-template-rows 0.45s ease,
+    opacity 0.3s ease;
+}
+.banner-turun-enter-from,
+.banner-turun-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.kontrak-banner {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
-  background: linear-gradient(135deg, #f35c2b, #d6481c);
+  gap: 0.7rem;
+  padding: 0.7rem 0.9rem;
   color: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  animation: slideDown 0.4s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
+.banner-aktif {
+  background: linear-gradient(135deg, #f35c2b 0%, #d6481c 100%);
+}
+.banner-tenggang {
+  background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+}
+
+/* Kilau halus yang lewat sesekali */
+.kontrak-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: banner-kilau 5s ease-in-out 1s infinite;
+  pointer-events: none;
+}
+@keyframes banner-kilau {
+  0%,
+  60% {
+    transform: translateX(-100%);
   }
-  to {
-    transform: translateY(0);
+  100% {
+    transform: translateX(100%);
   }
 }
-.alert-text {
+
+.banner-ikon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+.banner-tenggang .banner-ikon {
+  animation: banner-denyut 1.6s ease-in-out infinite;
+}
+@keyframes banner-denyut {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+.banner-isi {
   flex: 1;
+  min-width: 0;
 }
-.alert-btn {
+.banner-judul {
+  margin: 0 0 0.1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.banner-pesan {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.95;
+}
+
+.banner-btn {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
   background: #fff;
   color: #d6481c;
-  padding: 0.35rem 0.8rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 999px;
-  font-weight: 700;
   font-size: 0.74rem;
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-.alert-close {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  opacity: 0.8;
+.banner-tenggang .banner-btn {
+  color: #9f1239;
+}
+.banner-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
+}
+.banner-btn:active {
+  transform: scale(0.96);
+}
+
+/* Hormati pengguna yang mematikan animasi di perangkatnya */
+@media (prefers-reduced-motion: reduce) {
+  .kontrak-banner::after,
+  .banner-tenggang .banner-ikon {
+    animation: none;
+  }
+  .banner-turun-enter-active,
+  .banner-turun-leave-active {
+    transition: none;
+  }
 }
 
 * {
@@ -249,7 +395,8 @@ kontrak-alert {
    ===================================================== */
 .dashboard-tentor-page {
   position: relative;
-  overflow: hidden; /* jaga agar blob dekoratif tidak memicu scroll horizontal */
+  overflow: hidden; /* cadangan untuk browser lama */
+  overflow: clip; /* tetap menjaga blob dekoratif, tapi header tetap bisa menempel */
   width: 100%;
   min-height: 100vh;
   background-color: #fdfaf3;
@@ -313,9 +460,8 @@ kontrak-alert {
    tapi sudut kiri berisi icon profil bulat + greeting
    ===================================================== */
 .tentor-navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative;
+  z-index: 1;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr auto 1fr;

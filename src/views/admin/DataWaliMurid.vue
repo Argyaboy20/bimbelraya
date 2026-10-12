@@ -269,13 +269,14 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive, computed, onMounted } from 'vue'
+import { ApiError } from '@/api/http'
 import Navbar from '@/components/Navbar.vue'
 import { useWalimuridStore } from '@/stores/walimurid'
 
 const walimuridStore = useWalimuridStore()
 
-let savedCounter = walimuridStore.rows.length
+let savedCounter = 0
 let rowIdCounter = 0
 
 // ============================================
@@ -299,6 +300,7 @@ const createEmptyRow = () => ({
   status: '',
   isSaved: false,
   savedNumber: null,
+  isSaving: false,
   touched: {
     kodeWali: false,
     nama: false,
@@ -308,15 +310,30 @@ const createEmptyRow = () => ({
   }
 })
 
-const rows = reactive([
-  ...walimuridStore.rows.map((r, i) => ({
-    ...createEmptyRow(),
-    ...r,
-    isSaved: true,
-    savedNumber: i + 1,
-  })),
-  createEmptyRow(),
-])
+// Dimulai dengan 1 baris kosong; baris tersimpan dimuat dari server
+const rows = reactive([createEmptyRow()])
+
+onMounted(async () => {
+  try {
+    await walimuridStore.fetchRows()
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat data walimurid.')
+    return
+  }
+  savedCounter = walimuridStore.rows.length
+  rows.splice(
+    0,
+    rows.length,
+    ...walimuridStore.rows.map((r, i) => ({
+      ...createEmptyRow(),
+      ...r,
+      isSaved: true,
+      savedNumber: i + 1,
+    })),
+    createEmptyRow(),
+  )
+})
 
 // ============================================
 // VALIDASI PER KOLOM
@@ -421,22 +438,20 @@ const onRowChanged = (index) => {
 // ============================================
 // KONFIRMASI SIMPAN / BATAL / HAPUS
 // ============================================
-const confirmSave = (index) => {
+const confirmSave = async (index) => {
   const row = rows[index]
-  savedCounter += 1
-  row.isSaved = true
-  row.savedNumber = savedCounter
-  walimuridStore.addRow({ ...row })
-
-  // ============================================
-  // Nanti diganti dengan API call sungguhan, contoh:
-  // await fetch('/api/admin/walimurid', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ ...row })
-  // })
-  // ============================================
-  console.log('Data walimurid tersimpan:', { ...row })
+  if (row.isSaving) return
+  row.isSaving = true
+  try {
+    await walimuridStore.simpanWalimurid(row)
+    savedCounter += 1
+    row.isSaved = true
+    row.savedNumber = savedCounter
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan data walimurid. Coba lagi.')
+  } finally {
+    row.isSaving = false
+  }
 }
 
 const confirmCancel = (index) => {
@@ -444,16 +459,17 @@ const confirmCancel = (index) => {
   rows[index]._cancelledOnce = true
 }
 
-const deleteRow = (index) => {
+const deleteRow = async (index) => {
   const yakin = confirm('Yakin mau hapus data walimurid ini?')
   if (!yakin) return
-
-  // ============================================
-  // Nanti diganti dengan API call sungguhan:
-  // await fetch(`/api/admin/walimurid/${row.kodeWali}`, { method: 'DELETE' })
-  // ============================================
-  walimuridStore.removeByKode(rows[index].kodeWali)
-  rows.splice(index, 1)
+  const row = rows[index]
+  try {
+    await walimuridStore.hapusWalimurid(row.kodeWali)
+    const posisi = rows.indexOf(row)
+    if (posisi !== -1) rows.splice(posisi, 1)
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menghapus data walimurid. Coba lagi.')
+  }
 }
 
 // ============================================

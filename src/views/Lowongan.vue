@@ -29,7 +29,11 @@
             <tbody>
               <tr v-if="lowonganStore.items.length === 0">
                 <td :colspan="KOLOM_LOWONGAN.length + 3" class="empty-row">
-                  Belum ada lowongan tersedia saat ini
+                  {{
+                    lowonganStore.loading
+                      ? 'Memuat lowongan...'
+                      : lowonganStore.error || 'Belum ada lowongan tersedia saat ini'
+                  }}
                 </td>
               </tr>
 
@@ -72,11 +76,13 @@
 
 <script setup>
 defineOptions({ name: 'LowonganTentor' })
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLowonganStore, KOLOM_LOWONGAN } from '@/stores/lowongan'
 
 const router = useRouter()
 const lowonganStore = useLowonganStore()
+onMounted(() => lowonganStore.fetchPublik())
 
 // Halaman ini bisa dibuka dari dashboard tentor ATAU langsung lewat link publik,
 // jadi kalau tidak ada riwayat halaman sebelumnya, arahkan ke beranda.

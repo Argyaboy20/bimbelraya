@@ -106,21 +106,10 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { api, ApiError } from '@/api/http'
 
 const router = useRouter()
 const authStore = useAuthStore()
-
-// ============================================
-// DUMMY DATA — nanti diganti pemanggilan API backend.
-// Backend yang akan verifikasi email + password + kode akses
-// sekaligus, BUKAN dicek satu-satu di frontend (agar tidak
-// gampang dibaca orang lewat DevTools / Network tab)
-// ============================================
-const dummyAdminCredential = {
-  email: 'bimbelrayaid@gmail.com',
-  password: 'RayakanPrestasi26',
-  kodeAkses: '260824'
-}
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -256,43 +245,34 @@ const handleSubmit = async () => {
 
   isSubmitting.value = true
 
-  // Simulasi delay verifikasi (nanti diganti fetch ke backend)
-  await new Promise((r) => setTimeout(r, 700))
+  try {
+    const data = await api('/api/auth/admin/login', {
+      method: 'POST',
+      auth: false,
+      body: { email: form.email, password: form.password, kodeAkses: form.kodeAkses },
+    })
 
-  // ============================================
-  // Nanti diganti dengan API call sungguhan, contoh:
-  //
-  // const res = await fetch('/api/auth/login-admin', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     email: form.email,
-  //     password: form.password,
-  //     kodeAkses: form.kodeAkses
-  //   })
-  // })
-  // if (!res.ok) { registerFailedAttempt(); isSubmitting.value = false; return }
-  // const data = await res.json()
-  // authStore.login({ role: 'admin', ...data })
-  // ============================================
+    // Login berhasil → reset percobaan gagal
+    failedAttempts.value = 0
+    localStorage.removeItem('adminLoginAttempt')
 
-  const isMatch =
-    form.email === dummyAdminCredential.email &&
-    form.password === dummyAdminCredential.password &&
-    form.kodeAkses === dummyAdminCredential.kodeAkses
-
-  if (!isMatch) {
-    registerFailedAttempt()
+    authStore.login({
+      role: 'admin',
+      email: data.admin.email,
+      token: data.token,
+      expiresInSeconds: data.expiresInSeconds,
+    })
+    router.push('/admin/dashboard')
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      registerFailedAttempt() // salah email/password/kode akses
+    } else {
+      // server mati, terlalu banyak percobaan (429), dsb. tidak dihitung sebagai salah password
+      loginError.value = err instanceof ApiError ? err.message : 'Terjadi kesalahan. Coba lagi.'
+    }
+  } finally {
     isSubmitting.value = false
-    return
   }
-
-  // Login berhasil → reset percobaan gagal
-  failedAttempts.value = 0
-  localStorage.removeItem('adminLoginAttempt')
-
-  authStore.login({ role: 'admin', email: form.email })
-  router.push('/admin/dashboard')
 }
 </script>
 

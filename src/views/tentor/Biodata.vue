@@ -75,21 +75,22 @@
           </p>
         </div>
 
-        <!-- Password -->
+        <!-- Password Baru (opsional) -->
         <div class="field-group">
-          <label class="field-label">Password</label>
+          <label class="field-label">Password Baru</label>
           <div class="password-wrap">
             <input
               :type="showPassword ? 'text' : 'password'"
               class="field-input"
               :class="{
-                'is-error': isEditing && touched.password && passwordError,
+                'is-error': isEditing && touched.passwordBaru && passwordBaruError,
                 'is-active': isEditing,
               }"
-              v-model="form.password"
+              v-model="form.passwordBaru"
               :disabled="!isEditing"
-              @blur="touched.password = true"
-              placeholder="Minimal 6 karakter"
+              @blur="touched.passwordBaru = true"
+              :placeholder="isEditing ? 'Kosongkan jika tidak diganti' : '••••••••'"
+              autocomplete="new-password"
             />
             <button
               v-if="isEditing"
@@ -100,8 +101,25 @@
               {{ showPassword ? '🙈' : '👁️' }}
             </button>
           </div>
-          <p v-if="isEditing && touched.password && passwordError" class="field-alert">
-            {{ passwordError }}
+          <p v-if="isEditing && touched.passwordBaru && passwordBaruError" class="field-alert">
+            {{ passwordBaruError }}
+          </p>
+        </div>
+
+        <!-- Password Saat Ini: hanya muncul kalau mengganti email atau password -->
+        <div v-if="isEditing && perluPasswordLama" class="field-group">
+          <label class="field-label">Password Saat Ini</label>
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="field-input is-active"
+            :class="{ 'is-error': touched.passwordLama && passwordLamaError }"
+            v-model="form.passwordLama"
+            @blur="touched.passwordLama = true"
+            placeholder="Diperlukan untuk mengganti email atau password"
+            autocomplete="current-password"
+          />
+          <p v-if="touched.passwordLama && passwordLamaError" class="field-alert">
+            {{ passwordLamaError }}
           </p>
         </div>
 
@@ -127,19 +145,35 @@
         <p class="modal-title">Sudah benar semua data?</p>
         <div class="modal-btn-row">
           <button class="modal-btn btn-belum" @click="showSimpanModal = false">Belum</button>
-          <button class="modal-btn btn-sudah" @click="simpanData">Sudah</button>
+          <button class="modal-btn btn-sudah" :disabled="isSaving" @click="simpanData">Sudah</button>
         </div>
       </div>
     </div>
 
     <!-- ===== MODAL KONFIRMASI HAPUS AKUN ===== -->
-    <div v-if="showHapusModal" class="modal-overlay" @click.self="showHapusModal = false">
+    <div v-if="showHapusModal" class="modal-overlay" @click.self="batalHapus">
       <div class="modal-box">
         <p class="modal-title">Mau hapus akun kamu?</p>
-        <p class="modal-sub">Semua data termasuk presensi dan kontrak akan dihapus permanen.</p>
+        <p class="modal-sub">
+          Data akun dan kontrakmu dihapus permanen. Riwayat presensi tetap disimpan admin sebagai
+          rekap, tapi foto presensimu ikut dihapus.
+        </p>
+        <input
+          type="password"
+          class="field-input is-active"
+          v-model="passwordHapus"
+          placeholder="Masukkan password untuk konfirmasi"
+          autocomplete="current-password"
+        />
         <div class="modal-btn-row">
           <button class="modal-btn btn-belum" @click="batalHapus">Tidak</button>
-          <button class="modal-btn btn-hapus-konfirm" @click="hapusAkun">Ya, Hapus</button>
+          <button
+            class="modal-btn btn-hapus-konfirm"
+            :disabled="!passwordHapus || isDeleting"
+            @click="hapusAkun"
+          >
+            Ya, Hapus
+          </button>
         </div>
       </div>
     </div>
@@ -159,10 +193,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTentorStore } from '@/stores/tentor'
+import { ApiError } from '@/api/http'
 
 defineOptions({ name: 'TentorBiodata' })
 
@@ -172,13 +207,27 @@ const authStore = useAuthStore()
 const tentorStore = useTentorStore()
 const kodeTentor = route.params.id
 
-const akun = tentorStore.getAkunByKode(kodeTentor)
-const form = reactive({
-  nama: akun ? akun.nama : '',
-  email: akun ? akun.email : '',
-  password: akun ? akun.password : '',
+const form = reactive({ nama: '', email: '', passwordBaru: '', passwordLama: '' })
+const waNumber = ref('') // angka saja, tanpa +62 (sama seperti yang disimpan server)
+const profilAsli = ref(null) // data dari server, untuk mendeteksi apa yang berubah
+
+const isiForm = (p) => {
+  form.nama = p.nama
+  form.email = p.email
+  form.passwordBaru = ''
+  form.passwordLama = ''
+  waNumber.value = p.wa
+  profilAsli.value = p
+}
+
+onMounted(async () => {
+  try {
+    isiForm(await tentorStore.fetchProfil())
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat profil. Coba muat ulang halaman.')
+  }
 })
-const waNumber = ref(akun ? akun.wa.replace('+62', '') : '')
 
 // ===== INISIAL AVATAR (sama seperti DashboardTentor) =====
 const inisialTentor = computed(() => {
@@ -201,7 +250,8 @@ const touched = reactive({
   nama: false,
   wa: false,
   email: false,
-  password: false,
+  passwordBaru: false,
+  passwordLama: false,
 })
 
 const startEdit = () => {
@@ -241,9 +291,10 @@ const emailError = computed(() => {
   return ''
 })
 
-const passwordError = computed(() => {
-  const pw = form.password
-  if (!pw) return 'Password wajib diisi'
+// Password baru boleh kosong (artinya password tidak diganti)
+const passwordBaruError = computed(() => {
+  const pw = form.passwordBaru
+  if (!pw) return ''
   if (pw.length < 6) return 'Password minimal 6 karakter'
   if (!/[A-Z]/.test(pw)) return 'Password harus mengandung huruf kapital'
   if (!/[a-z]/.test(pw)) return 'Password harus mengandung huruf kecil'
@@ -251,8 +302,26 @@ const passwordError = computed(() => {
   return ''
 })
 
+// Ganti email atau password wajib menyertakan password saat ini
+const perluPasswordLama = computed(() => {
+  if (!profilAsli.value) return false
+  return form.email.trim().toLowerCase() !== profilAsli.value.email || form.passwordBaru !== ''
+})
+
+const passwordLamaError = computed(() => {
+  if (!perluPasswordLama.value) return ''
+  if (!form.passwordLama) return 'Password saat ini wajib diisi'
+  return ''
+})
+
 const isFormValid = computed(() => {
-  return !nameError.value && !waError.value && !emailError.value && !passwordError.value
+  return (
+    !nameError.value &&
+    !waError.value &&
+    !emailError.value &&
+    !passwordBaruError.value &&
+    !passwordLamaError.value
+  )
 })
 
 // ===== REQUEST SIMPAN: tandai semua touched dulu, baru tampil modal =====
@@ -263,41 +332,52 @@ const requestSave = () => {
 }
 
 // ===== SIMPAN DATA =====
-const simpanData = () => {
-  // ============================================
-  // Nanti diganti dengan API call sungguhan:
-  // await fetch(`/api/tentor/${kodeTentor}`, {
-  //   method: 'PUT',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     namaLengkap: form.nama,
-  //     noWA: `+62${waNumber.value}`,
-  //     email: form.email,
-  //     password: form.password
-  //   })
-  // })
-  // ============================================
-  const hasil = tentorStore.updateAkun(kodeTentor, {
-    nama: form.nama,
-    email: form.email,
-    wa: `+62${waNumber.value}`,
-    password: form.password,
-  })
-  if (!hasil.ok) {
+const isSaving = ref(false)
+
+const simpanData = async () => {
+  if (isSaving.value) return
+  const asli = profilAsli.value
+  const emailBaru = form.email.trim().toLowerCase()
+
+  // Hanya kirim yang berubah
+  const body = {}
+  if (form.nama.trim() !== asli.nama) body.nama = form.nama.trim()
+  if (waNumber.value !== asli.wa) body.wa = waNumber.value
+  if (emailBaru !== asli.email) body.email = emailBaru
+  if (form.passwordBaru) body.passwordBaru = form.passwordBaru
+  if (body.email !== undefined || body.passwordBaru !== undefined) {
+    body.passwordLama = form.passwordLama
+  }
+
+  if (Object.keys(body).length === 0) {
+    // tidak ada yang berubah
+    isEditing.value = false
     showSimpanModal.value = false
-    alert(hasil.pesan)
     return
   }
-  isEditing.value = false
-  showSimpanModal.value = false
-  // Reset touched
-  Object.keys(touched).forEach((k) => (touched[k] = false))
+
+  isSaving.value = true
+  try {
+    isiForm(await tentorStore.ubahProfil(body))
+    isEditing.value = false
+    showSimpanModal.value = false
+    Object.keys(touched).forEach((k) => (touched[k] = false))
+  } catch (err) {
+    showSimpanModal.value = false
+    if (err instanceof ApiError && err.status === 401) return
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan. Coba lagi.')
+  } finally {
+    isSaving.value = false
+  }
 }
+
+const passwordHapus = ref('')
+const isDeleting = ref(false)
 
 // ===== BATAL HAPUS: tutup modal dan tetap di halaman biodata =====
 const batalHapus = () => {
   showHapusModal.value = false
-  router.push(`/tentor/biodata/${kodeTentor}`)
+  passwordHapus.value = ''
 }
 
 // ===== KELUAR AKUN =====
@@ -306,17 +386,21 @@ const keluarAkun = () => {
   router.push('/login')
 }
 
-// ===== HAPUS AKUN =====
-const hapusAkun = () => {
-  // ============================================
-  // Nanti diganti dengan API call sungguhan:
-  // await fetch(`/api/tentor/${kodeTentor}`, { method: 'DELETE' })
-  // — menghapus: data tentor, presensi, kontrak, semua record terkait kodeTentor
-  // ============================================
-  tentorStore.removeByKode(kodeTentor)
-  authStore.logout()
-  showHapusModal.value = false
-  router.push('/daftar')
+// ===== HAPUS AKUN (server meminta password) =====
+const hapusAkun = async () => {
+  if (isDeleting.value || !passwordHapus.value) return
+  isDeleting.value = true
+  try {
+    await tentorStore.hapusAkunSendiri(passwordHapus.value)
+    authStore.logout()
+    showHapusModal.value = false
+    router.push('/daftar')
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return
+    alert(err instanceof ApiError ? err.message : 'Gagal menghapus akun. Coba lagi.')
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>
 
@@ -750,6 +834,14 @@ const hapusAkun = () => {
 }
 .btn-hapus-konfirm:hover {
   box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.modal-box .field-input {
+  margin-bottom: 0.9rem;
+}
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* =====================================================

@@ -150,22 +150,17 @@
 <script setup>
 // give component a multi-word name to satisfy linter
 defineOptions({ name: 'AdminDashboard' })
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
 import { useTentorStore } from '@/stores/tentor'
-import { usePresensiStore } from '@/stores/presensi'
-import { useWalimuridStore } from '@/stores/walimurid'
+import { api, ApiError } from '@/api/http'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const tentorStore = useTentorStore()
-const presensiStore = usePresensiStore()
-const walimuridStore = useWalimuridStore()
-
-tentorStore.checkExpiredContracts() // admin membuka dashboard ikut menyapu kontrak yang lewat
 
 // ===== LOGOUT (dengan modal konfirmasi) =====
 const showLogoutConfirm = ref(false)
@@ -176,50 +171,37 @@ const handleLogout = () => {
   router.push('/loginadmin')
 }
 
-// "YYYY-MM-DD" dari tanggal lokal (toISOString() mundur sehari di WIB)
-const toDateKey = (date) => {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
+// ===== STATISTIK + RIWAYAT KODE dari server =====
+const stats = ref({ tentorAktif: 0, walimuridAktif: 0, frekuensiPresensi: 0 })
 
-// Nanti dari backend: GET /api/admin/statistik
-const stats = computed(() => {
-  const hariIni = toDateKey(new Date())
-  return {
-    tentorAktif: tentorStore.rows.filter((r) => !r.habisKontrak || r.habisKontrak >= hariIni).length,
-    walimuridAktif: walimuridStore.jumlahAktif,
-    frekuensiPresensi: presensiStore.records.filter((p) => p.tanggalKey === hariIni).length,
+onMounted(async () => {
+  try {
+    const [hasil] = await Promise.all([api('/api/admin/statistik'), tentorStore.fetchKodeHistory()])
+    stats.value = hasil
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat data dashboard.')
   }
 })
 
-// ===== KODE TENTOR GENERATOR =====
-// 2 digit belakang = tahun berjalan otomatis (misal 2026 → "26")
-const tahunSingkat = new Date().getFullYear().toString().slice(-2)
-
+// ===== KODE TENTOR GENERATOR (kode dibuat dan dicek server) =====
 const kodeState = ref('idle') // 'idle' | 'loading' | 'result'
 const generatedKode = ref('')
 const showRiwayat = ref(false)
+const menyimpanKode = ref(false)
 
-// Generate: 2 digit random (10-99) + 2 digit tahun, misal "1726"
-const generateKode = () => {
+const pesanError = (err, cadangan) => (err instanceof ApiError ? err.message : cadangan)
+
+// Generate: server memilih kode acak yang belum ada (belum disimpan)
+const generateKode = async () => {
   kodeState.value = 'loading'
-  setTimeout(() => {
-    // Hanya ada 90 kemungkinan per tahun (10–99). Pilih acak dari yang belum ada di riwayat.
-    const tersedia = []
-    for (let n = 10; n <= 99; n++) {
-      const kode = String(n) + tahunSingkat
-      if (!tentorStore.kodeSudahAda(kode)) tersedia.push(kode)
-    }
-    if (tersedia.length === 0) {
-      alert('Semua kode tahun ini sedang terpakai.')
-      kodeState.value = 'idle'
-      return
-    }
-    generatedKode.value = tersedia[Math.floor(Math.random() * tersedia.length)]
+  try {
+    generatedKode.value = await tentorStore.generateKodeBaru()
     kodeState.value = 'result'
-  }, 1200)
+  } catch (err) {
+    alert(pesanError(err, 'Gagal membuat kode. Coba lagi.'))
+    kodeState.value = 'idle'
+  }
 }
 
 const tolakKode = () => {
@@ -228,18 +210,23 @@ const tolakKode = () => {
   kodeState.value = 'idle'
 }
 
-const setujuKode = () => {
-  // Setuju: simpan ke riwayat + masuk ke database (nanti disambung API)
-  // ============================================
-  // Nanti diganti API call:
-  // await fetch('/api/admin/kode-tentor', {
-  //   method: 'POST',
-  //   body: JSON.stringify({ kode: generatedKode.value })
-  // })
-
-  tentorStore.addKodeHistory(generatedKode.value)
-  generatedKode.value = ''
-  kodeState.value = 'idle'
+// Setuju: simpan kode ke database lewat server
+const setujuKode = async () => {
+  if (menyimpanKode.value) return
+  menyimpanKode.value = true
+  try {
+    await tentorStore.setujuKode(generatedKode.value)
+    generatedKode.value = ''
+    kodeState.value = 'idle'
+  } catch (err) {
+    alert(pesanError(err, 'Gagal menyimpan kode. Coba lagi.'))
+    if (err instanceof ApiError && err.status === 409) {
+      generatedKode.value = ''
+      kodeState.value = 'idle' // kode keburu terpakai → buat kode baru
+    }
+  } finally {
+    menyimpanKode.value = false
+  }
 }
 </script>
 
