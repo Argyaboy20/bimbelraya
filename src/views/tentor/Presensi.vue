@@ -22,6 +22,8 @@
               class="field-input date-input"
               v-model="form.tanggal"
               @change="touched.tanggal = true"
+              :min="minTanggal"
+              :max="maxTanggal"
             />
             <button type="button" class="btn-today" @click="setToday">Hari Ini</button>
           </div>
@@ -59,7 +61,7 @@
         />
 
         <!-- 4. Tombol Konfirmasi -->
-        <button type="submit" class="btn-submit" :disabled="!isFormValid">
+        <button type="submit" class="btn-submit" :disabled="!isFormValid || isSaving">
           Konfirmasi Presensi
         </button>
       </form>
@@ -113,7 +115,9 @@
         <p class="modal-sub">Pastikan tanggal, materi, dan foto sudah sesuai sebelum konfirmasi.</p>
         <div class="modal-btn-row">
           <button class="modal-btn btn-belum" @click="showConfirmModal = false">Belum</button>
-          <button class="modal-btn btn-sudah" @click="submitPresensi">Sudah</button>
+          <button class="modal-btn btn-sudah" :disabled="isSaving" @click="submitPresensi">
+            Sudah
+          </button>
         </div>
       </div>
     </div>
@@ -121,28 +125,29 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePresensiStore } from '@/stores/presensi'
 import UploadFoto from '@/components/UploadFoto.vue'
-import { useTentorStore } from '@/stores/tentor'
+import { ApiError } from '@/api/http'
 
 defineOptions({ name: 'TentorPresensi' })
 
 const route = useRoute()
 const presensiStore = usePresensiStore()
-const tentorStore = useTentorStore()
 const kodeTentor = route.params.id
 
-const namaTentor = computed(() => tentorStore.getNama(kodeTentor) || 'Tentor')
-
 // ===== HELPER TANGGAL =====
-const toDateKey = (d) => {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+// Hari ini menurut zona waktu Jakarta (sama seperti server), format YYYY-MM-DD
+const hariIniKey = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date())
+
+const kurangiHari = (key, n) => {
+  const d = new Date(key + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() - n)
+  return d.toISOString().slice(0, 10)
 }
+
 const formatHariTanggal = (dateKeyStr) => {
   if (!dateKeyStr) return ''
   const d = new Date(dateKeyStr + 'T00:00:00')
@@ -156,7 +161,7 @@ const formatHariTanggal = (dateKeyStr) => {
 
 // ===== STATE FORM =====
 const form = reactive({
-  tanggal: toDateKey(new Date()), // default hari ini
+  tanggal: hariIniKey(),
   materi: '',
   foto: '',
 })
@@ -167,15 +172,22 @@ const touched = reactive({
 })
 
 const setToday = () => {
-  form.tanggal = toDateKey(new Date())
+  form.tanggal = hariIniKey()
   touched.tanggal = true
 }
 
 const formattedTanggal = computed(() => formatHariTanggal(form.tanggal))
 
 // ===== VALIDASI =====
+// Aturan server: hari ini atau sampai 2 hari ke belakang, tidak boleh tanggal depan
+const maxTanggal = computed(() => hariIniKey())
+const minTanggal = computed(() => kurangiHari(hariIniKey(), 2))
+
 const tanggalError = computed(() => {
   if (!form.tanggal) return 'Tanggal wajib diisi'
+  if (form.tanggal < minTanggal.value || form.tanggal > maxTanggal.value) {
+    return 'Tanggal hanya boleh hari ini atau sampai 2 hari ke belakang'
+  }
   return ''
 })
 
@@ -209,38 +221,49 @@ const requestSubmit = () => {
   showConfirmModal.value = true
 }
 
-const submitPresensi = () => {
-  const now = new Date()
-  const jamPresensi = now.toLocaleTimeString('id-ID', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+const isSaving = ref(false)
 
-  const dataBaru = {
-    namaTentor: namaTentor.value,
-    kodeTentor,
-    tanggalKey: form.tanggal,
-    hariTanggalDisplay: formatHariTanggal(form.tanggal),
-    jamPresensi,
-    materi: form.materi.trim(),
-    fotoUrl: form.foto,
-    kehadiran: true,
+const submitPresensi = async () => {
+  if (isSaving.value) return
+  isSaving.value = true
+  try {
+    await presensiStore.kirimPresensi({
+      tanggal: form.tanggal,
+      materi: form.materi.trim(),
+      foto: form.foto,
+    })
+
+    // Reset form untuk entri berikutnya, tapi biarkan riwayat tetap tampil
+    form.tanggal = hariIniKey()
+    form.materi = ''
+    form.foto = ''
+    touched.tanggal = false
+    touched.materi = false
+    showConfirmModal.value = false
+  } catch (err) {
+    showConfirmModal.value = false // isian dan foto tetap, tinggal coba lagi
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    let pesan = err instanceof ApiError ? err.message : 'Gagal mengirim presensi. Coba lagi.'
+    if (err instanceof ApiError && err.data?.min) {
+      pesan += ` (${formatHariTanggal(err.data.min)} sampai ${formatHariTanggal(err.data.max)})`
+    }
+    alert(pesan)
+  } finally {
+    isSaving.value = false
   }
-
-  presensiStore.addPresensi(dataBaru)
-
-  // Reset form untuk entri berikutnya, tapi biarkan riwayat tetap tampil
-  form.tanggal = toDateKey(new Date())
-  form.materi = ''
-  form.foto = ''
-  touched.tanggal = false
-  touched.materi = false
-  showConfirmModal.value = false
 }
 
 // ===== RIWAYAT PRESENSI TENTOR INI =====
-const riwayat = computed(() => presensiStore.riwayatByTentor(kodeTentor))
+const riwayat = computed(() => presensiStore.riwayatSaya)
+
+onMounted(async () => {
+  try {
+    await presensiStore.fetchSaya()
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat riwayat presensi.')
+  }
+})
 
 // ===== DOWNLOAD TABEL SEBAGAI PNG =====
 const tableRef = ref(null)
