@@ -195,9 +195,28 @@ export const useTentorStore = defineStore('tentor', {
       this.kodeHistory = this.kodeHistory.filter((k) => k.kode !== kode)
     },
 
+    // ===== Halaman tentor: profil dan status kontrak dari server =====
+    async fetchProfil() {
+      this.profil = await api('/api/tentor/me')
+      return this.profil
+    },
+
     // Ubah profil. body hanya berisi yang berubah: { nama?, wa?, email?, passwordBaru?, passwordLama? }
     async ubahProfil(body) {
       this.profil = await api('/api/tentor/me', { method: 'PATCH', body })
+      return this.profil
+    },
+
+    // Perpanjang kontrak (server menghitung batas 1 sampai 3 bulan dari hari ini).
+    // Melempar ApiError kalau di luar batas; ApiError.data berisi { min, max }.
+    async perpanjangKontrak(habisKontrak) {
+      this.profil = await api('/api/tentor/kontrak', { method: 'PATCH', body: { habisKontrak } })
+      return this.profil
+    },
+
+    // Catat persetujuan Surat Kontrak Tentor (hanya sekali selama masih berlaku).
+    async setujuSurat() {
+      this.profil = await api('/api/tentor/surat/setuju', { method: 'POST' })
       return this.profil
     },
 

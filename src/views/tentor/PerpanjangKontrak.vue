@@ -11,8 +11,13 @@
     </div>
 
     <div class="kontrak-content">
+      <!-- ===== STATE: MEMUAT ===== -->
+      <div v-if="memuat" class="empty-card">
+        <p class="empty-text">Memuat data kontrak...</p>
+      </div>
+
       <!-- ===== STATE: DATA TENTOR TIDAK DITEMUKAN ===== -->
-      <div v-if="!dataTentor" class="empty-card">
+      <div v-else-if="!dataTentor" class="empty-card">
         <div class="empty-icon">⚠️</div>
         <p class="empty-text">Data kontrak kamu belum tersedia</p>
         <p class="empty-sub">
@@ -34,13 +39,77 @@
           </div>
         </section>
 
+                <!-- ===== SECTION: SURAT KONTRAK TENTOR ===== -->
+        <section class="kontrak-section">
+          <h2 class="section-title">Surat Kontrak Tentor</h2>
+          <p class="section-desc">
+            Baca seluruh pasal di bawah ini. Kamu perlu menyetujuinya sebelum bisa mengajukan
+            kontrak baru.
+          </p>
+
+          <div class="surat-card">
+            <h3 class="surat-judul">SURAT KONTRAK KERJA TENTOR</h3>
+
+            <div class="surat-isi" tabindex="0" aria-label="Isi Surat Kontrak Tentor">
+              <article v-for="(pasal, i) in SURAT_KONTRAK" :key="i" class="pasal">
+                <h4 class="pasal-nomor">PASAL {{ pasal.nomor }}</h4>
+                <p class="pasal-judul">{{ pasal.judul }}</p>
+
+                <template v-for="(blok, j) in pasal.blok" :key="j">
+                  <p
+                    v-if="blok.tipe === 'paragraf'"
+                    class="pasal-paragraf"
+                    v-html="formatTeks(blok.teks)"
+                  ></p>
+
+                  <div v-else-if="blok.tipe === 'ayat'" class="ayat">
+                    <span class="ayat-no">{{ blok.no }}.</span>
+                    <div class="ayat-isi">
+                      <p class="pasal-paragraf" v-html="formatTeks(blok.teks)"></p>
+                      <div v-for="s in blok.sub" :key="s.huruf" class="sub">
+                        <span class="sub-huruf">{{ s.huruf }}.</span>
+                        <p class="pasal-paragraf" v-html="formatTeks(s.teks)"></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-else-if="blok.tipe === 'daftar'" class="daftar">
+                    <div v-for="s in blok.sub" :key="s.huruf" class="sub">
+                      <span class="sub-huruf">{{ s.huruf }}.</span>
+                      <p class="pasal-paragraf" v-html="formatTeks(s.teks)"></p>
+                    </div>
+                  </div>
+                </template>
+              </article>
+            </div>
+
+            <label class="setuju-baris" :class="{ 'is-terkunci': suratDisetujui }">
+              <input
+                type="checkbox"
+                class="setuju-kotak"
+                v-model="centangSurat"
+                :disabled="suratDisetujui || sedangMenyetujui"
+              />
+              <span class="setuju-teks">
+                Saya menyetujui segala peraturan dan ketentuan yang berlaku
+              </span>
+            </label>
+            <p class="setuju-catatan" :class="{ 'is-ok': suratDisetujui }">{{ catatanSurat }}</p>
+          </div>
+        </section>
+
         <!-- ===== SECTION: AJUKAN KONTRAK BARU ===== -->
         <section class="kontrak-section">
           <h2 class="section-title">Ajukan Kontrak Baru</h2>
           <p class="section-desc">
-            Pilih tanggal kontrak baru. Maksimal perpanjangan 3 bulan terhitung dari hari ini.
+            Pilih tanggal kontrak baru. Minimal 1 bulan dan maksimal 3 bulan terhitung dari hari
+            ini. Boleh lebih pendek dari kontrak sekarang.
           </p>
 
+          <p v-if="!suratDisetujui" class="kunci-info">
+            🔒 Centang persetujuan Surat Kontrak Tentor di atas untuk membuka form ini.
+          </p>
+          
           <form class="ajukan-form" @submit.prevent="requestSubmit">
             <div class="field-group">
               <label class="field-label">Tanggal Kontrak Baru</label>
@@ -52,14 +121,14 @@
                 :min="minTanggal"
                 :max="maxTanggal"
                 @change="touched = true"
+                :disabled="!suratDisetujui"
               />
               <p v-if="touched && tanggalError" class="field-alert">{{ tanggalError }}</p>
               <p class="field-hint">
                 Rentang yang diperbolehkan: {{ formattedMin }} — {{ formattedMax }}
               </p>
             </div>
-
-            <button type="submit" class="btn-submit" :disabled="!isFormValid">
+            <button type="submit" class="btn-submit" :disabled="!suratDisetujui || !isFormValid">
               Ajukan Kontrak
             </button>
           </form>
@@ -74,7 +143,7 @@
         <p class="modal-sub">Kontrak akan diperbarui hingga {{ formattedTanggalBaru }}.</p>
         <div class="modal-btn-row">
           <button class="modal-btn btn-belum" @click="showConfirmModal = false">Belum</button>
-          <button class="modal-btn btn-sudah" @click="submitKontrak">Sudah</button>
+          <button class="modal-btn btn-sudah" :disabled="isSaving" @click="submitKontrak">Sudah</button>
         </div>
       </div>
     </div>
@@ -83,89 +152,145 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
-import { useAuthStore } from '@/stores/auth'
+import { ApiError } from '@/api/http'
+import { SURAT_KONTRAK, formatTeks } from '@/data/suratKontrak'
 
 defineOptions({ name: 'PerpanjangKontrak' })
 
 const route = useRoute()
-const router = useRouter()
 const tentorStore = useTentorStore()
-const authStore = useAuthStore()
 const kodeTentor = route.params.id
 
-// ===== HELPER TANGGAL =====
-const toDateKey = (d) => {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+// ===== HELPER TANGGAL (zona waktu Jakarta, sama seperti server) =====
+const hariIniJakarta = () =>
+  new Date(`${new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date())}T00:00:00Z`)
+
+const tanggalPlusBulan = (n) => {
+  const d = hariIniJakarta()
+  d.setUTCMonth(d.getUTCMonth() + n)
+  return d.toISOString().slice(0, 10)
 }
 
-// ============================================
-// Sebelum tampil, sapu dulu kontrak yang sudah expired di seluruh
-// data tentor. Kalau ternyata akun sendiri yang baru saja terhapus
-// (kontrak sudah lewat tanpa diperpanjang), langsung logout + redirect.
-// ============================================
-onMounted(() => {
-  const kodeYangDihapus = tentorStore.checkExpiredContracts()
-  if (kodeYangDihapus.includes(kodeTentor)) {
-    alert('Masa kontrakmu sudah habis dan tidak diperpanjang. Akun telah dinonaktifkan.')
-    authStore.logout()
-    router.push('/daftar')
+const formatTanggal = (key) => {
+  if (!key) return '-'
+  return new Date(key + 'T00:00:00').toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+// ===== DATA KONTRAK dari server =====
+const memuat = ref(true)
+
+onMounted(async () => {
+  try {
+    await tentorStore.fetchProfil()
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) return // sesi habis atau akun sudah dihapus, sudah dialihkan ke login
+    alert(err instanceof ApiError ? err.message : 'Gagal memuat data kontrak. Coba muat ulang halaman.')
+  } finally {
+    memuat.value = false
   }
 })
 
-// ===== DATA TENTOR SAAT INI (reaktif dari store) =====
-const dataTentor = computed(() => tentorStore.getByKode(kodeTentor))
-
-const formattedKontrakSekarang = computed(() => {
-  return dataTentor.value ? formatTanggal(dataTentor.value.habisKontrak) : '-'
+// Profil dipakai hanya kalau milik kode di alamat ini
+const dataTentor = computed(() => {
+  const p = tentorStore.profil
+  return p && p.kodeTentor === kodeTentor && p.habisKontrak ? p : null
 })
+const kontrak = computed(() => dataTentor.value?.kontrak ?? null)
 
-// ===== COUNTDOWN REALTIME =====
+const formattedKontrakSekarang = computed(() =>
+  dataTentor.value ? formatTanggal(dataTentor.value.habisKontrak) : '-',
+)
+
+// ===== COUNTDOWN (dihitung server, termasuk masa tenggang) =====
 const countdownText = computed(() => {
-  if (!dataTentor.value || !dataTentor.value.habisKontrak) return '-'
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = new Date(dataTentor.value.habisKontrak + 'T00:00:00')
-  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24))
-
-  if (diffDays < 0) return 'Masa kontrak sudah habis'
-  if (diffDays === 0) return 'Hari ini masa kontrak habis pukul 23.59'
-  return `${diffDays} hari lagi masa kontrak habis`
+  const k = kontrak.value
+  if (!k) return '-'
+  if (k.status === 'tenggang') {
+    return k.sisaHari <= 1
+      ? 'Masa kontrak sudah habis. Hari ini hari terakhir sebelum akun dihapus otomatis'
+      : `Masa kontrak sudah habis. Akun dihapus otomatis dalam ${k.sisaHari} hari jika tidak diperpanjang`
+  }
+  if (k.sisaHari === 0) return 'Hari ini masa kontrak habis pukul 23.59'
+  return `${k.sisaHari} hari lagi masa kontrak habis`
 })
 
 const countdownClass = computed(() => {
-  if (!dataTentor.value || !dataTentor.value.habisKontrak) return ''
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = new Date(dataTentor.value.habisKontrak + 'T00:00:00')
-  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24))
-
-  if (diffDays <= 0) return 'text-danger'
-  if (diffDays <= 5) return 'text-warning'
+  const k = kontrak.value
+  if (!k) return ''
+  if (k.status === 'tenggang' || k.sisaHari <= 0) return 'text-danger'
+  if (k.sisaHari <= 5) return 'text-warning'
   return 'text-safe'
+})
+
+// ===== SURAT KONTRAK TENTOR (persetujuan dicatat di server) =====
+const persetujuan = computed(
+  () => dataTentor.value?.persetujuan ?? { disetujui: false, pada: null },
+)
+const suratDisetujui = computed(() => persetujuan.value.disetujui)
+const sedangMenyetujui = ref(false)
+
+// Kotak centang: hanya bisa dicentang saat belum menyetujui. Begitu dicentang langsung dicatat
+// di server dan terkunci selama persetujuan masih berlaku (kontrak masih berjalan).
+const centangSurat = computed({
+  get: () => suratDisetujui.value || sedangMenyetujui.value,
+  set: async (nilai) => {
+    if (!nilai || suratDisetujui.value || sedangMenyetujui.value) return
+    sedangMenyetujui.value = true
+    try {
+      await tentorStore.setujuSurat()
+    } catch (err) {
+      if (!(err instanceof ApiError && err.status === 401)) {
+        alert(err instanceof ApiError ? err.message : 'Gagal menyimpan persetujuan. Coba lagi.')
+      }
+    } finally {
+      sedangMenyetujui.value = false
+    }
+  },
+})
+
+const waktuSetuju = computed(() => {
+  const pada = persetujuan.value.pada
+  if (!pada || !suratDisetujui.value) return ''
+  return new Date(pada).toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Asia/Jakarta',
+  })
+})
+
+const catatanSurat = computed(() => {
+  if (suratDisetujui.value) {
+    return `Kamu sudah menyetujui surat ini pada ${waktuSetuju.value}. Persetujuan terkunci selama kontrak masih berjalan, dan bisa dicentang lagi setelah kontrak berakhir.`
+  }
+  if (kontrak.value?.status === 'tenggang') {
+    return 'Kontrak kamu sudah berakhir. Centang persetujuan ini lagi untuk bisa mengajukan kontrak baru.'
+  }
+  return 'Centang persetujuan ini untuk bisa mengajukan kontrak baru.'
 })
 
 // ===== FORM AJUKAN KONTRAK BARU =====
 const form = reactive({ tanggalBaru: '' })
 const touched = ref(false)
 
-const minTanggal = computed(() => toDateKey(new Date()))
-const maxTanggal = computed(() => {
-  const d = new Date()
-  d.setMonth(d.getMonth() + 3)
-  return toDateKey(d)
-})
+// Rentang: hari ini + 1 bulan sampai hari ini + 3 bulan. Server tetap penentu akhir.
+const minTanggal = computed(() => tanggalPlusBulan(1))
+const maxTanggal = computed(() => tanggalPlusBulan(3))
 const formattedMin = computed(() => formatTanggal(minTanggal.value))
 const formattedMax = computed(() => formatTanggal(maxTanggal.value))
 const formattedTanggalBaru = computed(() => formatTanggal(form.tanggalBaru))
 
 const tanggalError = computed(() => {
   if (!form.tanggalBaru) return 'Tanggal kontrak baru wajib diisi'
-  if (form.tanggalBaru < minTanggal.value) return 'Tanggal tidak boleh sebelum hari ini'
+  if (form.tanggalBaru < minTanggal.value) return 'Minimal perpanjangan 1 bulan dari hari ini'
   if (form.tanggalBaru > maxTanggal.value) return 'Maksimal perpanjangan 3 bulan dari hari ini'
   return ''
 })
@@ -174,17 +299,34 @@ const isFormValid = computed(() => !tanggalError.value)
 
 // ===== SUBMIT =====
 const showConfirmModal = ref(false)
+const isSaving = ref(false)
+
 const requestSubmit = () => {
+  if (!suratDisetujui.value) return // form terkunci sampai Surat Kontrak disetujui
   touched.value = true
   if (!isFormValid.value) return
   showConfirmModal.value = true
 }
 
-const submitKontrak = () => {
-  tentorStore.updateKontrak(kodeTentor, form.tanggalBaru)
-  form.tanggalBaru = ''
-  touched.value = false
-  showConfirmModal.value = false
+const submitKontrak = async () => {
+  if (isSaving.value) return
+  isSaving.value = true
+  try {
+    await tentorStore.perpanjangKontrak(form.tanggalBaru)
+    form.tanggalBaru = ''
+    touched.value = false
+    showConfirmModal.value = false
+  } catch (err) {
+    showConfirmModal.value = false
+    if (err instanceof ApiError && err.status === 401) return
+    let pesan = err instanceof ApiError ? err.message : 'Gagal mengajukan kontrak. Coba lagi.'
+    if (err instanceof ApiError && err.data?.min) {
+      pesan += ` (${formatTanggal(err.data.min)} sampai ${formatTanggal(err.data.max)})`
+    }
+    alert(pesan)
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
@@ -464,6 +606,148 @@ const submitKontrak = () => {
   background: #2e87f6;
   color: #fff;
   box-shadow: 0 4px 12px rgba(46, 135, 246, 0.3);
+}
+
+/* ===== SURAT KONTRAK TENTOR ===== */
+.surat-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  border-radius: 18px;
+  padding: 1.1rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+.surat-judul {
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1f2937;
+  margin: 0 0 0.75rem;
+}
+.surat-isi {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  scrollbar-width: thin;
+}
+.surat-isi:focus-visible {
+  outline: none;
+  border-color: #2e87f6;
+  box-shadow: 0 0 0 3px rgba(46, 135, 246, 0.12);
+}
+.pasal + .pasal {
+  margin-top: 1.1rem;
+}
+.pasal-nomor {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+.pasal-judul {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0.1rem 0 0.55rem;
+}
+.pasal-paragraf {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0 0 0.4rem;
+  text-align: justify;
+}
+.ayat,
+.sub {
+  display: flex;
+  gap: 0.45rem;
+}
+.ayat-no,
+.sub-huruf {
+  flex-shrink: 0;
+  width: 1.1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #374151;
+}
+.ayat-isi {
+  flex: 1;
+  min-width: 0;
+}
+.sub .pasal-paragraf {
+  flex: 1;
+  margin-bottom: 0.3rem;
+}
+.daftar .sub {
+  margin-left: 0.5rem;
+}
+
+.setuju-baris {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.setuju-baris:hover:not(.is-terkunci) {
+  border-color: #2e87f6;
+}
+.setuju-baris.is-terkunci {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  cursor: not-allowed;
+}
+.setuju-kotak {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  accent-color: #2e87f6;
+  cursor: inherit;
+}
+.setuju-teks {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.45;
+}
+.setuju-catatan {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
+}
+.setuju-catatan.is-ok {
+  color: #15803d;
+}
+
+.kunci-info {
+  font-size: 0.76rem;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  margin: 0;
+  line-height: 1.5;
+}
+.ajukan-form.is-terkunci {
+  opacity: 0.6;
+}
+.field-input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
 }
 
 /* =====================================================
