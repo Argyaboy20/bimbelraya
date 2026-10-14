@@ -153,7 +153,12 @@ const handleSubmit = async () => {
       token: data.token,
       expiresInSeconds: data.expiresInSeconds,
     })
-    router.push(`/tentor/dashboardtentor/${data.tentor.kodeTentor}`)
+    // Login pakai password sementara → langsung ke Biodata untuk ganti password
+    router.push(
+      data.tentor.wajibGantiPassword
+        ? `/tentor/biodata/${data.tentor.kodeTentor}`
+        : `/tentor/dashboardtentor/${data.tentor.kodeTentor}`,
+    )
   } catch (err) {
     loginError.value = err instanceof ApiError ? err.message : 'Terjadi kesalahan. Coba lagi.'
   } finally {

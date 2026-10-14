@@ -121,6 +121,13 @@ export const useTentorStore = defineStore('tentor', {
       this.kodeHistory = this.kodeHistory.filter((k) => k.kode !== kode)
     },
 
+        // Admin reset password tentor: server membuat password sementara dan mengirimnya SATU KALI.
+    // Mengembalikan teks password sementara (jangan disimpan di state atau localStorage).
+    async resetPasswordTentor(kode) {
+      const data = await api(`/api/admin/tentor/${kode}/reset-password`, { method: 'POST' })
+      return data.passwordSementara
+    },
+
     // ===== Halaman tentor: profil dan status kontrak dari server =====
     async fetchProfil() {
       this.profil = await api('/api/tentor/me')

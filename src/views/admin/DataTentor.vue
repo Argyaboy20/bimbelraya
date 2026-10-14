@@ -243,6 +243,10 @@
                   </div>
                 </div>
 
+                <button v-if="row.isSaved" class="btn-reset-row" @click="bukaReset(row)">
+                  🔑 Reset Password
+                </button>
+
                 <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
                   🗑️ Hapus
                 </button>
@@ -250,6 +254,40 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    <!-- ===== MODAL RESET PASSWORD ===== -->
+    <div v-if="resetModal.buka" class="modal-overlay" @click.self="!resetModal.password && tutupReset()">
+      <div class="modal-box">
+        <template v-if="!resetModal.password">
+          <p class="modal-title">Reset password {{ resetModal.nama }}?</p>
+          <p class="modal-sub">
+            Password lama langsung tidak bisa dipakai. Tentor akan diminta membuat password baru saat
+            login.
+          </p>
+          <div class="modal-btn-row">
+            <button class="modal-btn btn-belum" :disabled="resetModal.loading" @click="tutupReset">
+              Batal
+            </button>
+            <button class="modal-btn btn-reset-ya" :disabled="resetModal.loading" @click="jalankanReset">
+              Ya, Reset
+            </button>
+          </div>
+        </template>
+        <template v-else>
+          <p class="modal-title">Password sementara</p>
+          <p class="modal-sub">
+            Kirim ke {{ resetModal.nama }} lewat WhatsApp. Password ini hanya tampil sekali dan tidak
+            bisa dilihat lagi.
+          </p>
+          <p class="pw-sementara">{{ resetModal.password }}</p>
+          <div class="modal-btn-row">
+            <button class="modal-btn btn-belum" @click="salinPassword">
+              {{ resetModal.tersalin ? 'Tersalin ✓' : 'Salin' }}
+            </button>
+            <button class="modal-btn btn-reset-ya" @click="tutupReset">Selesai</button>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -503,6 +541,55 @@ const deleteRow = async (index) => {
   }
 }
 
+// ============================================
+// RESET PASSWORD TENTOR (password sementara tampil SATU KALI)
+// ============================================
+const resetModal = reactive({
+  buka: false,
+  kode: '',
+  nama: '',
+  password: '',
+  loading: false,
+  tersalin: false,
+})
+
+const bukaReset = (row) => {
+  resetModal.buka = true
+  resetModal.kode = row.kodeTentor
+  resetModal.nama = row.nama
+  resetModal.password = ''
+  resetModal.tersalin = false
+}
+
+const tutupReset = () => {
+  if (resetModal.loading) return
+  resetModal.buka = false
+  resetModal.password = '' // buang dari memori
+}
+
+const jalankanReset = async () => {
+  if (resetModal.loading) return
+  resetModal.loading = true
+  try {
+    resetModal.password = await tentorStore.resetPasswordTentor(resetModal.kode)
+  } catch (err) {
+    resetModal.buka = false
+    if (err instanceof ApiError && err.status === 401) return
+    alert(err instanceof ApiError ? err.message : 'Gagal reset password. Coba lagi.')
+  } finally {
+    resetModal.loading = false
+  }
+}
+
+const salinPassword = async () => {
+  try {
+    await navigator.clipboard.writeText(resetModal.password)
+    resetModal.tersalin = true
+  } catch {
+    alert('Tidak bisa menyalin otomatis. Salin manual dari kotak di atas.')
+  }
+}
+
 // Override: popup tidak muncul lagi setelah "Tidak" ditekan,
 // kecuali row diubah lagi (re-trigger lewat onRowChanged)
 watch(
@@ -718,14 +805,101 @@ watch(
   color: #fff;
 }
 
+.btn-reset-row {
+  width: 100%;
+  margin-bottom: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1.5px solid #2e87f6;
+  background: #fff;
+  color: #2e87f6;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.btn-reset-row:hover {
+  background: #2e87f6;
+  color: #fff;
+}
+
+/* ===== MODAL RESET PASSWORD ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-box {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.75rem 1.5rem;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.4rem;
+}
+.modal-sub {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+.pw-sementara {
+  font-family: monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #1f2937;
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin: 0 0 1rem;
+  user-select: all;
+}
+.modal-btn-row {
+  display: flex;
+  gap: 0.75rem;
+}
+.modal-btn {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-belum {
+  background: #f3f4f6;
+  color: #374151;
+}
+.btn-reset-ya {
+  background: #2e87f6;
+  color: #fff;
+}
+
 /* =====================================================
    BREAKPOINTS (sama seperti file-file lain)
    @media 641px  : tablet
    @media 768px  : desktop
    @media 1024px : large desktop
-   Catatan: .table-wrapper TETAP full width (edge-to-edge)
-   di semua breakpoint — yang berubah hanya padding judul
-   dan skala font/elemen di dalam tabel.
    ===================================================== */
 
 /* ===== TABLET (≥ 641px) ===== */

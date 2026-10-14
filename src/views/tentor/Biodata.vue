@@ -17,6 +17,11 @@
 
       <!-- ===== FORM DATA ===== -->
       <div class="form-card">
+        <p v-if="wajibGanti" class="banner-wajib">
+          Kamu masuk dengan password sementara. Isi "Password Saat Ini" dengan password sementara itu,
+          lalu buat password baru sebelum memakai fitur lain.
+        </p>
+
         <!-- Nama Tentor -->
         <div class="field-group">
           <label class="field-label">Nama Tentor</label>
@@ -89,7 +94,13 @@
               v-model="form.passwordBaru"
               :disabled="!isEditing"
               @blur="touched.passwordBaru = true"
-              :placeholder="isEditing ? 'Kosongkan jika tidak diganti' : '••••••••'"
+              :placeholder="
+                isEditing
+                  ? wajibGanti
+                    ? 'Buat password baru'
+                    : 'Kosongkan jika tidak diganti'
+                  : '••••••••'
+              "
               autocomplete="new-password"
             />
             <button
@@ -210,6 +221,7 @@ const kodeTentor = route.params.id
 const form = reactive({ nama: '', email: '', passwordBaru: '', passwordLama: '' })
 const waNumber = ref('') // angka saja, tanpa +62 (sama seperti yang disimpan server)
 const profilAsli = ref(null) // data dari server, untuk mendeteksi apa yang berubah
+const wajibGanti = computed(() => profilAsli.value?.wajibGantiPassword === true)
 
 const isiForm = (p) => {
   form.nama = p.nama
@@ -222,7 +234,9 @@ const isiForm = (p) => {
 
 onMounted(async () => {
   try {
-    isiForm(await tentorStore.fetchProfil())
+    const p = await tentorStore.fetchProfil()
+    isiForm(p)
+    if (p.wajibGantiPassword) isEditing.value = true
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
     alert(err instanceof ApiError ? err.message : 'Gagal memuat profil. Coba muat ulang halaman.')
@@ -294,6 +308,7 @@ const emailError = computed(() => {
 // Password baru boleh kosong (artinya password tidak diganti)
 const passwordBaruError = computed(() => {
   const pw = form.passwordBaru
+  if (wajibGanti.value && !pw) return 'Password baru wajib diisi'
   if (!pw) return ''
   if (pw.length < 6) return 'Password minimal 6 karakter'
   if (!/[A-Z]/.test(pw)) return 'Password harus mengandung huruf kapital'
@@ -338,6 +353,7 @@ const simpanData = async () => {
   if (isSaving.value) return
   const asli = profilAsli.value
   const emailBaru = form.email.trim().toLowerCase()
+    const tadiWajib = wajibGanti.value // harus dicatat sebelum profil diperbarui
 
   // Hanya kirim yang berubah
   const body = {}
@@ -362,6 +378,7 @@ const simpanData = async () => {
     isEditing.value = false
     showSimpanModal.value = false
     Object.keys(touched).forEach((k) => (touched[k] = false))
+        if (tadiWajib) router.push(`/tentor/dashboardtentor/${kodeTentor}`)
   } catch (err) {
     showSimpanModal.value = false
     if (err instanceof ApiError && err.status === 401) return
@@ -586,6 +603,17 @@ const hapusAkun = async () => {
   color: #f35c2b;
   margin: 0;
   line-height: 1.3;
+}
+
+.banner-wajib {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: #fff4ed;
+  border: 1.5px solid #f35c2b;
+  color: #b8400f;
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 /* ===== PHONE INPUT ===== */
