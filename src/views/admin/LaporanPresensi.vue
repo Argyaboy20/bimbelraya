@@ -9,8 +9,18 @@
           <h1 class="page-title">Laporan Presensi Tentor</h1>
           <p class="page-date">{{ formattedToday }}</p>
         </div>
+        <!-- Pilihan tampilan -->
+        <div class="tab-row">
+          <button class="tab-btn" :class="{ aktif: tampilan === 'harian' }" @click="tampilan = 'harian'">
+            Harian
+          </button>
+          <button class="tab-btn" :class="{ aktif: tampilan === 'bulanan' }" @click="tampilan = 'bulanan'">
+            Rekap Bulanan
+          </button>
+        </div>
+
         <!-- Navigasi ganti hari -->
-        <div class="date-nav">
+        <div v-if="tampilan === 'harian'" class="date-nav">
           <button class="btn-nav" @click="prevDay">‹ Sebelumnya</button>
           <span class="date-label">{{ formattedSelectedDate }}</span>
           <button class="btn-nav" @click="nextDay" :disabled="isToday">Berikutnya ›</button>
@@ -18,7 +28,7 @@
       </div>
 
       <!-- ===== RINGKASAN HARI INI ===== -->
-      <div class="summary-row">
+      <div v-if="tampilan === 'harian'" class="summary-row">
         <div class="summary-card card-blue">
           <div class="summary-number">{{ sudahPresensi }}</div>
           <div class="summary-label">Sudah Presensi</div>
@@ -34,13 +44,26 @@
       </div>
 
       <!-- ===== LIST PRESENSI ===== -->
-      <div class="presensi-section">
+      <div v-if="tampilan === 'harian'" class="presensi-section">
         <h2 class="section-title">Detail Presensi</h2>
 
-        <!-- Belum ada presensi sama sekali hari ini -->
-        <div v-if="presensiHariIni.length === 0" class="empty-state">
+        <!-- Memuat data -->
+        <div v-if="memuat && presensiHariIni.length === 0" class="empty-state">
+          <p class="empty-text">Memuat data presensi...</p>
+        </div>
+
+        <!-- Gagal memuat -->
+        <div v-else-if="galat" class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <p class="empty-text">{{ galat }}</p>
+        </div>
+
+        <!-- Belum ada presensi sama sekali pada tanggal ini -->
+        <div v-else-if="presensiHariIni.length === 0" class="empty-state">
           <div class="empty-icon">📋</div>
-          <p class="empty-text">Belum ada tentor yang presensi hari ini</p>
+          <p class="empty-text">
+            Belum ada tentor yang presensi {{ isToday ? 'hari ini' : 'pada tanggal ini' }}
+          </p>
           <p class="empty-sub">Data akan muncul otomatis saat tentor melakukan presensi</p>
         </div>
 
@@ -67,95 +90,198 @@
                 <strong>{{ item.jamPresensi }} WIB</strong>
               </p>
               <p class="presensi-materi">📖 <strong>Materi:</strong> {{ item.materi }}</p>
-              <!-- Foto bukti presensi (selfie) — nanti dari URL yang disimpan di database -->
+              <!-- Foto bukti presensi (selfie): link sementara dari server -->
               <div class="foto-wrapper" v-if="item.fotoUrl">
                 <img :src="item.fotoUrl" alt="Bukti presensi" class="foto-presensi" />
               </div>
               <div v-else class="foto-placeholder">
-                📷 Foto bukti presensi belum tersedia
+                📷 Foto bukti presensi sudah dihapus (tentor tidak lagi terdaftar)
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- ===== REKAP BULANAN ===== -->
+        <div v-if="tampilan === 'bulanan'" class="presensi-section">
+          <div class="date-nav bulan-nav">
+            <button class="btn-nav" @click="prevBulan">‹ Sebelumnya</button>
+            <span class="date-label">{{ formattedBulan }}</span>
+            <button class="btn-nav" @click="nextBulan" :disabled="isBulanIni">Berikutnya ›</button>
+          </div>
+
+          <h2 class="section-title">Rekap Presensi per Bulan</h2>
+
+          <div v-if="memuatRekap && rekap.length === 0" class="empty-state">
+            <p class="empty-text">Memuat rekap bulanan...</p>
+          </div>
+
+          <div v-else-if="galatRekap" class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <p class="empty-text">{{ galatRekap }}</p>
+          </div>
+
+          <div v-else-if="rekap.length === 0" class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p class="empty-text">Belum ada presensi pada bulan ini</p>
+          </div>
+
+          <div v-else class="presensi-list">
+            <div v-for="item in rekap" :key="item.kodeTentor" class="presensi-card">
+              <div class="presensi-left">
+                <div class="tentor-avatar">{{ item.namaTentor.charAt(0).toUpperCase() }}</div>
+                <div class="tentor-info">
+                  <p class="tentor-nama">{{ item.namaTentor }}</p>
+                  <p class="tentor-kode">Kode: {{ item.kodeTentor }}</p>
+                  <span v-if="!item.masihTerdaftar" class="badge-tidak-aktif">
+                    Sudah tidak terdaftar
+                  </span>
+                </div>
+              </div>
+
+              <div class="presensi-right">
+                <p class="presensi-waktu">
+                  📅 Hadir <strong>{{ item.jumlahHari }} hari</strong>
+                </p>
+                <p class="presensi-materi">📝 Total {{ item.jumlahEntri }} kali presensi</p>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
-import { usePresensiStore } from '@/stores/presensi'
-import { useTentorStore } from '@/stores/tentor'
-
-const presensiStore = usePresensiStore()
-const tentorStore = useTentorStore()
+import { api, ApiError } from '@/api/http'
 
 // ============================================
-// TANGGAL — navigasi per hari
+// TANGGAL — zona waktu Jakarta (sama seperti server)
 // ============================================
-const selectedDate = ref(new Date())
-selectedDate.value.setHours(0, 0, 0, 0)
+const hariIniKey = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date())
 
-const today = new Date()
-today.setHours(0, 0, 0, 0)
+const geserHari = (key, n) => {
+  const d = new Date(key + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
 
-const isToday = computed(() => selectedDate.value.getTime() === today.getTime())
+const geserBulan = (bulan, n) => {
+  const [y, m] = bulan.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7)
+}
 
-const formatDate = (date) => {
-  return date.toLocaleDateString('id-ID', {
+const formatTanggal = (key) =>
+  new Date(key + 'T00:00:00').toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
   })
-}
 
-// "YYYY-MM-DD" dari tanggal LOKAL. Jangan pakai toISOString(): dia mengubah ke UTC,
-// jadi di WIB (UTC+7) hasilnya mundur 1 hari.
-const toDateKey = (date) => {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
+const formatBulan = (bulan) =>
+  new Date(bulan + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 
-const formattedToday = computed(() => `Hari ini: ${formatDate(today)}`)
-const formattedSelectedDate = computed(() => formatDate(selectedDate.value))
+const today = hariIniKey()
+const tampilan = ref('harian') // 'harian' | 'bulanan'
+
+// ============================================
+// LAPORAN HARIAN — navigasi per hari
+// ============================================
+const selectedDate = ref(today)
+const isToday = computed(() => selectedDate.value === today)
+const formattedToday = computed(() => `Hari ini: ${formatTanggal(today)}`)
+const formattedSelectedDate = computed(() => formatTanggal(selectedDate.value))
 
 const prevDay = () => {
-  const d = new Date(selectedDate.value)
-  d.setDate(d.getDate() - 1)
-  selectedDate.value = d
+  selectedDate.value = geserHari(selectedDate.value, -1)
 }
 const nextDay = () => {
   if (isToday.value) return
-  const d = new Date(selectedDate.value)
-  d.setDate(d.getDate() + 1)
-  selectedDate.value = d
+  selectedDate.value = geserHari(selectedDate.value, 1)
+}
+
+const laporan = ref({
+  ringkasan: { sudahPresensi: 0, belumPresensi: 0, totalTentor: 0 },
+  data: [],
+})
+const memuat = ref(false)
+const galat = ref('')
+let permintaanHarian = 0
+
+const muatHarian = async () => {
+  const saya = ++permintaanHarian // jawaban lama tidak boleh menimpa jawaban baru
+  memuat.value = true
+  galat.value = ''
+  try {
+    const hasil = await api(`/api/admin/presensi?tanggal=${selectedDate.value}`)
+    if (saya === permintaanHarian) laporan.value = hasil
+  } catch (err) {
+    if (saya !== permintaanHarian) return
+    if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    galat.value = err instanceof ApiError ? err.message : 'Gagal memuat laporan presensi.'
+  } finally {
+    if (saya === permintaanHarian) memuat.value = false
+  }
+}
+
+// Bentuk baris mengikuti yang dipakai template
+const presensiHariIni = computed(() =>
+  laporan.value.data.map((p) => ({ ...p, jamPresensi: p.jam, fotoUrl: p.fotoLink })),
+)
+
+// Dihitung server: sudah presensi per tentor (bukan per entri); tentor aktif = kontrak belum lewat
+const sudahPresensi = computed(() => laporan.value.ringkasan.sudahPresensi)
+const belumPresensi = computed(() => laporan.value.ringkasan.belumPresensi)
+const totalTentor = computed(() => laporan.value.ringkasan.totalTentor)
+
+// ============================================
+// REKAP BULANAN — per tentor (termasuk tentor yang sudah dihapus)
+// ============================================
+const bulanTerpilih = ref(today.slice(0, 7))
+const isBulanIni = computed(() => bulanTerpilih.value === today.slice(0, 7))
+const formattedBulan = computed(() => formatBulan(bulanTerpilih.value))
+
+const prevBulan = () => {
+  bulanTerpilih.value = geserBulan(bulanTerpilih.value, -1)
+}
+const nextBulan = () => {
+  if (isBulanIni.value) return
+  bulanTerpilih.value = geserBulan(bulanTerpilih.value, 1)
+}
+
+const rekap = ref([])
+const memuatRekap = ref(false)
+const galatRekap = ref('')
+let permintaanRekap = 0
+
+const muatRekap = async () => {
+  const saya = ++permintaanRekap
+  memuatRekap.value = true
+  galatRekap.value = ''
+  try {
+    const hasil = await api(`/api/admin/presensi/rekap?bulan=${bulanTerpilih.value}`)
+    if (saya === permintaanRekap) rekap.value = hasil.data
+  } catch (err) {
+    if (saya !== permintaanRekap) return
+    if (err instanceof ApiError && err.status === 401) return
+    galatRekap.value = err instanceof ApiError ? err.message : 'Gagal memuat rekap bulanan.'
+  } finally {
+    if (saya === permintaanRekap) memuatRekap.value = false
+  }
 }
 
 // ============================================
-// DATA: dibaca dari store yang sama dengan yang ditulis Presensi.vue (tentor)
+// MUAT DATA
 // ============================================
-const presensiHariIni = computed(() => {
-  const key = toDateKey(selectedDate.value)
-  return presensiStore.records.filter((p) => p.tanggalKey === key)
-})
-
-// Dihitung per tentor, bukan per entri, karena 1 tentor boleh mengisi lebih dari sekali sehari
-const sudahPresensi = computed(
-  () => new Set(presensiHariIni.value.map((p) => p.kodeTentor)).size
-)
-
-// Tentor aktif = kontrak belum lewat (hari terakhir kontrak masih dihitung aktif)
-const totalTentor = computed(() => {
-  const hariIni = toDateKey(today)
-  return tentorStore.rows.filter((r) => !r.habisKontrak || r.habisKontrak >= hariIni).length
-})
-
-const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresensi.value))
+onMounted(muatHarian)
+watch(selectedDate, muatHarian)
+watch(bulanTerpilih, muatRekap)
+// Setiap pindah tab data dimuat ulang (link foto hanya berlaku 5 menit)
+watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
 </script>
 
 <style scoped>
@@ -392,6 +518,45 @@ const belumPresensi = computed(() => Math.max(0, totalTentor.value - sudahPresen
   font-size: 0.74rem;
   color: #9ca3af;
   margin-top: 0.35rem;
+}
+
+/* ===== TAB HARIAN / REKAP BULANAN ===== */
+.tab-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.tab-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+.tab-btn.aktif {
+  background: #2e87f6;
+  border-color: #2e87f6;
+  color: #fff;
+}
+.bulan-nav {
+  margin-bottom: 1rem;
+}
+.badge-tidak-aktif {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.7rem;
+  font-weight: 600;
 }
 
 /* =====================================================
