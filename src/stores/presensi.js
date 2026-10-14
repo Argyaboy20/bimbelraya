@@ -22,36 +22,11 @@ const dariServer = (p) => ({
 
 export const usePresensiStore = defineStore('presensi', {
   state: () => ({
-    // ============================================
-    records: [],
     // Riwayat presensi milik tentor yang sedang login (dari server, 200 terbaru)
     riwayatSaya: [],
   }),
 
-  actions: {
-    // ===== Dipanggil dari Presensi.vue saat tentor konfirmasi presensi =====
-    addPresensi(data) {
-      this.records.unshift(data)
-
-      // ============================================
-      // Nanti diganti dengan API call sungguhan:
-      // await fetch('/api/tentor/presensi', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data)
-      // })
-      // ============================================
-    },
-
-    // ===== Ambil semua riwayat presensi milik satu tentor, terbaru dulu =====
-    riwayatByTentor(kodeTentor) {
-      return this.records
-        .filter((r) => r.kodeTentor === kodeTentor)
-        .slice() // salin dulu supaya tidak mutasi state asli saat di-sort
-        .sort((a, b) => (a.tanggalKey < b.tanggalKey ? 1 : -1))
-    },
-
-    
+  actions: {  
     // ===== Presensi.vue (tentor): riwayat milik sendiri dari server =====
     async fetchSaya() {
       const rows = await api('/api/tentor/presensi')
