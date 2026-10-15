@@ -45,6 +45,21 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('authSession')
     },
 
+        // Dipanggil setelah server mengeluarkan token baru (perpanjang sesi).
+    // Data pengguna tidak berubah; hanya token dan masa berlakunya.
+    perbaruiToken({ token, expiresInSeconds }) {
+      if (!this.isLoggedIn) return
+      this.token = token
+      this.expiresAt = Date.now() + expiresInSeconds * 1000
+      localStorage.setItem('authSession', JSON.stringify({
+        role: this.role,
+        user: this.user,
+        kodeTentor: this.kodeTentor,
+        token: this.token,
+        expiresAt: this.expiresAt
+      }))
+    },
+
     // Dipanggil sekali saat aplikasi pertama dibuka (di App.vue)
     // Cek apakah ada session tersimpan dan masih berlaku
     restoreSession() {
