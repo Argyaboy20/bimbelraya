@@ -271,14 +271,9 @@ const downloadPNG = async () => {
   if (riwayat.value.length === 0) return
 
   try {
-    // ============================================
-    // html2canvas dimuat dari CDN saat dibutuhkan saja (dynamic import),
+    // html2canvas-pro dimuat saat dibutuhkan saja (dynamic import),
     // supaya tidak menambah beban awal saat halaman pertama dibuka.
-    // ============================================
-    const html2canvasModule = await import(
-      /* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm'
-    )
-    const html2canvas = html2canvasModule.default
+    const { default: html2canvas } = await import('html2canvas-pro')
 
     const canvas = await html2canvas(tableRef.value, { backgroundColor: '#ffffff', scale: 2 })
     const link = document.createElement('a')

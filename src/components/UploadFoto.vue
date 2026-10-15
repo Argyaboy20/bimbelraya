@@ -123,12 +123,8 @@ const stopCamera = () => {
 // ============================================
 const loadFaceDetection = async () => {
   try {
-    faceapi = await import(
-      /* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/+esm'
-    )
-    const MODEL_URL =
-      'https://raw.githubusercontent.com/justadudewhohacks/face-api.js-models/master/tiny_face_detector'
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
+    faceapi = await import('@vladmandic/face-api')
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models')
 
     detectionAvailable.value = true
     loadingModel.value = false
