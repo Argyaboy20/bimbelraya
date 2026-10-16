@@ -89,6 +89,13 @@
                 ✅ Sudah melakukan absensi pada pukul
                 <strong>{{ item.jamPresensi }} WIB</strong>
               </p>
+              <p class="presensi-materi">
+                🎓 <strong>Siswa:</strong>
+                <template v-if="item.namaSiswa">
+                  {{ item.namaSiswa }} · Kelas {{ item.kelasSiswa }} · Wali: {{ item.namaWalimurid }}
+                </template>
+                <template v-else>—</template>
+              </p>
               <p class="presensi-materi">📖 <strong>Materi:</strong> {{ item.materi }}</p>
               <!-- Foto bukti presensi (selfie): link sementara dari server -->
               <div class="foto-wrapper" v-if="item.fotoUrl">
@@ -141,9 +148,24 @@
 
               <div class="presensi-right">
                 <p class="presensi-waktu">
-                  📅 Hadir <strong>{{ item.jumlahHari }} hari</strong>
+                  📅 Hadir <strong>{{ item.jumlahHari }} hari</strong> ·
+                  <strong>{{ item.jumlahPertemuan }} pertemuan</strong>
                 </p>
-                <p class="presensi-materi">📝 Total {{ item.jumlahEntri }} kali presensi</p>
+                <p class="presensi-materi">📝 Total {{ item.jumlahEntri }} kali presensi dikirim</p>
+                <ul class="rincian-siswa">
+                  <li v-for="s in item.siswa" :key="s.lesId ?? 'lama'">
+                    <span class="rincian-nama">
+                      <template v-if="s.namaSiswa">
+                        {{ s.namaSiswa }}
+                        <small>Kelas {{ s.kelas }} · Wali: {{ s.namaWalimurid }}</small>
+                      </template>
+                      <template v-else>
+                        Tanpa data siswa <small>(presensi sebelum fitur Les Siswa)</small>
+                      </template>
+                    </span>
+                    <strong class="rincian-jumlah">{{ s.jumlahPertemuan }} pertemuan</strong>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -557,6 +579,34 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
   color: #b91c1c;
   font-size: 0.7rem;
   font-weight: 600;
+}
+
+/* ===== RINCIAN PER SISWA (rekap bulanan) ===== */
+.rincian-siswa {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0.6rem 0 0;
+  border-top: 1px dashed #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.rincian-siswa li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #1f2937;
+}
+.rincian-nama small {
+  display: block;
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+.rincian-jumlah {
+  white-space: nowrap;
+  color: #2e87f6;
 }
 
 /* =====================================================
