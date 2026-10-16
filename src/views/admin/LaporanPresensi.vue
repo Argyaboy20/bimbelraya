@@ -47,6 +47,12 @@
       <div v-if="tampilan === 'harian'" class="presensi-section">
         <h2 class="section-title">Detail Presensi</h2>
 
+        <p v-if="isToday" class="live-info" :class="{ 'live-gagal': galatLive }">
+          <span class="live-titik"></span>
+          {{ galatLive ? 'Koneksi terganggu · mencoba lagi' : 'Langsung' }}
+          <template v-if="jamDiperbarui"> · diperbarui {{ jamDiperbarui }}</template>
+        </p>
+
         <!-- Memuat data -->
         <div v-if="memuat && presensiHariIni.length === 0" class="empty-state">
           <p class="empty-text">Memuat data presensi...</p>
@@ -71,14 +77,17 @@
         <div v-else class="presensi-list">
           <div
             v-for="(item, index) in presensiHariIni"
-            :key="index"
+            :key="item.id"
             class="presensi-card"
           >
             <!-- Info tentor -->
             <div class="presensi-left">
               <div class="tentor-avatar">{{ item.namaTentor.charAt(0).toUpperCase() }}</div>
               <div class="tentor-info">
-                <p class="tentor-nama">{{ item.namaTentor }}</p>
+                <p class="tentor-nama">
+                  {{ item.namaTentor }}
+                  <span v-if="baru[item.id]" class="badge-baru">Baru</span>
+                </p>
                 <p class="tentor-kode">Kode: {{ item.kodeTentor }}</p>
               </div>
             </div>
@@ -175,7 +184,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import { api, ApiError } from '@/api/http'
 
@@ -230,23 +239,82 @@ const laporan = ref({
   ringkasan: { sudahPresensi: 0, belumPresensi: 0, totalTentor: 0 },
   data: [],
 })
+
+// ============================================
+// Pembaruan otomatis (polling) hanya saat melihat HARI INI
+// ============================================
+const POLLING_MS = 20_000 // periksa data baru tiap 20 detik (hanya saat tab terlihat)
+const FOTO_SEGAR_MS = 3 * 60 * 1000 // link foto dipakai ulang sampai 3 menit (aslinya berlaku 5 menit)
+const TANDA_BARU_MS = 60 * 1000 // tanda "Baru" tampil 1 menit
+
 const memuat = ref(false)
 const galat = ref('')
+const galatLive = ref(false) // pemeriksaan otomatis gagal sesaat
+const terakhirDiperbarui = ref(null)
+const baru = ref({}) // { idPresensi: waktuKedaluwarsaTanda }
 let permintaanHarian = 0
+let sedangMemeriksa = false
+let linkFoto = new Map() // idPresensi -> { link, waktu }
 
-const muatHarian = async () => {
+const jamDiperbarui = computed(() =>
+  terakhirDiperbarui.value
+    ? terakhirDiperbarui.value.toLocaleTimeString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })
+    : '',
+)
+
+// Pasang data baru: link foto yang masih segar dipakai ulang (foto tidak berkedip),
+// dan entri yang baru muncul ditandai "Baru" (hanya untuk pemeriksaan otomatis).
+const terapkan = (hasil, tandaiBaru) => {
+  const sekarang = Date.now()
+  const idLama = new Set(laporan.value.data.map((p) => p.id))
+  const data = hasil.data.map((p) => {
+    const simpan = linkFoto.get(p.id)
+    if (simpan && p.fotoLink && simpan.link && sekarang - simpan.waktu < FOTO_SEGAR_MS) {
+      return { ...p, fotoLink: simpan.link }
+    }
+    linkFoto.set(p.id, { link: p.fotoLink, waktu: sekarang })
+    return p
+  })
+  const tanda = {}
+  for (const [id, batas] of Object.entries(baru.value)) {
+    if (batas > sekarang) tanda[id] = batas
+  }
+  if (tandaiBaru) {
+    for (const p of data) if (!idLama.has(p.id)) tanda[p.id] = sekarang + TANDA_BARU_MS
+  }
+  baru.value = tanda
+  laporan.value = { ...hasil, data }
+}
+
+// senyap = pemeriksaan otomatis: tanpa tulisan "memuat", dan gangguan sesaat tidak menghapus data
+const muatHarian = async ({ senyap = false } = {}) => {
   const saya = ++permintaanHarian // jawaban lama tidak boleh menimpa jawaban baru
-  memuat.value = true
-  galat.value = ''
+  if (!senyap) {
+    memuat.value = true
+    galat.value = ''
+  }
   try {
     const hasil = await api(`/api/admin/presensi?tanggal=${selectedDate.value}`)
-    if (saya === permintaanHarian) laporan.value = hasil
+    if (saya === permintaanHarian) {
+      terapkan(hasil, senyap)
+      terakhirDiperbarui.value = new Date()
+      galatLive.value = false
+    }
   } catch (err) {
     if (saya !== permintaanHarian) return
     if (err instanceof ApiError && err.status === 401) return // sesi habis, sudah dialihkan ke login
+    if (senyap) {
+      galatLive.value = true // data lama tetap tampil, coba lagi pada putaran berikutnya
+      return
+    }
     galat.value = err instanceof ApiError ? err.message : 'Gagal memuat laporan presensi.'
   } finally {
-    if (saya === permintaanHarian) memuat.value = false
+    if (!senyap && saya === permintaanHarian) memuat.value = false
   }
 }
 
@@ -299,8 +367,39 @@ const muatRekap = async () => {
 // ============================================
 // MUAT DATA
 // ============================================
-onMounted(muatHarian)
-watch(selectedDate, muatHarian)
+const bolehMemeriksa = () =>
+  tampilan.value === 'harian' && isToday.value && document.visibilityState === 'visible'
+
+const periksaBerkala = async () => {
+  if (!bolehMemeriksa() || memuat.value || sedangMemeriksa) return
+  sedangMemeriksa = true
+  try {
+    await muatHarian({ senyap: true })
+  } finally {
+    sedangMemeriksa = false
+  }
+}
+
+let timerPolling = null
+const saatTabTerlihat = () => {
+  if (document.visibilityState === 'visible') periksaBerkala()
+}
+
+onMounted(() => {
+  muatHarian()
+  timerPolling = setInterval(periksaBerkala, POLLING_MS)
+  document.addEventListener('visibilitychange', saatTabTerlihat)
+})
+onBeforeUnmount(() => {
+  clearInterval(timerPolling)
+  document.removeEventListener('visibilitychange', saatTabTerlihat)
+})
+
+watch(selectedDate, () => {
+  linkFoto = new Map()
+  baru.value = {}
+  muatHarian()
+})
 watch(bulanTerpilih, muatRekap)
 // Setiap pindah tab data dimuat ulang (link foto hanya berlaku 5 menit)
 watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
@@ -579,6 +678,45 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
   color: #b91c1c;
   font-size: 0.7rem;
   font-weight: 600;
+}
+
+/* ===== PEMBARUAN OTOMATIS ===== */
+.live-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  color: #16a34a;
+}
+.live-info.live-gagal {
+  color: #b8400f;
+}
+.live-titik {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: live-denyut 1.6s ease-in-out infinite;
+}
+@keyframes live-denyut {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.badge-baru {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: #f35c2b;
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  vertical-align: middle;
 }
 
 /* ===== RINCIAN PER SISWA (rekap bulanan) ===== */
