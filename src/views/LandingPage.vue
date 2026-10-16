@@ -275,7 +275,13 @@
     </div>
 
     <!-- ===== CHAT BANTUAN ===== -->
-    <div v-if="showChat" class="chat-overlay" @click="closeChat"></div>
+    <div
+      v-if="showChat"
+      class="chat-overlay"
+      @click="closeChat"
+      @wheel.prevent
+      @touchmove.prevent
+    ></div>
 
     <div v-if="showChat" class="chat-window">
       <div class="chat-header">
@@ -290,9 +296,13 @@
           <div class="chat-bubble loading">●●●</div>
         </div>
       </div>
+      <p class="chat-catatan">
+        Dijawab oleh asisten AI. Jangan menulis data pribadi; untuk hal penting hubungi WhatsApp admin.
+      </p>
       <div class="chat-input-area">
         <input
           v-model="chatInput"
+          maxlength="300"
           class="chat-input"
           placeholder="Ketik pesan..."
           @keyup.enter="sendChat"
@@ -318,6 +328,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { api, ApiError } from '@/api/http'
 
 const router = useRouter()
 
@@ -366,23 +377,25 @@ const showChat = ref(false)
 const chatInput = ref('')
 const chatLoading = ref(false)
 const chatBody = ref(null)
-const chatMessages = ref([{ from: 'bot', text: 'Halo! Ada yang bisa kami bantu?' }])
+const chatMessages = ref([{ from: 'bot', text: 'Halo! Ada yang bisa kami bantu?', sapaan: true }])
+
+// Kunci scroll halaman saat chat terbuka. `html` dan `body` sama-sama dikunci, karena aturan
+// "overflow-x: hidden" pada html membuat html (bukan body) yang menjadi penggulung halaman.
+const kunciScrollHalaman = (kunci) => {
+  const nilai = kunci ? 'hidden' : ''
+  document.documentElement.style.overflow = nilai
+  document.body.style.overflow = nilai
+  document.body.style.touchAction = kunci ? 'none' : ''
+}
 
 const goToHelp = () => {
   showChat.value = !showChat.value
-  if (showChat.value) {
-    document.body.style.overflow = 'hidden'
-    document.body.style.touchAction = 'none'
-  } else {
-    document.body.style.overflow = ''
-    document.body.style.touchAction = ''
-  }
+  kunciScrollHalaman(showChat.value)
 }
 
 const closeChat = () => {
   showChat.value = false
-  document.body.style.overflow = ''
-  document.body.style.touchAction = ''
+  kunciScrollHalaman(false)
 }
 
 const scrollChatToBottom = () => {
@@ -393,26 +406,41 @@ const scrollChatToBottom = () => {
   })
 }
 
+const RIWAYAT_MAKS = 6
+
 const sendChat = async () => {
-  const text = chatInput.value.trim()
-  if (!text) return
+  const text = chatInput.value.trim().slice(0, 300)
+  if (!text || chatLoading.value) return
+
+  // Riwayat percakapan (maksimal 6 terakhir) dikirim agar pertanyaan lanjutan nyambung.
+  // Sapaan awal dan pesan galat tidak ikut dikirim.
+  const riwayat = chatMessages.value
+    .filter((m) => !m.sapaan && !m.galat)
+    .slice(-RIWAYAT_MAKS)
+    .map((m) => ({ dari: m.from, teks: m.text.slice(0, 600) }))
 
   chatMessages.value.push({ from: 'user', text })
   chatInput.value = ''
   chatLoading.value = true
   scrollChatToBottom()
 
-  // TODO: Ganti bagian ini dengan API AI sungguhan
-  // Contoh: const res = await fetch('/api/chat', { method: 'POST', body: JSON.stringify({ message: text }) })
-  // const data = await res.json()
-  // chatMessages.value.push({ from: 'bot', text: data.reply })
-  await new Promise((r) => setTimeout(r, 1000)) // simulasi delay
-  chatMessages.value.push({
-    from: 'bot',
-    text: 'Terima kasih pesannya! Fitur AI sedang dalam pengembangan. Untuk info lebih lanjut, silakan hubungi kami via WhatsApp ya 😊',
-  })
-  chatLoading.value = false
-  scrollChatToBottom()
+  try {
+    const data = await api('/api/chat', {
+      method: 'POST',
+      body: { pesan: text, riwayat },
+      auth: false, // halaman publik: tanpa token
+    })
+    chatMessages.value.push({ from: 'bot', text: data.jawaban })
+  } catch (err) {
+    const pesan =
+      err instanceof ApiError && err.message
+        ? err.message
+        : 'Maaf, asisten sedang tidak bisa menjawab. Silakan hubungi kami lewat WhatsApp ya.'
+    chatMessages.value.push({ from: 'bot', text: pesan, galat: true })
+  } finally {
+    chatLoading.value = false
+    scrollChatToBottom()
+  }
 }
 
 // ===== DATA PROGRAM =====
@@ -771,8 +799,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  document.body.style.overflow = ''
-  document.body.style.touchAction = ''
+  kunciScrollHalaman(false)
   clearInterval(autoPlay)
   clearTimeout(tooltipTimer)
   if (jamTimer) clearInterval(jamTimer)
@@ -1495,6 +1522,7 @@ onUnmounted(() => {
   z-index: 9998;
   overflow: hidden;
   animation: chatFadeIn 0.25s ease-out;
+  overscroll-behavior: contain;
 }
 
 .chat-overlay {
@@ -1545,6 +1573,7 @@ onUnmounted(() => {
   gap: 0.6rem;
   background: #f4f7ff;
   max-height: calc(75vh - 120px);
+  overscroll-behavior: contain;
 }
 .chat-msg {
   display: flex;
@@ -1561,6 +1590,8 @@ onUnmounted(() => {
   border-radius: 16px;
   font-size: 0.84rem;
   line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .chat-msg.bot .chat-bubble {
   background: #fff;
@@ -1577,6 +1608,15 @@ onUnmounted(() => {
   letter-spacing: 4px;
   color: #9ca3af;
   font-size: 1rem;
+}
+.chat-catatan {
+  margin: 0;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: #6b7280;
+  background: #f9fafb;
+  border-top: 1px solid #eef0f3;
 }
 .chat-input-area {
   display: flex;
