@@ -296,6 +296,7 @@
           <div class="chat-bubble loading">●●●</div>
         </div>
       </div>
+      <div ref="turnstileEl" class="chat-turnstile"></div>
       <p class="chat-catatan">
         Dijawab oleh asisten AI. Jangan menulis data pribadi; untuk hal penting hubungi WhatsApp admin.
       </p>
@@ -326,9 +327,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, ApiError } from '@/api/http'
+import { buatTurnstile, TurnstileError } from '@/utils/turnstile'
 
 const router = useRouter()
 
@@ -406,6 +408,20 @@ const scrollChatToBottom = () => {
   })
 }
 
+// Turnstile (anti-bot): dipasang saat chat dibuka, dilepas saat ditutup
+const turnstileEl = ref(null)
+let turnstile = null
+
+watch(showChat, async (buka) => {
+  if (buka) {
+    await nextTick()
+    if (!turnstile && turnstileEl.value) turnstile = buatTurnstile(turnstileEl.value)
+  } else if (turnstile) {
+    turnstile.hancurkan()
+    turnstile = null
+  }
+})
+
 const RIWAYAT_MAKS = 6
 
 const sendChat = async () => {
@@ -425,15 +441,16 @@ const sendChat = async () => {
   scrollChatToBottom()
 
   try {
+    const turnstileToken = turnstile ? await turnstile.ambilToken() : ''
     const data = await api('/api/chat', {
       method: 'POST',
-      body: { pesan: text, riwayat },
+      body: { pesan: text, riwayat, turnstileToken },
       auth: false, // halaman publik: tanpa token
     })
     chatMessages.value.push({ from: 'bot', text: data.jawaban })
   } catch (err) {
     const pesan =
-      err instanceof ApiError && err.message
+      (err instanceof ApiError || err instanceof TurnstileError) && err.message
         ? err.message
         : 'Maaf, asisten sedang tidak bisa menjawab. Silakan hubungi kami lewat WhatsApp ya.'
     chatMessages.value.push({ from: 'bot', text: pesan, galat: true })
@@ -805,6 +822,7 @@ onUnmounted(() => {
   if (jamTimer) clearInterval(jamTimer)
   if (observer) observer.disconnect()
   if (animFrame) cancelAnimationFrame(animFrame)
+  if (turnstile) turnstile.hancurkan()
   window.removeEventListener('scroll', checkSections)
 })
 </script>
@@ -1617,6 +1635,9 @@ onUnmounted(() => {
   color: #6b7280;
   background: #f9fafb;
   border-top: 1px solid #eef0f3;
+}
+.chat-turnstile {
+  padding: 0 0.9rem;
 }
 .chat-input-area {
   display: flex;
