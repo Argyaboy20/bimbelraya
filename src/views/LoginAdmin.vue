@@ -84,6 +84,7 @@
             <p class="field-hint">Kode akses didapat dari sistem internal, bukan dari email biasa</p>
           </div>
 
+          <div ref="turnstileEl" class="turnstile-slot"></div>
           <!-- Pesan error gagal login (dari percobaan sebelumnya) -->
           <p v-if="loginError" class="login-error-alert">{{ loginError }}</p>
 
@@ -107,6 +108,7 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
+import { buatTurnstile } from '@/utils/turnstile'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -227,11 +229,17 @@ const registerFailedAttempt = () => {
   }
 }
 
+// Turnstile (anti-bot)
+const turnstileEl = ref(null)
+let turnstile = null
+
 onMounted(() => {
   loadAttemptState()
+  turnstile = buatTurnstile(turnstileEl.value)
 })
 onUnmounted(() => {
   if (countdownTimer) clearInterval(countdownTimer)
+  if (turnstile) turnstile.hancurkan()
 })
 
 // ===== SUBMIT =====
@@ -246,10 +254,11 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
+    const turnstileToken = turnstile ? await turnstile.ambilTokenLonggar() : ''
     const data = await api('/api/auth/admin/login', {
       method: 'POST',
       auth: false,
-      body: { email: form.email, password: form.password, kodeAkses: form.kodeAkses },
+      body: { email: form.email, password: form.password, kodeAkses: form.kodeAkses, turnstileToken },
     })
 
     // Login berhasil → reset percobaan gagal
@@ -278,6 +287,11 @@ const handleSubmit = async () => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.turnstile-slot {
+  display: flex;
+  justify-content: center;
+}
 
 * {
   font-family: 'DM Sans', sans-serif;

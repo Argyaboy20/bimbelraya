@@ -54,6 +54,7 @@
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
 
+          <div ref="turnstileEl" class="turnstile-slot"></div>
           <p v-if="loginError" class="field-alert">{{ loginError }}</p>
           <!-- Tombol Masuk -->
           <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">Masuk</button>
@@ -87,10 +88,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
+import { buatTurnstile } from '@/utils/turnstile'
 
 // ===== STATE FORM =====
 const form = reactive({
@@ -132,6 +134,16 @@ const isFormValid = computed(() => {
   return !emailError.value && !passwordError.value
 })
 
+// Turnstile (anti-bot): dipasang saat halaman dibuka, dilepas saat ditutup
+const turnstileEl = ref(null)
+let turnstile = null
+onMounted(() => {
+  turnstile = buatTurnstile(turnstileEl.value)
+})
+onUnmounted(() => {
+  if (turnstile) turnstile.hancurkan()
+})
+
 // ===== SUBMIT =====
 const handleSubmit = async () => {
   touched.email = true
@@ -141,10 +153,11 @@ const handleSubmit = async () => {
 
   isSubmitting.value = true
   try {
+    const turnstileToken = turnstile ? await turnstile.ambilTokenLonggar() : ''
     const data = await api('/api/auth/tentor/login', {
       method: 'POST',
       auth: false,
-      body: { email: form.email, password: form.password },
+      body: { email: form.email, password: form.password, turnstileToken },
     })
     authStore.login({
       role: 'tentor',
@@ -169,6 +182,11 @@ const handleSubmit = async () => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.turnstile-slot {
+  display: flex;
+  justify-content: center;
+}
 
 * {
   font-family: 'DM Sans', sans-serif;

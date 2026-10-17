@@ -148,6 +148,7 @@
             <p v-if="touched.kode && kodeError" class="field-alert">{{ kodeError }}</p>
           </div>
 
+          <div ref="turnstileEl" class="turnstile-slot"></div>
           <p v-if="submitError" class="field-alert">{{ submitError }}</p>
           <!-- Tombol Daftar -->
           <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">
@@ -167,10 +168,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
+import { buatTurnstile } from '@/utils/turnstile'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -277,6 +279,16 @@ const isFormValid = computed(() => {
   )
 })
 
+// Turnstile (anti-bot): dipasang saat halaman dibuka, dilepas saat ditutup
+const turnstileEl = ref(null)
+let turnstile = null
+onMounted(() => {
+  turnstile = buatTurnstile(turnstileEl.value)
+})
+onUnmounted(() => {
+  if (turnstile) turnstile.hancurkan()
+})
+
 // ===== SUBMIT =====
 const handleSubmit = async () => {
   Object.keys(touched).forEach((key) => (touched[key] = true))
@@ -285,6 +297,7 @@ const handleSubmit = async () => {
 
   isSubmitting.value = true
   try {
+    const turnstileToken = turnstile ? await turnstile.ambilTokenLonggar() : ''
     await api('/api/auth/tentor/register', {
       method: 'POST',
       auth: false,
@@ -294,6 +307,7 @@ const handleSubmit = async () => {
         email: form.email,
         password: form.password,
         kodeTentor: form.kodeTentor,
+        turnstileToken,
       },
     })
   } catch (err) {
@@ -304,10 +318,11 @@ const handleSubmit = async () => {
 
   // Akun sudah jadi → langsung masuk dengan email & password yang sama
   try {
+    const turnstileToken2 = turnstile ? await turnstile.ambilTokenLonggar() : ''
     const data = await api('/api/auth/tentor/login', {
       method: 'POST',
       auth: false,
-      body: { email: form.email, password: form.password },
+      body: { email: form.email, password: form.password, turnstileToken: turnstileToken2 },
     })
     authStore.login({
       role: 'tentor',
@@ -327,6 +342,11 @@ const handleSubmit = async () => {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.turnstile-slot {
+  display: flex;
+  justify-content: center;
+}
 
 * {
   font-family: 'DM Sans', sans-serif;

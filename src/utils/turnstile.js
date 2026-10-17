@@ -33,7 +33,10 @@ function muatTurnstile() {
 // Pasang widget di `elemen`. Mengembalikan { ambilToken, hancurkan }.
 // Setiap token hanya berlaku sekali: setelah diambil, widget diminta membuat token baru.
 export function buatTurnstile(elemen) {
-  if (!SITE_KEY || !elemen) return { ambilToken: async () => '', hancurkan() {} }
+  if (!SITE_KEY || !elemen) {
+    const kosong = async () => ''
+    return { ambilToken: kosong, ambilTokenLonggar: kosong, hancurkan() {} }
+  }
 
   let idWidget = null
   let token = ''
@@ -123,5 +126,8 @@ export function buatTurnstile(elemen) {
     }
   }
 
-  return { ambilToken, hancurkan }
+  // Versi longgar: kalau widget gagal, kirim token kosong dan biarkan server yang memutuskan
+  const ambilTokenLonggar = () => ambilToken().catch(() => '')
+
+  return { ambilToken, ambilTokenLonggar, hancurkan }
 }
