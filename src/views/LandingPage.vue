@@ -422,13 +422,13 @@ watch(showChat, async (buka) => {
   }
 })
 
-const RIWAYAT_MAKS = 6
+const RIWAYAT_MAKS = 10
 
 const sendChat = async () => {
   const text = chatInput.value.trim().slice(0, 300)
   if (!text || chatLoading.value) return
 
-  // Riwayat percakapan (maksimal 6 terakhir) dikirim agar pertanyaan lanjutan nyambung.
+  // Riwayat percakapan (maksimal 10 terakhir) dikirim agar pertanyaan lanjutan nyambung.
   // Sapaan awal dan pesan galat tidak ikut dikirim.
   const riwayat = chatMessages.value
     .filter((m) => !m.sapaan && !m.galat)

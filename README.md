@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 1.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 1.1** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -127,6 +127,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | Versi | Tanggal | Ringkasan |
 |---|---|---|
 | **1.0** | 2026-10-18 | Rilis pertama: halaman publik dengan asisten chat AI, portal tentor (Les Siswa, presensi per siswa, Absen Kehadiran PNG), portal admin (data induk dan laporan presensi), serta perpanjangan sesi dan perlindungan anti-bot |
+| **1.1** | 2026-10-18 | Asisten chat AI lebih interaktif: jawaban nyambung, tanpa sapaan berulang, plus pengetahuan proses pendaftaran dan perkiraan waktu pencarian tentor |
 
 ## Kontribusi
 

@@ -23,7 +23,12 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
-_Catat perubahan yang sedang dikerjakan di sini. Saat rilis, pindahkan ke bagian versi baru di bawah._
+## [1.1] — 2026-10-18
+
+Rilis bersama backend `1.1`: asisten chat lebih interaktif. Perubahan utama ada di backend.
+
+### Diubah
+- Asisten chat mengirim riwayat percakapan yang lebih panjang (hingga 10 pesan terakhir) agar jawaban lebih nyambung
 
 ## [1.0] — 2026-10-18
 
