@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 1.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](CHANGELOG.md).
+**Versi saat ini: 1.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
