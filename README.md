@@ -4,6 +4,8 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
+**Versi saat ini: 1.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](CHANGELOG.md).
+
 ## Fitur
 
 **Halaman publik**
@@ -116,8 +118,19 @@ Karena aplikasi ini *single-page*, hosting harus mengarahkan semua alamat yang t
 
 Variabel `VITE_*` harus sudah diisi **sebelum** build dijalankan. Jika nilainya berubah, lakukan build ulang.
 
+## Riwayat versi
+
+Frontend dan backend memakai penomoran versi yang sama (`MAJOR.MINOR`):
+versi **MAJOR** (`1.0`, `2.0`, `3.0`, ...) untuk perubahan besar tampilan atau pengalaman pengguna yang dirilis bersamaan di kedua sisi,
+dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan lengkapnya ada di [CHANGELOG.md](CHANGELOG.md).
+
+| Versi | Tanggal | Ringkasan |
+|---|---|---|
+| **1.0** | 2026-10-18 | Rilis pertama: halaman publik dengan asisten chat AI, portal tentor (Les Siswa, presensi per siswa, Absen Kehadiran PNG), portal admin (data induk dan laporan presensi), serta perpanjangan sesi dan perlindungan anti-bot |
+
 ## Kontribusi
 
+- Catat setiap perubahan penting di `CHANGELOG.md` (bagian **Belum dirilis**) saat mengerjakannya.
 - Gunakan Prettier dan ESLint (`npm run format` dan `npm run lint`) sebelum commit.
 - Tulis pesan commit yang singkat dan jelas, dalam Bahasa Indonesia.
 - Jangan meng-commit berkas `.env`, kunci, atau data nyata pengguna.
