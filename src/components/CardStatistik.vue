@@ -24,6 +24,13 @@
         <div class="stat-label">Frekuensi Presensi / Hari</div>
       </div>
 
+            <!-- Lowongan Tentor (live) -->
+      <div class="stat-item bg-navy">
+        <div class="stat-icon">📢</div>
+        <div class="stat-value">{{ lowonganAktif }}</div>
+        <div class="stat-label">Lowongan Tentor</div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -45,6 +52,10 @@ defineProps({
     default: 0
   },
   frekuensiPresensi: {
+    type: [Number, String],
+    default: 0
+  },
+  lowonganAktif: {
     type: [Number, String],
     default: 0
   }
@@ -131,8 +142,10 @@ defineProps({
   background: linear-gradient(145deg, #F9ECCC 0%, #f3dfa8 100%);
   box-shadow: 0 8px 20px rgba(243, 197, 92, 0.25);
   color: #5a4a1f;
-  /* Item ke-3 melebar penuh 2 kolom karena jumlahnya ganjil (3 item, 2 per baris) */
-  grid-column: 1 / -1;
+}
+.bg-navy {
+  background: linear-gradient(145deg, #1e5aa8 0%, #123c75 100%);
+  box-shadow: 0 8px 20px rgba(18, 60, 117, 0.3);
 }
 
 /* =====================================================

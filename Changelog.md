@@ -23,6 +23,23 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [2.0] — 2026-10-19
+
+Rilis bersama backend `2.0`: Reward Tentor bulanan dan modal loading universal.
+
+### Ditambahkan
+- Modal loading universal: tampil otomatis pada setiap proses yang berhubungan dengan server (masuk, daftar, simpan, ubah, hapus, dan memuat data), dengan pesan sesuai aksi serta keterangan bila server sedang bangun dari mode tidur
+- **Reward Tentor** untuk admin: halaman penilaian performa tentor per bulan dengan 8 kriteria (nilai 1 sampai 10), total nilai otomatis, tiga peringkat teratas ditandai hijau, biru, dan kuning di tabel dan di grafik, serta navigasi bulan yang menyimpan isian tiap bulan. Tombol **UMUMKAN** muncul setelah semua nilai terisi
+- Section **Reward Tentor** di dashboard admin
+- Kotak keempat di dashboard admin: jumlah lowongan tentor yang masih tersedia, diperbarui otomatis
+- **Reward Bulanan Tentor** untuk tentor: halaman daftar peringkat tentor bulan ini, dengan baris milik tentor yang sedang masuk ditandai hijau
+- Section **Reward Bulanan Tentor** di dashboard tentor
+- Notifikasi juara di dashboard tentor: kartu melayang dengan ucapan sesuai peringkat (juara 1, 2, 3, atau belum terpilih), tampil sekitar 90 menit setelah pengumuman dan bisa ditutup dengan tombol OK
+
+### Diubah
+- Batas waktu tunggu permintaan ke server diperpanjang agar server yang sedang bangun tidak memutus proses
+- Kartu statistik dashboard admin kini berjumlah empat dan tersusun 2×2
+
 ## [1.1] — 2026-10-18
 
 Rilis bersama backend `1.1`: asisten chat lebih interaktif. Perubahan utama ada di backend.

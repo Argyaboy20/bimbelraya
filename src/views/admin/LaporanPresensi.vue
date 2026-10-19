@@ -299,7 +299,9 @@ const muatHarian = async ({ senyap = false } = {}) => {
     galat.value = ''
   }
   try {
-    const hasil = await api(`/api/admin/presensi?tanggal=${selectedDate.value}`)
+    const hasil = await api(`/api/admin/presensi?tanggal=${selectedDate.value}`, {
+      loading: !senyap,
+    })
     if (saya === permintaanHarian) {
       terapkan(hasil, senyap)
       terakhirDiperbarui.value = new Date()

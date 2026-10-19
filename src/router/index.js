@@ -14,12 +14,14 @@ import DataTentor from '@/views/admin/DataTentor.vue'
 import DataWaliMurid from '@/views/admin/DataWaliMurid.vue'
 import LaporanPresensi from '@/views/admin/LaporanPresensi.vue'
 import DataLowongan from '@/views/admin/DataLowongan.vue'
+import AdminReward from '@/views/admin/Reward.vue'
 
 // Tentor
 import DashboardTentor from '@/views/tentor/DashboardTentor.vue'
 import TentorBiodata from '@/views/tentor/Biodata.vue'
 import TentorPresensi from '@/views/tentor/Presensi.vue'
 import PerpanjangKontrak from '@/views/tentor/PerpanjangKontrak.vue'
+import TentorReward from '@/views/tentor/RewardTentor.vue'
 
 const routes = [
   // ===== PUBLIK =====
@@ -81,6 +83,11 @@ const routes = [
         component: DataLowongan,
         meta: { requiresAuth: true, role: 'admin', title: 'Kelola Lowongan' },
       },
+       {
+        path: 'reward',
+        component: AdminReward,
+        meta: { requiresAuth: true, role: 'admin', title: 'Reward Tentor' },
+      },
     ],
   },
 
@@ -115,6 +122,11 @@ const routes = [
         path: 'kontrak/:id',
         component: PerpanjangKontrak,
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Perpanjang Kontrak' },
+      },
+      {
+        path: 'rewardtentor/:id',
+        component: TentorReward,
+        meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Reward Bulanan Tentor' },
       },
     ],
   },

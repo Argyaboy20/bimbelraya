@@ -3,6 +3,7 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { mulaiPemantauanSesi, sesiHampirHabis } from '@/utils/sesi'
+import LoadingModal from '@/components/LoadingModal.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -27,6 +28,7 @@ const loginUlang = () => {
 
 <template>
   <RouterView />
+  <LoadingModal />
 
   <div v-if="sesiHampirHabis" class="banner-sesi" role="alert">
     <span>Sesi kamu hampir berakhir. Simpan pekerjaanmu, lalu login ulang.</span>

@@ -102,7 +102,25 @@
           </div>
         </div>
       </section>
+      
+      <!-- ===== SECTION 4: REWARD BULANAN TENTOR ===== -->
+      <section class="tentor-section">
+        <div class="tentor-card card-reward">
+          <div class="card-icon-circle">🏆</div>
+          <div class="card-body">
+            <h2 class="card-title">Reward Bulanan Tentor</h2>
+            <p class="card-desc">
+              Lihat peringkat tentor terbaik bulan ini dan pantau posisimu di Best Tentor of the Month.
+            </p>
+            <router-link :to="`/tentor/rewardtentor/${kodeTentor}`" class="card-btn btn-reward">
+              Lihat Reward <span class="btn-arrow">→</span>
+            </router-link>
+          </div>
+        </div>
+      </section>
     </div>
+    <!-- ===== NOTIF REWARD BULANAN ===== -->
+    <RewardNotifModal />
   </div>
 </template>
 
@@ -113,6 +131,7 @@ import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
 import { ApiError } from '@/api/http'
+import RewardNotifModal from '@/components/RewardNotifModal.vue'
 
 const route = useRoute()
 const tentorStore = useTentorStore()
@@ -672,6 +691,17 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #f9eccc 0%, #f3dfa8 100%);
   color: #5a4a1f;
   box-shadow: 0 6px 16px rgba(243, 223, 168, 0.45);
+}
+
+.card-reward {
+  border-left-color: #22a559;
+}
+.card-reward .card-icon-circle {
+  background: linear-gradient(135deg, #22a559 0%, #178044 100%);
+}
+.btn-reward {
+  background: linear-gradient(135deg, #22a559 0%, #178044 100%);
+  box-shadow: 0 6px 16px rgba(34, 165, 89, 0.3);
 }
 
 /* =====================================================

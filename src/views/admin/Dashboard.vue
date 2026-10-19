@@ -10,6 +10,7 @@
         :tentor-aktif="stats.tentorAktif"
         :walimurid-aktif="stats.walimuridAktif"
         :frekuensi-presensi="stats.frekuensiPresensi"
+        :lowongan-aktif="stats.lowonganAktif"
       />
 
       <!-- ===== SECTION: BUAT KODE TENTOR ===== -->
@@ -114,9 +115,22 @@
         <p class="section-desc">
           Kelola lowongan mengajar yang tampil di halaman publik untuk para tentor.
         </p>
-        <router-link to="/admin/lowongan" class="section-card card-blue">
+        <router-link to="/admin/lowongan" class="section-card card-navy">
           <span class="card-icon">📢</span>
           <span class="card-text">KELOLA LOWONGAN</span>
+          <span class="card-arrow">→</span>
+        </router-link>
+      </section>
+
+      <!-- ===== SECTION: REWARD TENTOR ===== -->
+      <section class="dashboard-section">
+        <h2 class="section-title">Reward Tentor</h2>
+        <p class="section-desc">
+          Beri penilaian performa tentor tiap bulan dan umumkan tentor terbaiknya.
+        </p>
+        <router-link to="/admin/reward" class="section-card card-green">
+          <span class="card-icon">🏆</span>
+          <span class="card-text">KELOLA REWARD</span>
           <span class="card-arrow">→</span>
         </router-link>
       </section>
@@ -150,7 +164,7 @@
 <script setup>
 // give component a multi-word name to satisfy linter
 defineOptions({ name: 'AdminDashboard' })
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
@@ -172,9 +186,30 @@ const handleLogout = () => {
 }
 
 // ===== STATISTIK + RIWAYAT KODE dari server =====
-const stats = ref({ tentorAktif: 0, walimuridAktif: 0, frekuensiPresensi: 0 })
+const stats = ref({ tentorAktif: 0, walimuridAktif: 0, frekuensiPresensi: 0, lowonganAktif: 0 })
+
+// Angka Lowongan Tentor diperbarui otomatis (tanpa modal loading) selama tab terlihat
+const POLLING_MS = 20_000
+let timerLowongan = null
+let sedangMemperbarui = false
+
+const perbaruiLowongan = async () => {
+  if (document.visibilityState !== 'visible' || sedangMemperbarui) return
+  sedangMemperbarui = true
+  try {
+    const hasil = await api('/api/admin/statistik', { loading: false })
+    stats.value.lowonganAktif = hasil.lowonganAktif
+  } catch {
+    // gangguan sesaat: angka lama tetap tampil, dicoba lagi pada putaran berikutnya
+  } finally {
+    sedangMemperbarui = false
+  }
+}
+
+onBeforeUnmount(() => clearInterval(timerLowongan))
 
 onMounted(async () => {
+  timerLowongan = setInterval(perbaruiLowongan, POLLING_MS)
   try {
     const [hasil] = await Promise.all([api('/api/admin/statistik'), tentorStore.fetchKodeHistory()])
     stats.value = hasil
@@ -321,6 +356,13 @@ const setujuKode = async () => {
 .card-cream {
   background: linear-gradient(135deg, #f9eccc 0%, #f3dfa8 100%);
   color: #5a4a1f;
+}
+.card-navy {
+  background: linear-gradient(145deg, #1e5aa8 0%, #123c75 100%);
+  box-shadow: 0 8px 20px rgba(18, 60, 117, 0.3);
+}
+.card-green {
+  background: linear-gradient(135deg, #22a559 0%, #178044 100%);
 }
 
 /* ===== TOMBOL LOGOUT (sengaja dibuat kecil, beda dari section-card lain) ===== */
