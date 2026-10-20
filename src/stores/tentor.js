@@ -114,6 +114,32 @@ export const useTentorStore = defineStore('tentor', {
       this.rows.push(tentorDariServer(dibuat))
     },
 
+    // Ubah 1 baris tersimpan (bentuk baris frontend). Kode tentor tidak dikirim karena tidak bisa diubah.
+    // Melempar ApiError kalau ditolak server.
+    async ubahTentor(row) {
+      const diubah = await api(`/api/admin/tentor/${row.kodeTentor}`, {
+        method: 'PATCH',
+        body: {
+          nama: row.nama.trim(),
+          panggilan: row.panggilan.trim(),
+          telepon: row.telepon,
+          email: row.email.trim(),
+          lulusan: row.lulusan.trim(),
+          alamat: row.alamat.trim(),
+          gaji: row.gajiRaw,
+          kontakDarurat: row.kontakDarurat,
+          cv: keBoolean(row.cv),
+          pasPhoto: keBoolean(row.pasPhoto),
+          suratKontrak: keBoolean(row.suratKontrak),
+          habisKontrak: row.habisKontrak,
+        },
+      })
+      const baru = tentorDariServer(diubah)
+      const i = this.rows.findIndex((r) => r.kodeTentor === baru.kodeTentor)
+      if (i !== -1) this.rows[i] = baru
+      return baru
+    },
+
     // Admin hapus tentor: server menghapus data tentor + akun login + kodenya (presensi tetap tersimpan)
     async hapusTentor(kode) {
       await api(`/api/admin/tentor/${kode}`, { method: 'DELETE' })

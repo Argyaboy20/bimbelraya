@@ -39,7 +39,7 @@
           </div>
         </section>
 
-                <!-- ===== SECTION: SURAT KONTRAK TENTOR ===== -->
+        <!-- ===== SECTION: SURAT KONTRAK TENTOR ===== -->
         <section class="kontrak-section">
           <h2 class="section-title">Surat Kontrak Tentor</h2>
           <p class="section-desc">
@@ -50,39 +50,40 @@
           <div class="surat-card">
             <h3 class="surat-judul">SURAT KONTRAK KERJA TENTOR</h3>
 
-            <div class="surat-isi" tabindex="0" aria-label="Isi Surat Kontrak Tentor">
-              <article v-for="(pasal, i) in SURAT_KONTRAK" :key="i" class="pasal">
-                <h4 class="pasal-nomor">PASAL {{ pasal.nomor }}</h4>
-                <p class="pasal-judul">{{ pasal.judul }}</p>
+            <SuratTerlindungi :nama="tentorStore.profil?.nama ?? ''" :kode="kodeTentor">
+              <div class="surat-isi" tabindex="0" aria-label="Isi Surat Kontrak Tentor">
+                <article v-for="(pasal, i) in SURAT_KONTRAK" :key="i" class="pasal">
+                  <h4 class="pasal-nomor">PASAL {{ pasal.nomor }}</h4>
+                  <p class="pasal-judul">{{ pasal.judul }}</p>
 
-                <template v-for="(blok, j) in pasal.blok" :key="j">
-                  <p
-                    v-if="blok.tipe === 'paragraf'"
-                    class="pasal-paragraf"
-                    v-html="formatTeks(blok.teks)"
-                  ></p>
+                  <template v-for="(blok, j) in pasal.blok" :key="j">
+                    <p
+                      v-if="blok.tipe === 'paragraf'"
+                      class="pasal-paragraf"
+                      v-html="formatTeks(blok.teks)"
+                    ></p>
 
-                  <div v-else-if="blok.tipe === 'ayat'" class="ayat">
-                    <span class="ayat-no">{{ blok.no }}.</span>
-                    <div class="ayat-isi">
-                      <p class="pasal-paragraf" v-html="formatTeks(blok.teks)"></p>
+                    <div v-else-if="blok.tipe === 'ayat'" class="ayat">
+                      <span class="ayat-no">{{ blok.no }}.</span>
+                      <div class="ayat-isi">
+                        <p class="pasal-paragraf" v-html="formatTeks(blok.teks)"></p>
+                        <div v-for="s in blok.sub" :key="s.huruf" class="sub">
+                          <span class="sub-huruf">{{ s.huruf }}.</span>
+                          <p class="pasal-paragraf" v-html="formatTeks(s.teks)"></p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div v-else-if="blok.tipe === 'daftar'" class="daftar">
                       <div v-for="s in blok.sub" :key="s.huruf" class="sub">
                         <span class="sub-huruf">{{ s.huruf }}.</span>
                         <p class="pasal-paragraf" v-html="formatTeks(s.teks)"></p>
                       </div>
                     </div>
-                  </div>
-
-                  <div v-else-if="blok.tipe === 'daftar'" class="daftar">
-                    <div v-for="s in blok.sub" :key="s.huruf" class="sub">
-                      <span class="sub-huruf">{{ s.huruf }}.</span>
-                      <p class="pasal-paragraf" v-html="formatTeks(s.teks)"></p>
-                    </div>
-                  </div>
-                </template>
-              </article>
-            </div>
-
+                  </template>
+                </article>
+              </div>
+            </SuratTerlindungi>
             <label class="setuju-baris" :class="{ 'is-terkunci': suratDisetujui }">
               <input
                 type="checkbox"
@@ -156,6 +157,7 @@ import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { ApiError } from '@/api/http'
 import { SURAT_KONTRAK, formatTeks } from '@/data/suratKontrak'
+import SuratTerlindungi from '@/components/SuratTerlindungi.vue'
 
 defineOptions({ name: 'PerpanjangKontrak' })
 

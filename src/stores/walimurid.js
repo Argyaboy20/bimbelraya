@@ -56,6 +56,33 @@ export const useWalimuridStore = defineStore('walimurid', {
       this.rows.push(walimuridDariServer(dibuat))
     },
 
+    // Ubah 1 baris tersimpan. kodeLama = kode sebelum diedit (kode walimurid boleh diganti).
+    // Melempar ApiError kalau ditolak server (mis. 409 kode sudah dipakai).
+    async ubahWalimurid(kodeLama, row) {
+      const diubah = await api(`/api/admin/walimurid/${kodeLama}`, {
+        method: 'PATCH',
+        body: {
+          kodeWali: row.kodeWali.trim(),
+          nama: row.nama.trim(),
+          kelas: row.kelas.trim(),
+          asalSekolah: row.asalSekolah.trim(),
+          alamat: row.alamat.trim(),
+          paket: Number(row.paket),
+          hariPertemuan: row.hariPertemuan.trim(),
+          jam: row.jam.trim(),
+          kodeTentor: row.kodeTentor.trim(),
+          guru: row.guru.trim(),
+          mapel: row.mapel.trim(),
+          harga: row.hargaRaw,
+          status: row.status,
+        },
+      })
+      const baru = walimuridDariServer(diubah)
+      const i = this.rows.findIndex((r) => r.kodeWali === kodeLama)
+      if (i !== -1) this.rows[i] = baru
+      return baru
+    },
+
     async hapusWalimurid(kode) {
       await api(`/api/admin/walimurid/${kode}`, { method: 'DELETE' })
       this.rows = this.rows.filter((r) => r.kodeWali !== kode)

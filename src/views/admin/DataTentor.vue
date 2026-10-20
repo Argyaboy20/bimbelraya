@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in rows" :key="row.rowId" :class="{ 'row-saved': row.isSaved }">
+            <tr v-for="(row, index) in rows" :key="row.rowId" :class="{ 'row-saved': row.isSaved, 'row-editing': row.isEditing }">
               <!-- Nomor — hanya tampil setelah baris dikonfirmasi simpan -->
               <td class="col-no">
                 <span v-if="row.isSaved">{{ row.savedNumber }}</span>
@@ -44,7 +44,7 @@
                   v-model="row.nama"
                   @input="(onNamaInput(row), onRowChanged(index))"
                   @focus="row.touched.nama = true"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="Nama lengkap"
                 />
                 <p v-if="row.touched.nama && namaError(row)" class="cell-alert">
@@ -61,7 +61,7 @@
                   v-model="row.panggilan"
                   @input="(onPanggilanInput(row), onRowChanged(index))"
                   @focus="row.touched.panggilan = true"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="Panggilan"
                 />
                 <p v-if="row.touched.panggilan && panggilanError(row)" class="cell-alert">
@@ -78,7 +78,7 @@
                   v-model="row.telepon"
                   @input="onRowChanged(index)"
                   @focus="row.touched.telepon = true"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing""
                   placeholder="wa.me/62812xxxxxxx"
                 />
                 <p v-if="row.touched.telepon && teleponError(row)" class="cell-alert">
@@ -95,7 +95,7 @@
                   v-model="row.email"
                   @input="onRowChanged(index)"
                   @focus="row.touched.email = true"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="nama@email.com"
                 />
                 <p v-if="row.touched.email && emailError(row)" class="cell-alert">
@@ -110,7 +110,7 @@
                   class="cell-input"
                   v-model="row.lulusan"
                   @input="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="S1 Pendidikan..."
                 />
               </td>
@@ -122,7 +122,7 @@
                   class="cell-input"
                   v-model="row.alamat"
                   @input="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="Alamat lengkap"
                 />
               </td>
@@ -151,7 +151,7 @@
                   class="cell-input"
                   v-model="row.gajiDisplay"
                   @input="(onGajiInput(row), onRowChanged(index))"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="Rp 50.000"
                 />
               </td>
@@ -165,7 +165,7 @@
                   v-model="row.kontakDarurat"
                   @input="onRowChanged(index)"
                   @focus="row.touched.darurat = true"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                   placeholder="wa.me/62812xxxxxxx"
                 />
                 <p v-if="row.touched.darurat && teleponDaruratError(row)" class="cell-alert">
@@ -179,7 +179,7 @@
                   class="cell-select"
                   v-model="row.cv"
                   @change="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                 >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
@@ -193,7 +193,7 @@
                   class="cell-select"
                   v-model="row.pasPhoto"
                   @change="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                 >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
@@ -207,7 +207,7 @@
                   class="cell-select"
                   v-model="row.suratKontrak"
                   @change="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                 >
                   <option value="">-</option>
                   <option value="Sudah">Sudah</option>
@@ -222,7 +222,7 @@
                   class="cell-input cell-date"
                   v-model="row.habisKontrak"
                   @change="onRowChanged(index)"
-                  :disabled="row.isSaved"
+                  :disabled="row.isSaved && !row.isEditing"
                 />
               </td>
 
@@ -243,11 +243,23 @@
                   </div>
                 </div>
 
-                <button v-if="row.isSaved" class="btn-reset-row" @click="bukaReset(row)">
+                <template v-if="row.isSaved">
+                  <template v-if="row.isEditing">
+                    <button class="btn-edit-simpan" :disabled="row.isUpdating" @click="simpanEdit(row)">
+                      💾 Simpan
+                    </button>
+                    <button class="btn-edit-batal" :disabled="row.isUpdating" @click="batalEdit(row)">
+                      Batal
+                    </button>
+                  </template>
+                  <button v-else class="btn-reset-row" @click="mulaiEdit(row)">✏️ Edit</button>
+                </template>
+
+                <button v-if="row.isSaved && !row.isEditing" class="btn-reset-row" @click="bukaReset(row)">
                   🔑 Reset Password
                 </button>
 
-                <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
+                <button v-if="row.isSaved && !row.isEditing" class="btn-delete-row" @click="deleteRow(index)">
                   🗑️ Hapus
                 </button>
               </td>
@@ -327,6 +339,9 @@ const createEmptyRow = () => ({
   isSaved: false,
   savedNumber: null,
   isSaving: false,
+  isEditing: false,
+  isUpdating: false,
+  cadangan: null,
   touched: {
     nama: false,
     panggilan: false,
@@ -538,6 +553,56 @@ const deleteRow = async (index) => {
     if (posisi !== -1) rows.splice(posisi, 1)
   } catch (err) {
     alert(err instanceof ApiError ? err.message : 'Gagal menghapus data tentor. Coba lagi.')
+  }
+}
+
+// ============================================
+// EDIT BARIS TERSIMPAN (Kode Tentor tidak bisa diubah)
+// ============================================
+const KOLOM_EDIT = [
+  'nama',
+  'panggilan',
+  'telepon',
+  'email',
+  'lulusan',
+  'alamat',
+  'gajiDisplay',
+  'gajiRaw',
+  'kontakDarurat',
+  'cv',
+  'pasPhoto',
+  'suratKontrak',
+  'habisKontrak',
+]
+
+const mulaiEdit = (row) => {
+  row.cadangan = Object.fromEntries(KOLOM_EDIT.map((k) => [k, row[k]]))
+  row.isEditing = true
+}
+
+const batalEdit = (row) => {
+  if (row.cadangan) Object.assign(row, row.cadangan)
+  row.cadangan = null
+  row.isEditing = false
+  Object.keys(row.touched).forEach((k) => (row.touched[k] = false))
+}
+
+const simpanEdit = async (row) => {
+  if (row.isUpdating) return
+  if (!isRowComplete(row)) {
+    Object.keys(row.touched).forEach((k) => (row.touched[k] = true))
+    alert('Masih ada kolom yang kosong atau formatnya salah. Periksa kolom yang bertanda merah.')
+    return
+  }
+  row.isUpdating = true
+  try {
+    await tentorStore.ubahTentor(row)
+    row.cadangan = null
+    row.isEditing = false
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan perubahan. Coba lagi.')
+  } finally {
+    row.isUpdating = false
   }
 }
 
@@ -823,6 +888,41 @@ watch(
 .btn-reset-row:hover {
   background: #2e87f6;
   color: #fff;
+}
+
+/* ===== MODE EDIT BARIS TERSIMPAN ===== */
+.row-editing {
+  background: #fffbeb;
+}
+.row-editing .cell-input:not(:disabled),
+.row-editing .cell-select:not(:disabled) {
+  border-color: #d1d5db;
+  background: #fff;
+}
+.btn-edit-simpan,
+.btn-edit-batal {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-edit-simpan {
+  margin-bottom: 0.35rem;
+  border: none;
+  background: #22a559;
+  color: #fff;
+}
+.btn-edit-batal {
+  border: 1.5px solid #9ca3af;
+  background: #fff;
+  color: #4b5563;
+}
+.btn-edit-simpan:disabled,
+.btn-edit-batal:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* ===== MODAL RESET PASSWORD ===== */

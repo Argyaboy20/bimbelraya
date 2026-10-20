@@ -34,7 +34,7 @@
               <tr
                 v-for="(row, index) in rows"
                 :key="row.rowId"
-                :class="{ 'row-saved': row.isSaved }"
+                :class="{ 'row-saved': row.isSaved, 'row-editing': row.isEditing }"
               >
                 <!-- Nomor — hanya tampil setelah baris dikonfirmasi -->
                 <td class="col-no">
@@ -50,7 +50,7 @@
                     v-model="row.kodeWali"
                     @input="onKodeWaliInput(row); onRowChanged(index)"
                     @focus="row.touched.kodeWali = true"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Contoh: WM1001"
                   />
                   <p v-if="row.touched.kodeWali && kodeWaliError(row)" class="cell-alert">{{ kodeWaliError(row) }}</p>
@@ -65,7 +65,7 @@
                     v-model="row.nama"
                     @input="onNamaInput(row); onRowChanged(index)"
                     @focus="row.touched.nama = true"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Nama lengkap"
                   />
                   <p v-if="row.touched.nama && namaError(row)" class="cell-alert">{{ namaError(row) }}</p>
@@ -78,7 +78,7 @@
                     class="cell-input"
                     v-model="row.kelas"
                     @input="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Contoh: 6 SD"
                   />
                 </td>
@@ -90,7 +90,7 @@
                     class="cell-input"
                     v-model="row.asalSekolah"
                     @input="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Nama sekolah"
                   />
                 </td>
@@ -102,7 +102,7 @@
                     class="cell-input"
                     v-model="row.alamat"
                     @input="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Alamat lengkap"
                   />
                 </td>
@@ -116,7 +116,7 @@
                     v-model="row.paket"
                     @input="onPaketInput(row); onRowChanged(index)"
                     @focus="row.touched.paket = true"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Contoh: 2"
                   />
                   <p v-if="row.touched.paket && paketError(row)" class="cell-alert">{{ paketError(row) }}</p>
@@ -129,7 +129,7 @@
                     class="cell-input"
                     v-model="row.hariPertemuan"
                     @input="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Senin & Kamis"
                   />
                 </td>
@@ -143,7 +143,7 @@
                     v-model="row.jam"
                     @input="onJamInput(row); onRowChanged(index)"
                     @focus="row.touched.jam = true"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="16:00-17:30"
                   />
                   <p v-if="row.touched.jam && jamError(row)" class="cell-alert">{{ jamError(row) }}</p>
@@ -158,7 +158,7 @@
                     v-model="row.kodeTentor"
                     @input="onKodeTentorInput(row); onRowChanged(index)"
                     @focus="row.touched.kodeTentor = true"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Contoh: TR1001"
                   />
                   <p v-if="row.touched.kodeTentor && kodeTentorError(row)" class="cell-alert">{{ kodeTentorError(row) }}</p>
@@ -171,7 +171,7 @@
                     class="cell-input"
                     v-model="row.guru"
                     @input="onGuruInput(row); onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Nama tentor"
                   />
                 </td>
@@ -183,7 +183,7 @@
                     class="cell-input"
                     v-model="row.mapel"
                     @input="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Matematika"
                   />
                 </td>
@@ -195,7 +195,7 @@
                     class="cell-input"
                     v-model="row.hargaDisplay"
                     @input="onHargaInput(row); onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                     placeholder="Rp 500.000"
                   />
                 </td>
@@ -206,7 +206,7 @@
                     class="cell-select"
                     v-model="row.status"
                     @change="onRowChanged(index)"
-                    :disabled="row.isSaved"
+                    :disabled="row.isSaved && !row.isEditing"
                   >
                     <option value="">-</option>
                     <option value="Berlangsung">Berlangsung</option>
@@ -225,9 +225,20 @@
                     </div>
                   </div>
 
-                  <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
-                    🗑️ Hapus
-                  </button>
+                  <template v-if="row.isSaved">
+                    <template v-if="row.isEditing">
+                      <button class="btn-edit-simpan" :disabled="row.isUpdating" @click="simpanEdit(row)">
+                        💾 Simpan
+                      </button>
+                      <button class="btn-edit-batal" :disabled="row.isUpdating" @click="batalEdit(row)">
+                        Batal
+                      </button>
+                    </template>
+                    <template v-else>
+                      <button class="btn-edit-row" @click="mulaiEdit(row)">✏️ Edit</button>
+                      <button class="btn-delete-row" @click="deleteRow(index)">🗑️ Hapus</button>
+                    </template>
+                  </template>
                 </td>
               </tr>
             </tbody>
@@ -301,6 +312,9 @@ const createEmptyRow = () => ({
   isSaved: false,
   savedNumber: null,
   isSaving: false,
+  isEditing: false,
+  isUpdating: false,
+  cadangan: null,
   touched: {
     kodeWali: false,
     nama: false,
@@ -469,6 +483,58 @@ const deleteRow = async (index) => {
     if (posisi !== -1) rows.splice(posisi, 1)
   } catch (err) {
     alert(err instanceof ApiError ? err.message : 'Gagal menghapus data walimurid. Coba lagi.')
+  }
+}
+
+// ============================================
+// EDIT BARIS TERSIMPAN (kode walimurid boleh diganti)
+// ============================================
+const KOLOM_EDIT = [
+  'kodeWali',
+  'nama',
+  'kelas',
+  'asalSekolah',
+  'alamat',
+  'paket',
+  'hariPertemuan',
+  'jam',
+  'kodeTentor',
+  'guru',
+  'mapel',
+  'hargaDisplay',
+  'hargaRaw',
+  'status',
+]
+
+const mulaiEdit = (row) => {
+  row.cadangan = Object.fromEntries(KOLOM_EDIT.map((k) => [k, row[k]]))
+  row.isEditing = true
+}
+
+const batalEdit = (row) => {
+  if (row.cadangan) Object.assign(row, row.cadangan)
+  row.cadangan = null
+  row.isEditing = false
+  Object.keys(row.touched).forEach((k) => (row.touched[k] = false))
+}
+
+const simpanEdit = async (row) => {
+  if (row.isUpdating) return
+  if (!isRowComplete(row)) {
+    Object.keys(row.touched).forEach((k) => (row.touched[k] = true))
+    alert('Masih ada kolom yang kosong atau formatnya salah. Periksa kolom yang bertanda merah.')
+    return
+  }
+  row.isUpdating = true
+  try {
+    const baru = await walimuridStore.ubahWalimurid(row.cadangan.kodeWali, row)
+    Object.assign(row, baru)
+    row.cadangan = null
+    row.isEditing = false
+  } catch (err) {
+    alert(err instanceof ApiError ? err.message : 'Gagal menyimpan perubahan. Coba lagi.')
+  } finally {
+    row.isUpdating = false
   }
 }
 
@@ -672,6 +738,58 @@ const statusCount = computed(() => {
 .btn-delete-row:hover {
   background: #F35C2B;
   color: #fff;
+}
+
+/* ===== MODE EDIT BARIS TERSIMPAN ===== */
+.row-editing {
+  background: #fffbeb;
+}
+.row-editing .cell-input:not(:disabled),
+.row-editing .cell-select:not(:disabled) {
+  border-color: #d1d5db;
+  background: #fff;
+}
+.btn-edit-row {
+  width: 100%;
+  margin-bottom: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1.5px solid #2e87f6;
+  background: #fff;
+  color: #2e87f6;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-edit-row:hover {
+  background: #2e87f6;
+  color: #fff;
+}
+.btn-edit-simpan,
+.btn-edit-batal {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-edit-simpan {
+  margin-bottom: 0.35rem;
+  border: none;
+  background: #22a559;
+  color: #fff;
+}
+.btn-edit-batal {
+  border: 1.5px solid #9ca3af;
+  background: #fff;
+  color: #4b5563;
+}
+.btn-edit-simpan:disabled,
+.btn-edit-batal:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* ===== TABEL RINGKASAN STATUS — mobile: baris ke-2, full width ===== */

@@ -23,6 +23,16 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [2.2] — 2026-10-20
+
+Rilis frontend: pengeditan data tentor dan walimurid, serta perlindungan Surat Kontrak. Mengikuti backend `2.1`, nomor `2.1` sendiri tidak dipakai di sini.
+
+### Ditambahkan
+- Tombol **Edit** pada baris yang sudah tersimpan di tabel Data Tentor dan Data Walimurid: admin dapat memperbaiki data yang salah input lalu menyimpannya, atau membatalkan perubahan. Kode Tentor tetap terkunci, sedangkan Kode Walimurid boleh diganti
+
+### Keamanan
+- Isi Surat Kontrak Kerja Tentor di halaman Perpanjang Kontrak kini dilindungi: teks tidak bisa diseleksi, disalin, atau dicetak, isi surat tertutup saat jendela kehilangan fokus atau ada upaya tangkap layar, dan setiap tampilan diberi watermark berisi nama, kode, serta waktu akses tentor
+
 ## [2.0] — 2026-10-19
 
 Rilis bersama backend `2.0`: Reward Tentor bulanan dan modal loading universal.
