@@ -18,7 +18,7 @@
 
       <!-- ===== STATE: DATA TENTOR TIDAK DITEMUKAN ===== -->
       <div v-else-if="!dataTentor" class="empty-card">
-        <div class="empty-icon">⚠️</div>
+        <div class="empty-icon"><TriangleAlert size="1em" /></div>
         <p class="empty-text">Data kontrak kamu belum tersedia</p>
         <p class="empty-sub">
           Kamu belum terdaftar di data tentor admin, atau kontrak sudah tidak aktif. Hubungi admin
@@ -108,7 +108,7 @@
           </p>
 
           <p v-if="!suratDisetujui" class="kunci-info">
-            🔒 Centang persetujuan Surat Kontrak Tentor di atas untuk membuka form ini.
+            <Lock size="1.15em" class="ikon-inline" /> Centang persetujuan Surat Kontrak Tentor di atas untuk membuka form ini.
           </p>
           
           <form class="ajukan-form" @submit.prevent="requestSubmit">
@@ -157,6 +157,7 @@ import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { ApiError } from '@/api/http'
 import { SURAT_KONTRAK, formatTeks } from '@/data/suratKontrak'
+import { TriangleAlert, Lock } from 'lucide-vue-next'
 import SuratTerlindungi from '@/components/SuratTerlindungi.vue'
 
 defineOptions({ name: 'PerpanjangKontrak' })
@@ -400,6 +401,9 @@ const submitKontrak = async () => {
 .empty-icon {
   font-size: 2.5rem;
   margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: center;
+  color: #9ca3af;
 }
 .empty-text {
   font-size: 1rem;
@@ -750,6 +754,12 @@ const submitKontrak = async () => {
 .field-input:disabled {
   background: #f3f4f6;
   cursor: not-allowed;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
 }
 
 /* =====================================================

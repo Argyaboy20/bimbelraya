@@ -86,7 +86,7 @@
                 <strong>{{ s.namaSiswa }}</strong>
                 <small>Kelas {{ s.kelas }} · Wali: {{ s.namaWalimurid }}</small>
               </span>
-              <span v-if="s.id === lesIdTerpilih" class="siswa-check">✓ Dipilih</span>
+              <span v-if="s.id === lesIdTerpilih" class="siswa-check"><Check size="1.1em" class="ikon-inline" /> Dipilih</span>
             </button>
             <button
               type="button"
@@ -175,7 +175,7 @@
             :disabled="riwayat.length === 0"
             @click="downloadPNG"
           >
-            ⬇️ Download PNG
+            <Download size="1.15em" class="ikon-inline" /> Download PNG
           </button>
         </div>
 
@@ -215,7 +215,7 @@
                 <td>{{ item.hariTanggalDisplay }}</td>
                 <td class="col-materi">{{ item.materi }}</td>
                 <td class="col-kehadiran">
-                  <span v-if="item.kehadiran" class="check-yes">✔️</span>
+                  <span v-if="item.kehadiran" class="check-yes"><Check :size="16" :stroke-width="3" color="#16a34a" /></span>
                 </td>
               </tr>
             </tbody>
@@ -251,6 +251,7 @@ import { useRoute } from 'vue-router'
 import { usePresensiStore } from '@/stores/presensi'
 import UploadFoto from '@/components/UploadFoto.vue'
 import { ApiError } from '@/api/http'
+import { Check, Download } from 'lucide-vue-next'
 import logoBimbel from '../../../assets/logobimbel.png'
 
 defineOptions({ name: 'TentorPresensi' })
@@ -801,6 +802,8 @@ const downloadPNG = async () => {
 }
 .check-yes {
   font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
 }
 .empty-row {
   text-align: center;
@@ -1023,6 +1026,12 @@ const downloadPNG = async () => {
   background: #2e87f6;
   color: #fff;
   box-shadow: 0 4px 12px rgba(46, 135, 246, 0.3);
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
 }
 
 /* =====================================================

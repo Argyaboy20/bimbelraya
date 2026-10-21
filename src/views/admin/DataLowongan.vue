@@ -84,7 +84,7 @@
                 </div>
 
                 <button v-if="row.isSaved" class="btn-delete-row" @click="deleteRow(index)">
-                  🗑️ Hapus
+                  <Trash2 size="1.15em" class="ikon-inline" /> Hapus
                 </button>
               </td>
             </tr>
@@ -101,6 +101,7 @@ import { reactive, onMounted } from 'vue'
 import { ApiError } from '@/api/http'
 import Navbar from '@/components/Navbar.vue'
 import { useLowonganStore, KOLOM_LOWONGAN, STATUS_LOWONGAN } from '@/stores/lowongan'
+import { Trash2 } from 'lucide-vue-next'
 
 const lowonganStore = useLowonganStore()
 
@@ -413,6 +414,12 @@ const confirmCancel = (index) => {
 .btn-delete-row:hover {
   background: #f35c2b;
   color: #fff;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
 }
 
 /* =====================================================

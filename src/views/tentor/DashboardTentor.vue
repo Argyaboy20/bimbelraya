@@ -7,7 +7,7 @@
         <div v-if="banner" class="banner-bungkus">
           <div class="banner-ruang">
             <div class="kontrak-banner" :class="`banner-${banner.tipe}`" role="alert">
-              <span class="banner-ikon" aria-hidden="true">{{ banner.ikon }}</span>
+              <span class="banner-ikon" aria-hidden="true"><component :is="banner.ikon" size="1em" /></span>
               <div class="banner-isi">
                 <p class="banner-judul">{{ banner.judul }}</p>
                 <p class="banner-pesan">{{ banner.pesan }}</p>
@@ -57,7 +57,7 @@
       <!-- ===== SECTION 1: PRESENSI ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-presensi">
-          <div class="card-icon-circle">🕒</div>
+          <div class="card-icon-circle"><Clock size="1em" /></div>
           <div class="card-body">
             <h2 class="card-title">Presensi</h2>
             <p class="card-desc">
@@ -65,7 +65,7 @@
               waktu.
             </p>
             <router-link :to="`/tentor/presensi/${kodeTentor}`" class="card-btn btn-presensi">
-              Isi Presensi <span class="btn-arrow">→</span>
+              Isi Presensi <span class="btn-arrow"><ArrowRight size="1em" /></span>
             </router-link>
           </div>
         </div>
@@ -74,14 +74,14 @@
       <!-- ===== SECTION 2: PERPANJANG KONTRAK ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-kontrak">
-          <div class="card-icon-circle">📄</div>
+          <div class="card-icon-circle"><FileText size="1em" /></div>
           <div class="card-body">
             <h2 class="card-title">Perpanjang Kontrak</h2>
             <p class="card-desc">
               Kontrak mengajarmu akan segera berakhir? Ajukan perpanjangan kontrak di sini.
             </p>
             <router-link :to="`/tentor/kontrak/${kodeTentor}`" class="card-btn btn-kontrak">
-              Perpanjang Kontrak <span class="btn-arrow">→</span>
+              Perpanjang Kontrak <span class="btn-arrow"><ArrowRight size="1em" /></span>
             </router-link>
           </div>
         </div>
@@ -90,14 +90,14 @@
       <!-- ===== SECTION 3: LOWONGAN TENTOR ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-lowongan">
-          <div class="card-icon-circle">📢</div>
+          <div class="card-icon-circle"><Megaphone size="1em" /></div>
           <div class="card-body">
             <h2 class="card-title">Lowongan Tentor</h2>
             <p class="card-desc">
               Lihat lowongan mengajar baru yang tersedia dan daftarkan dirimu untuk kelas tambahan.
             </p>
             <router-link to="/lowongan" class="card-btn btn-lowongan">
-              Lihat Lowongan <span class="btn-arrow">→</span>
+              Lihat Lowongan <span class="btn-arrow"><ArrowRight size="1em" /></span>
             </router-link>
           </div>
         </div>
@@ -106,14 +106,14 @@
       <!-- ===== SECTION 4: REWARD BULANAN TENTOR ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-reward">
-          <div class="card-icon-circle">🏆</div>
+          <div class="card-icon-circle"><Trophy size="1em" /></div>
           <div class="card-body">
             <h2 class="card-title">Reward Bulanan Tentor</h2>
             <p class="card-desc">
               Lihat peringkat tentor terbaik bulan ini dan pantau posisimu di Best Tentor of the Month.
             </p>
             <router-link :to="`/tentor/rewardtentor/${kodeTentor}`" class="card-btn btn-reward">
-              Lihat Reward <span class="btn-arrow">→</span>
+              Lihat Reward <span class="btn-arrow"><ArrowRight size="1em" /></span>
             </router-link>
           </div>
         </div>
@@ -131,6 +131,7 @@ import { useRoute } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
 import { ApiError } from '@/api/http'
+import { Clock, FileText, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock } from 'lucide-vue-next'
 import RewardNotifModal from '@/components/RewardNotifModal.vue'
 
 const route = useRoute()
@@ -167,13 +168,13 @@ const banner = computed(() => {
       })
       pesan = `Akunmu akan dihapus otomatis dalam ${k.sisaHari} hari (${tanggal}) jika belum diperpanjang.`
     }
-    return { tipe: 'tenggang', ikon: '⚠️', judul: 'Masa tenggang kontrak', pesan }
+    return { tipe: 'tenggang', ikon: TriangleAlert, judul: 'Masa tenggang kontrak', pesan }
   }
 
   if (k.sisaHari <= 5) {
     return {
       tipe: 'aktif',
-      ikon: '⏰',
+      ikon: AlarmClock,
       judul: 'Kontrak segera berakhir',
       pesan:
         k.sisaHari === 0
@@ -653,6 +654,8 @@ onUnmounted(() => {
 }
 .btn-arrow {
   transition: transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 .card-btn:hover .btn-arrow {
   transform: translateX(3px);

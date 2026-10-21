@@ -18,7 +18,7 @@
 
         <!-- ===== PERINGATAN AKUN TERKUNCI ===== -->
         <div v-if="isLocked" class="lockout-warning">
-          🔒 Terlalu banyak percobaan gagal. Coba lagi dalam
+          <Lock :size="16" class="ikon-inline" /> Terlalu banyak percobaan gagal. Coba lagi dalam
           <strong>{{ lockoutCountdown }}</strong> detik.
         </div>
 
@@ -56,9 +56,7 @@
                 placeholder="Masukkan password"
                 autocomplete="off"
               />
-              <button type="button" class="toggle-eye" @click="showPassword = !showPassword" :disabled="isLocked">
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
+              <TombolMata :tampil="showPassword" :disabled="isLocked" @toggle="showPassword = !showPassword" />
             </div>
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
@@ -94,7 +92,7 @@
           </button>
 
           <p class="back-link">
-            <router-link to="/login" class="link-text">← Kembali ke login tentor</router-link>
+            <router-link to="/login" class="link-text"><ArrowLeft :size="14" class="ikon-inline" /> Kembali ke login tentor</router-link>
           </p>
 
         </form>
@@ -109,6 +107,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile } from '@/utils/turnstile'
+import { Lock, ArrowLeft } from 'lucide-vue-next'
+import TombolMata from '@/components/TombolMata.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -528,6 +528,11 @@ const handleSubmit = async () => {
 .back-link {
   text-align: center;
   margin-top: 0.75rem;
+}
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
 }
 .link-text {
   font-size: 0.76rem;

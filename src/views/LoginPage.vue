@@ -47,9 +47,7 @@
                 @blur="touched.password = true"
                 placeholder="Masukkan password"
               />
-              <button type="button" class="toggle-eye" @click="showPassword = !showPassword">
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
+              <TombolMata :tampil="showPassword" @toggle="showPassword = !showPassword" />
             </div>
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
@@ -93,6 +91,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile } from '@/utils/turnstile'
+import TombolMata from '@/components/TombolMata.vue'
 
 // ===== STATE FORM =====
 const form = reactive({

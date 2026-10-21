@@ -25,7 +25,7 @@
         <div class="kode-box">
           <!-- State awal: tombol generate -->
           <div v-if="kodeState === 'idle'" class="kode-idle">
-            <button class="btn-generate" @click="generateKode">✦ Generate Kode</button>
+            <button class="btn-generate" @click="generateKode"><Sparkles :size="16" /> Generate Kode</button>
           </div>
 
           <!-- State loading: proses generate -->
@@ -39,14 +39,14 @@
             <p class="kode-label">Kode Tentor yang Digenerate:</p>
             <div class="kode-display">{{ generatedKode }}</div>
             <div class="kode-actions">
-              <button class="btn-kode tolak" @click="tolakKode">✕ TOLAK</button>
-              <button class="btn-kode setuju" @click="setujuKode">✓ SETUJU</button>
+              <button class="btn-kode tolak" @click="tolakKode"><X :size="14" /> TOLAK</button>
+              <button class="btn-kode setuju" @click="setujuKode"><Check :size="14" /> SETUJU</button>
             </div>
           </div>
         </div>
 
         <!-- Riwayat Generate -->
-        <button class="btn-riwayat" @click="showRiwayat = true">📋 Riwayat Generate</button>
+        <button class="btn-riwayat" @click="showRiwayat = true"><ClipboardList :size="14" /> Riwayat Generate</button>
       </section>
 
       <!-- ===== MODAL RIWAYAT ===== -->
@@ -54,7 +54,7 @@
         <div class="modal-box">
           <div class="modal-header">
             <h3 class="modal-title">Riwayat Generate Kode Tentor</h3>
-            <button class="modal-close" @click="showRiwayat = false">✕</button>
+            <button class="modal-close" @click="showRiwayat = false"><X :size="18" /></button>
           </div>
           <div class="modal-body">
             <p v-if="tentorStore.kodeHistory.length === 0" class="riwayat-empty">
@@ -77,9 +77,9 @@
           Pantau jumlah tentor yang sedang aktif mengajar beserta status kontraknya.
         </p>
         <router-link to="/admin/tentor" class="section-card card-blue">
-          <span class="card-icon">👨‍🏫</span>
+          <span class="card-icon"><GraduationCap size="1em" /></span>
           <span class="card-text">DATA TENTOR</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
         </router-link>
       </section>
 
@@ -90,9 +90,9 @@
           Lihat data wali murid yang terdaftar dan aktif menggunakan layanan bimbel.
         </p>
         <router-link to="/admin/walimurid" class="section-card card-orange">
-          <span class="card-icon">👨‍👩‍👧</span>
+          <span class="card-icon"><Users size="1em" /></span>
           <span class="card-text">DATA WALIMURID</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
         </router-link>
       </section>
 
@@ -103,9 +103,9 @@
           Pantau laporan kehadiran tentor secara langsung dari seluruh sesi mengajar.
         </p>
         <router-link to="/admin/presensi" class="section-card card-cream">
-          <span class="card-icon">📋</span>
+          <span class="card-icon"><ClipboardList size="1em" /></span>
           <span class="card-text">LAPORAN PRESENSI</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
         </router-link>
       </section>
 
@@ -116,9 +116,9 @@
           Kelola lowongan mengajar yang tampil di halaman publik untuk para tentor.
         </p>
         <router-link to="/admin/lowongan" class="section-card card-navy">
-          <span class="card-icon">📢</span>
+          <span class="card-icon"><Megaphone size="1em" /></span>
           <span class="card-text">KELOLA LOWONGAN</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
         </router-link>
       </section>
 
@@ -129,16 +129,16 @@
           Beri penilaian performa tentor tiap bulan dan umumkan tentor terbaiknya.
         </p>
         <router-link to="/admin/reward" class="section-card card-green">
-          <span class="card-icon">🏆</span>
+          <span class="card-icon"><Trophy size="1em" /></span>
           <span class="card-text">KELOLA REWARD</span>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
         </router-link>
       </section>
 
       <!-- ===== SECTION: KELUAR AKUN ===== -->
       <section class="logout-section">
         <button type="button" class="btn-logout" @click="showLogoutConfirm = true">
-          <span class="card-icon">🚪</span>
+          <span class="card-icon"><LogOut size="1em" /></span>
           <span class="card-text">KELUAR AKUN</span>
         </button>
       </section>
@@ -164,11 +164,23 @@
 <script setup>
 // give component a multi-word name to satisfy linter
 defineOptions({ name: 'AdminDashboard' })
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Navbar from '@/components/Navbar.vue'
 import CardStatistik from '@/components/CardStatistik.vue'
+import {
+  Sparkles,
+  X,
+  Check,
+  ClipboardList,
+  GraduationCap,
+  Users,
+  Megaphone,
+  Trophy,
+  LogOut,
+  ArrowRight,
+} from 'lucide-vue-next'
 import { useTentorStore } from '@/stores/tentor'
 import { api, ApiError } from '@/api/http'
 
@@ -223,6 +235,13 @@ onMounted(async () => {
 const kodeState = ref('idle') // 'idle' | 'loading' | 'result'
 const generatedKode = ref('')
 const showRiwayat = ref(false)
+// Kunci scroll halaman utama selama modal Riwayat terbuka
+watch(showRiwayat, (terbuka) => {
+  document.body.style.overflow = terbuka ? 'hidden' : ''
+})
+onBeforeUnmount(() => {
+  document.body.style.overflow = ''
+})
 const menyimpanKode = ref(false)
 
 const pesanError = (err, cadangan) => (err instanceof ApiError ? err.message : cadangan)
@@ -335,6 +354,8 @@ const setujuKode = async () => {
 }
 .card-icon {
   font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
 }
 .card-text {
   flex: 1;
@@ -342,6 +363,8 @@ const setujuKode = async () => {
 .card-arrow {
   font-size: 1rem;
   transition: transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 .section-card:hover .card-arrow {
   transform: translateX(4px);
@@ -425,6 +448,10 @@ const setujuKode = async () => {
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(46, 135, 246, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -497,6 +524,10 @@ const setujuKode = async () => {
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   transition:
     opacity 0.2s,
     transform 0.2s;
@@ -524,6 +555,10 @@ const setujuKode = async () => {
   font-weight: 600;
   color: #374151;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   transition:
     border-color 0.2s,
     color 0.2s;
@@ -578,6 +613,8 @@ const setujuKode = async () => {
   cursor: pointer;
   padding: 0.25rem;
   transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
 }
 .modal-close:hover {
   color: #1f2937;
@@ -585,6 +622,7 @@ const setujuKode = async () => {
 .modal-body {
   padding: 1rem 1.25rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .riwayat-empty {
   text-align: center;

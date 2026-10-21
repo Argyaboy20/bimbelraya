@@ -14,19 +14,19 @@
 
         <!-- Overlay status deteksi wajah -->
         <div class="face-status" :class="faceStatusClass">
-          <span v-if="!cameraReady">📷 Meminta akses kamera...</span>
-          <span v-else-if="loadingModel">🔎 Memuat deteksi wajah...</span>
+          <span v-if="!cameraReady"><Camera size="1.15em" class="ikon-inline" /> Meminta akses kamera...</span>
+          <span v-else-if="loadingModel"><ScanFace size="1.15em" class="ikon-inline" /> Memuat deteksi wajah...</span>
           <span v-else-if="!detectionAvailable">
-            ⚠️ Deteksi wajah tidak tersedia, foto tetap bisa diambil manual
+            <TriangleAlert size="1.15em" class="ikon-inline" /> Deteksi wajah tidak tersedia, foto tetap bisa diambil manual
           </span>
           <span v-else-if="faceCount < minFaces">
-            👤 Terdeteksi {{ faceCount }} wajah — minimal {{ minFaces }} orang diperlukan
+            <User size="1.15em" class="ikon-inline" /> Terdeteksi {{ faceCount }} wajah — minimal {{ minFaces }} orang diperlukan
           </span>
-          <span v-else> ✅ Terdeteksi {{ faceCount }} wajah — siap diambil </span>
+          <span v-else> <CircleCheck size="1.15em" class="ikon-inline" /> Terdeteksi {{ faceCount }} wajah — siap diambil </span>
         </div>
 
         <!-- Pesan error kamera (misal akses ditolak) -->
-        <div v-if="cameraError" class="camera-error">❌ {{ cameraError }}</div>
+        <div v-if="cameraError" class="camera-error"><CircleX size="1.15em" class="ikon-inline" /> {{ cameraError }}</div>
       </template>
 
       <canvas ref="canvasEl" class="hidden-canvas"></canvas>
@@ -40,14 +40,15 @@
       :disabled="!canCapture"
       @click="ambilFoto"
     >
-      📸 Ambil Foto
+      <Camera size="1.15em" class="ikon-inline" /> Ambil Foto
     </button>
-    <button v-else type="button" class="btn-retake" @click="ambilUlang">🔄 Ambil Ulang Foto</button>
+    <button v-else type="button" class="btn-retake" @click="ambilUlang"><RefreshCw size="1.15em" class="ikon-inline" /> Ambil Ulang Foto</button>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Camera, ScanFace, TriangleAlert, User, CircleCheck, CircleX, RefreshCw } from 'lucide-vue-next'
 
 const props = defineProps({
   label: { type: String, default: 'Upload Foto' },
@@ -321,6 +322,12 @@ onUnmounted(() => {
 .btn-retake:hover {
   background: #2e87f6;
   color: #fff;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
 }
 
 /* =====================================================

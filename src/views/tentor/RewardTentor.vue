@@ -3,7 +3,7 @@
   <div class="reward-tentor-page">
     <div class="page-content">
       <router-link :to="`/tentor/dashboardtentor/${kodeTentor}`" class="link-kembali">
-        ‹ Kembali
+        <ChevronLeft size="1.15em" class="ikon-inline" /> Kembali
       </router-link>
 
       <h1 class="page-title">Reward Bulanan Tentor</h1>
@@ -39,6 +39,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, ApiError } from '@/api/http'
 import { namaBulan, bulanSekarang } from '@/stores/reward'
+import { ChevronLeft } from 'lucide-vue-next'
 
 const route = useRoute()
 const kodeTentor = computed(() => route.params.id)
@@ -98,6 +99,12 @@ onMounted(async () => {
   font-weight: 700;
   color: #2e87f6;
   text-decoration: none;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.1rem;
 }
 
 .page-title {

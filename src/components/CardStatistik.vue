@@ -5,28 +5,28 @@
 
       <!-- Tentor Aktif -->
       <div class="stat-item bg-blue">
-        <div class="stat-icon">👨‍🏫</div>
+        <div class="stat-icon"><GraduationCap size="1em" /></div>
         <div class="stat-value">{{ tentorAktif }}</div>
         <div class="stat-label">Tentor Aktif</div>
       </div>
 
       <!-- Walimurid Aktif -->
       <div class="stat-item bg-orange">
-        <div class="stat-icon">👨‍👩‍👧</div>
+        <div class="stat-icon"><Users size="1em" /></div>
         <div class="stat-value">{{ walimuridAktif }}</div>
         <div class="stat-label">Walimurid Aktif</div>
       </div>
 
       <!-- Frekuensi Presensi Per Hari -->
       <div class="stat-item bg-cream">
-        <div class="stat-icon">📋</div>
+        <div class="stat-icon"><ClipboardList size="1em" /></div>
         <div class="stat-value">{{ frekuensiPresensi }}</div>
         <div class="stat-label">Frekuensi Presensi / Hari</div>
       </div>
 
             <!-- Lowongan Tentor (live) -->
       <div class="stat-item bg-navy">
-        <div class="stat-icon">📢</div>
+        <div class="stat-icon"><Megaphone size="1em" /></div>
         <div class="stat-value">{{ lowonganAktif }}</div>
         <div class="stat-label">Lowongan Tentor</div>
       </div>
@@ -42,6 +42,8 @@
 // nanti tinggal diganti hasil fetch API — komponen
 // ini sendiri tidak perlu diubah sama sekali.
 // ============================================
+import { GraduationCap, Users, ClipboardList, Megaphone } from 'lucide-vue-next'
+
 defineProps({
   tentorAktif: {
     type: [Number, String],
@@ -115,6 +117,8 @@ defineProps({
 .stat-icon {
   font-size: 1.3rem;
   margin-bottom: 0.15rem;
+  display: flex;
+  justify-content: center;
 }
 .stat-value {
   font-size: 1.4rem;

@@ -103,9 +103,7 @@
                 @blur="touched.password = true"
                 placeholder="Minimal 6 karakter"
               />
-              <button type="button" class="toggle-eye" @click="showPassword = !showPassword">
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
+              <TombolMata :tampil="showPassword" @toggle="showPassword = !showPassword" />
             </div>
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
@@ -123,9 +121,7 @@
                 @blur="touched.confirm = true"
                 placeholder="Ulangi password"
               />
-              <button type="button" class="toggle-eye" @click="showConfirm = !showConfirm">
-                {{ showConfirm ? '🙈' : '👁️' }}
-              </button>
+              <TombolMata :tampil="showConfirm" @toggle="showConfirm = !showConfirm" />
             </div>
             <p v-if="touched.confirm && confirmError" class="field-alert">{{ confirmError }}</p>
           </div>
@@ -173,6 +169,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile } from '@/utils/turnstile'
+import TombolMata from '@/components/TombolMata.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

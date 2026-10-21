@@ -21,9 +21,9 @@
 
         <!-- Navigasi ganti hari -->
         <div v-if="tampilan === 'harian'" class="date-nav">
-          <button class="btn-nav" @click="prevDay">‹ Sebelumnya</button>
+          <button class="btn-nav" @click="prevDay"><ChevronLeft size="1.15em" class="ikon-inline" /> Sebelumnya</button>
           <span class="date-label">{{ formattedSelectedDate }}</span>
-          <button class="btn-nav" @click="nextDay" :disabled="isToday">Berikutnya ›</button>
+          <button class="btn-nav" @click="nextDay" :disabled="isToday">Berikutnya <ChevronRight size="1.15em" class="ikon-inline ikon-kanan" /></button>
         </div>
       </div>
 
@@ -60,13 +60,13 @@
 
         <!-- Gagal memuat -->
         <div v-else-if="galat" class="empty-state">
-          <div class="empty-icon">⚠️</div>
+          <div class="empty-icon"><TriangleAlert size="1em" /></div>
           <p class="empty-text">{{ galat }}</p>
         </div>
 
         <!-- Belum ada presensi sama sekali pada tanggal ini -->
         <div v-else-if="presensiHariIni.length === 0" class="empty-state">
-          <div class="empty-icon">📋</div>
+          <div class="empty-icon"><ClipboardList size="1em" /></div>
           <p class="empty-text">
             Belum ada tentor yang presensi {{ isToday ? 'hari ini' : 'pada tanggal ini' }}
           </p>
@@ -95,23 +95,23 @@
             <!-- Detail presensi -->
             <div class="presensi-right">
               <p class="presensi-waktu">
-                ✅ Sudah melakukan absensi pada pukul
+                <CircleCheck size="1.15em" class="ikon-inline ikon-sukses" /> Sudah melakukan absensi pada pukul
                 <strong>{{ item.jamPresensi }} WIB</strong>
               </p>
               <p class="presensi-materi">
-                🎓 <strong>Siswa:</strong>
+                <GraduationCap size="1.15em" class="ikon-inline" /> <strong>Siswa:</strong>
                 <template v-if="item.namaSiswa">
                   {{ item.namaSiswa }} · Kelas {{ item.kelasSiswa }} · Wali: {{ item.namaWalimurid }}
                 </template>
                 <template v-else>—</template>
               </p>
-              <p class="presensi-materi">📖 <strong>Materi:</strong> {{ item.materi }}</p>
+              <p class="presensi-materi"><BookOpen size="1.15em" class="ikon-inline" /> <strong>Materi:</strong> {{ item.materi }}</p>
               <!-- Foto bukti presensi (selfie): link sementara dari server -->
               <div class="foto-wrapper" v-if="item.fotoUrl">
                 <img :src="item.fotoUrl" alt="Bukti presensi" class="foto-presensi" />
               </div>
               <div v-else class="foto-placeholder">
-                📷 Foto bukti presensi sudah dihapus (tentor tidak lagi terdaftar)
+                <Camera size="1.15em" class="ikon-inline" /> Foto bukti presensi sudah dihapus (tentor tidak lagi terdaftar)
               </div>
             </div>
           </div>
@@ -121,9 +121,9 @@
       <!-- ===== REKAP BULANAN ===== -->
         <div v-if="tampilan === 'bulanan'" class="presensi-section">
           <div class="date-nav bulan-nav">
-            <button class="btn-nav" @click="prevBulan">‹ Sebelumnya</button>
+            <button class="btn-nav" @click="prevBulan"><ChevronLeft size="1.15em" class="ikon-inline" /> Sebelumnya</button>
             <span class="date-label">{{ formattedBulan }}</span>
-            <button class="btn-nav" @click="nextBulan" :disabled="isBulanIni">Berikutnya ›</button>
+            <button class="btn-nav" @click="nextBulan" :disabled="isBulanIni">Berikutnya <ChevronRight size="1.15em" class="ikon-inline ikon-kanan" /></button>
           </div>
 
           <h2 class="section-title">Rekap Presensi per Bulan</h2>
@@ -133,12 +133,12 @@
           </div>
 
           <div v-else-if="galatRekap" class="empty-state">
-            <div class="empty-icon">⚠️</div>
+            <div class="empty-icon"><TriangleAlert size="1em" /></div>
             <p class="empty-text">{{ galatRekap }}</p>
           </div>
 
           <div v-else-if="rekap.length === 0" class="empty-state">
-            <div class="empty-icon">📋</div>
+            <div class="empty-icon"><ClipboardList size="1em" /></div>
             <p class="empty-text">Belum ada presensi pada bulan ini</p>
           </div>
 
@@ -157,10 +157,10 @@
 
               <div class="presensi-right">
                 <p class="presensi-waktu">
-                  📅 Hadir <strong>{{ item.jumlahHari }} hari</strong> ·
+                  <CalendarDays size="1.15em" class="ikon-inline" /> Hadir <strong>{{ item.jumlahHari }} hari</strong> ·
                   <strong>{{ item.jumlahPertemuan }} pertemuan</strong>
                 </p>
-                <p class="presensi-materi">📝 Total {{ item.jumlahEntri }} kali presensi dikirim</p>
+                <p class="presensi-materi"><NotebookPen size="1.15em" class="ikon-inline" /> Total {{ item.jumlahEntri }} kali presensi dikirim</p>
                 <ul class="rincian-siswa">
                   <li v-for="s in item.siswa" :key="s.lesId ?? 'lama'">
                     <span class="rincian-nama">
@@ -187,6 +187,18 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import { api, ApiError } from '@/api/http'
+import {
+  TriangleAlert,
+  ClipboardList,
+  CircleCheck,
+  GraduationCap,
+  BookOpen,
+  Camera,
+  CalendarDays,
+  NotebookPen,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-vue-next'
 
 // ============================================
 // TANGGAL — zona waktu Jakarta (sama seperti server)
@@ -542,6 +554,9 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
 .empty-icon {
   font-size: 2.5rem;
   margin-bottom: 0.6rem;
+  display: flex;
+  justify-content: center;
+  color: #9ca3af;
 }
 .empty-text {
   font-size: 0.9rem;
@@ -747,6 +762,20 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
 .rincian-jumlah {
   white-space: nowrap;
   color: #2e87f6;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
+}
+.ikon-sukses {
+  color: #22a559;
+}
+
+.ikon-kanan {
+  margin-right: 0;
+  margin-left: 0.2rem;
 }
 
 /* =====================================================

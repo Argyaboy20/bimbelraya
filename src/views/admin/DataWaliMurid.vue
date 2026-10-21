@@ -228,15 +228,15 @@
                   <template v-if="row.isSaved">
                     <template v-if="row.isEditing">
                       <button class="btn-edit-simpan" :disabled="row.isUpdating" @click="simpanEdit(row)">
-                        💾 Simpan
+                        <Save size="1.15em" class="ikon-inline" /> Simpan
                       </button>
                       <button class="btn-edit-batal" :disabled="row.isUpdating" @click="batalEdit(row)">
                         Batal
                       </button>
                     </template>
                     <template v-else>
-                      <button class="btn-edit-row" @click="mulaiEdit(row)">✏️ Edit</button>
-                      <button class="btn-delete-row" @click="deleteRow(index)">🗑️ Hapus</button>
+                      <button class="btn-edit-row" @click="mulaiEdit(row)"><Pencil size="1.15em" class="ikon-inline" /> Edit</button>
+                      <button class="btn-delete-row" @click="deleteRow(index)"><Trash2 size="1.15em" class="ikon-inline" /> Hapus</button>
                     </template>
                   </template>
                 </td>
@@ -284,6 +284,7 @@ import { reactive, computed, onMounted } from 'vue'
 import { ApiError } from '@/api/http'
 import Navbar from '@/components/Navbar.vue'
 import { useWalimuridStore } from '@/stores/walimurid'
+import { Pencil, Save, Trash2 } from 'lucide-vue-next'
 
 const walimuridStore = useWalimuridStore()
 
@@ -852,6 +853,12 @@ const statusCount = computed(() => {
 .summary-number.jeda { color: #a16207; }
 .summary-number.berhenti { color: #b91c1c; }
 .summary-number.total { color: #2E87F6; }
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
+}
 
 /* =====================================================
    BREAKPOINTS

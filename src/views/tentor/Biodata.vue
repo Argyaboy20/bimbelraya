@@ -103,14 +103,7 @@
               "
               autocomplete="new-password"
             />
-            <button
-              v-if="isEditing"
-              type="button"
-              class="toggle-eye"
-              @click="showPassword = !showPassword"
-            >
-              {{ showPassword ? '🙈' : '👁️' }}
-            </button>
+            <TombolMata v-if="isEditing" :tampil="showPassword" @toggle="showPassword = !showPassword" />
           </div>
           <p v-if="isEditing && touched.passwordBaru && passwordBaruError" class="field-alert">
             {{ passwordBaruError }}
@@ -209,6 +202,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTentorStore } from '@/stores/tentor'
 import { ApiError } from '@/api/http'
+import TombolMata from '@/components/TombolMata.vue'
 
 defineOptions({ name: 'TentorBiodata' })
 

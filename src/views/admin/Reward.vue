@@ -10,9 +10,9 @@
 
         <!-- Navigasi bulan: data tiap bulan tersimpan terpisah -->
         <div class="date-nav">
-          <button class="btn-nav" @click="geser(-1)">‹ Sebelumnya</button>
+          <button class="btn-nav" @click="geser(-1)"><ChevronLeft size="1.15em" class="ikon-inline" /> Sebelumnya</button>
           <span class="date-label">{{ namaBulan(bulan) }}</span>
-          <button class="btn-nav" @click="geser(1)">Berikutnya ›</button>
+          <button class="btn-nav" @click="geser(1)">Berikutnya <ChevronRight size="1.15em" class="ikon-inline ikon-kanan" /></button>
         </div>
       </div>
 
@@ -96,6 +96,7 @@ import {
   namaBulan,
 } from '@/stores/reward'
 import { ApiError } from '@/api/http'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 const tentorStore = useTentorStore()
 const rewardStore = useRewardStore()
@@ -397,6 +398,16 @@ watch(bulan, muat)
   font-size: 0.78rem;
   font-weight: 700;
   color: #1f2937;
+}
+
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
+}
+.ikon-kanan {
+  margin-right: 0;
+  margin-left: 0.2rem;
 }
 
 /* ===== TOMBOL UMUMKAN ===== */

@@ -246,21 +246,21 @@
                 <template v-if="row.isSaved">
                   <template v-if="row.isEditing">
                     <button class="btn-edit-simpan" :disabled="row.isUpdating" @click="simpanEdit(row)">
-                      💾 Simpan
+                      <Save size="1.15em" class="ikon-inline" /> Simpan
                     </button>
                     <button class="btn-edit-batal" :disabled="row.isUpdating" @click="batalEdit(row)">
                       Batal
                     </button>
                   </template>
-                  <button v-else class="btn-reset-row" @click="mulaiEdit(row)">✏️ Edit</button>
+                  <button v-else class="btn-reset-row" @click="mulaiEdit(row)"><Pencil size="1.15em" class="ikon-inline" /> Edit</button>
                 </template>
 
                 <button v-if="row.isSaved && !row.isEditing" class="btn-reset-row" @click="bukaReset(row)">
-                  🔑 Reset Password
+                  <KeyRound size="1.15em" class="ikon-inline" /> Reset Password
                 </button>
 
                 <button v-if="row.isSaved && !row.isEditing" class="btn-delete-row" @click="deleteRow(index)">
-                  🗑️ Hapus
+                  <Trash2 size="1.15em" class="ikon-inline" /> Hapus
                 </button>
               </td>
             </tr>
@@ -295,7 +295,10 @@
           <p class="pw-sementara">{{ resetModal.password }}</p>
           <div class="modal-btn-row">
             <button class="modal-btn btn-belum" @click="salinPassword">
-              {{ resetModal.tersalin ? 'Tersalin ✓' : 'Salin' }}
+              <template v-if="resetModal.tersalin">
+                <Check size="1.15em" class="ikon-inline" /> Tersalin
+              </template>
+              <template v-else>Salin</template>
             </button>
             <button class="modal-btn btn-reset-ya" @click="tutupReset">Selesai</button>
           </div>
@@ -310,6 +313,7 @@ import { reactive, watch, onMounted } from 'vue'
 import { ApiError } from '@/api/http'
 import { useTentorStore } from '@/stores/tentor'
 import Navbar from '@/components/Navbar.vue'
+import { Pencil, Save, KeyRound, Trash2, Check } from 'lucide-vue-next'
 
 // ============================================
 // Counter nomor urut global — hanya bertambah saat baris dikonfirmasi simpan
@@ -853,13 +857,14 @@ watch(
 
 .btn-delete-row {
   width: 100%;
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
+  padding: 0.28rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  line-height: 1.2;
+  font-weight: 700;
   border: 1.5px solid #f35c2b;
   background: #fff;
   color: #f35c2b;
-  font-size: 0.72rem;
-  font-weight: 700;
   cursor: pointer;
   transition:
     background 0.2s,
@@ -872,14 +877,15 @@ watch(
 
 .btn-reset-row {
   width: 100%;
-  margin-bottom: 0.35rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
+  margin-bottom: 0.25rem;
+  padding: 0.28rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  line-height: 1.2;
+  font-weight: 700;
   border: 1.5px solid #2e87f6;
   background: #fff;
   color: #2e87f6;
-  font-size: 0.72rem;
-  font-weight: 700;
   cursor: pointer;
   transition:
     background 0.2s,
@@ -902,14 +908,15 @@ watch(
 .btn-edit-simpan,
 .btn-edit-batal {
   width: 100%;
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.72rem;
+  padding: 0.28rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  line-height: 1.2;
   font-weight: 700;
   cursor: pointer;
 }
 .btn-edit-simpan {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
   border: none;
   background: #22a559;
   color: #fff;
@@ -995,6 +1002,12 @@ watch(
   color: #fff;
 }
 
+.ikon-inline {
+  display: inline-block;
+  vertical-align: -0.18em;
+  margin-right: 0.2rem;
+}
+
 /* =====================================================
    BREAKPOINTS (sama seperti file-file lain)
    @media 641px  : tablet
@@ -1036,8 +1049,11 @@ watch(
   .btn-confirm {
     font-size: 0.74rem;
   }
-  .btn-delete-row {
-    font-size: 0.76rem;
+  .btn-reset-row,
+  .btn-delete-row,
+  .btn-edit-simpan,
+  .btn-edit-batal {
+    font-size: 0.68rem;
   }
 }
 
@@ -1065,6 +1081,13 @@ watch(
   }
   .hitungan-hari {
     font-size: 0.76rem;
+  }
+
+  .btn-reset-row,
+  .btn-delete-row,
+  .btn-edit-simpan,
+  .btn-edit-batal {
+    font-size: 0.7rem;
   }
 }
 
@@ -1099,8 +1122,11 @@ watch(
   .btn-confirm {
     font-size: 0.76rem;
   }
-  .btn-delete-row {
-    font-size: 0.78rem;
+  .btn-reset-row,
+  .btn-delete-row,
+  .btn-edit-simpan,
+  .btn-edit-batal {
+    font-size: 0.72rem;
   }
 }
 </style>
