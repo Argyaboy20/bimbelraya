@@ -148,8 +148,6 @@ export function validasiForm(kodeJenjang, data) {
 }
 
 // ===== Pesan WhatsApp =====
-const CATATAN =
-  'NOTE: Untuk alamat, mohon ditulis yang jelas dan lengkap ya bapak/ibu agar kami bisa menyampaikan ke tentornya dengan baik. *Alamat yang bapak/ibu berikan akan kami jaga kerahasiaannya, hanya digunakan untuk keperluan les privat*'
 const PENUTUP =
   'Halo admin, saya mau daftarkan anak saya les. Berikut biodatanya ya. Mohon info lanjutannya'
 
@@ -167,8 +165,6 @@ export function buatPesan(kodeJenjang, daerah, data) {
     `_(${daerah})_`,
     '',
     ...baris,
-    '',
-    CATATAN,
     '',
     PENUTUP,
   ].join('\n')
