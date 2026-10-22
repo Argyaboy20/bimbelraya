@@ -46,7 +46,7 @@
       </p>
       <div class="programs-grid">
         <div v-for="program in programs" :key="program.id" class="program-card">
-          <div class="program-icon">{{ program.icon }}</div>
+          <div class="program-icon"><component :is="IKON[program.icon]" size="1em" /></div>
           <h3 class="program-title">{{ program.title }}</h3>
           <p class="program-desc">{{ program.desc }}</p>
         </div>
@@ -59,7 +59,7 @@
       <h2 class="section-title white">Kenapa Pilih Bimbel Raya?</h2>
       <div class="why-grid">
         <div v-for="item in whyUs" :key="item.id" class="why-card">
-          <div class="why-icon">{{ item.icon }}</div>
+          <div class="why-icon"><component :is="IKON[item.icon]" size="1em" /></div>
           <h3 class="why-title">{{ item.title }}</h3>
           <p class="why-desc">{{ item.desc }}</p>
         </div>
@@ -84,7 +84,7 @@
           >
             <!-- Sisi kiri: avatar + nama -->
             <div class="testi-left">
-              <div class="testi-avatar">{{ item.avatar }}</div>
+              <div class="testi-avatar"><component :is="IKON[item.avatar]" size="0.75em" /></div>
               <p class="testi-name">{{ item.name }}</p>
             </div>
             <!-- Garis pemisah -->
@@ -107,7 +107,7 @@
       </p>
       <div class="service-grid">
         <div v-for="area in serviceAreas" :key="area.id" class="service-card">
-          <div class="service-icon">{{ area.icon }}</div>
+          <div class="service-icon"><component :is="IKON[area.icon]" size="1em" /></div>
           <h3 class="service-title">{{ area.title }}</h3>
           <div class="service-cities">
             <span v-for="(city, i) in area.cities" :key="i" class="service-city-tag">{{
@@ -133,12 +133,12 @@
       <!-- Grid jadwal -->
       <div class="jam-grid">
         <div class="jam-card">
-          <div class="jam-card-icon">📅</div>
+          <div class="jam-card-icon"><CalendarDays size="1em" /></div>
           <div class="jam-card-hari">Senin – Jumat</div>
           <div class="jam-card-waktu">08.00 – 21.00</div>
         </div>
         <div class="jam-card">
-          <div class="jam-card-icon">🏖️</div>
+          <div class="jam-card-icon"><Sun size="1em" /></div>
           <div class="jam-card-hari">Sabtu & Minggu</div>
           <div class="jam-card-waktu">09.00 – 17.00</div>
         </div>
@@ -236,7 +236,7 @@
       <div class="steps-grid">
         <div v-for="(step, index) in howItWorks" :key="step.id" class="step-card">
           <div class="step-number">{{ index + 1 }}</div>
-          <div class="step-icon">{{ step.icon }}</div>
+          <div class="step-icon"><component :is="IKON[step.icon]" size="1em" /></div>
           <h3 class="step-title">{{ step.title }}</h3>
           <p class="step-desc">{{ step.desc }}</p>
         </div>
@@ -271,7 +271,7 @@
       <span class="help-text" :class="{ visible: showTooltip }"
         >Butuh Bantuan? Bisa ke sini ya</span
       >
-      <span class="help-icon" :class="{ visible: !showTooltip }">💬</span>
+      <span class="help-icon" :class="{ visible: !showTooltip }"><MessageCircle size="1em" /></span>
     </div>
 
     <!-- ===== CHAT BANTUAN ===== -->
@@ -285,8 +285,8 @@
 
     <div v-if="showChat" class="chat-window">
       <div class="chat-header">
-        <span>💬 Asisten Bimbel Raya</span>
-        <button class="chat-close" @click="closeChat">✕</button>
+        <span class="chat-judul"><MessageCircle :size="16" /> Asisten Bimbel Raya</span>
+        <button class="chat-close" @click="closeChat"><X :size="18" /></button>
       </div>
       <div class="chat-body" ref="chatBody">
         <div v-for="(msg, i) in chatMessages" :key="i" class="chat-msg" :class="msg.from">
@@ -308,7 +308,7 @@
           placeholder="Ketik pesan..."
           @keyup.enter="sendChat"
         />
-        <button class="chat-send" @click="sendChat">➤</button>
+        <button class="chat-send" @click="sendChat"><Send :size="18" /></button>
       </div>
     </div>
 
@@ -331,6 +331,46 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile, TurnstileError } from '@/utils/turnstile'
+import {
+  BookOpen,
+  Shapes,
+  Library,
+  FlaskConical,
+  GraduationCap,
+  BadgeCheck,
+  Clock,
+  Target,
+  House,
+  MapPin,
+  MessageCircle,
+  ClipboardList,
+  UserCheck,
+  Rocket,
+  User,
+  CalendarDays,
+  Sun,
+  X,
+  Send,
+} from 'lucide-vue-next'
+
+// Peta nama ikon (dipakai data kartu di bawah) → komponen ikon
+const IKON = {
+  BookOpen,
+  Shapes,
+  Library,
+  FlaskConical,
+  GraduationCap,
+  BadgeCheck,
+  Clock,
+  Target,
+  House,
+  MapPin,
+  MessageCircle,
+  ClipboardList,
+  UserCheck,
+  Rocket,
+  User,
+}
 
 const router = useRouter()
 
@@ -464,31 +504,31 @@ const sendChat = async () => {
 const programs = ref([
   {
     id: 1,
-    icon: '📖',
+    icon: 'BookOpen',
     title: 'Program Mengaji',
     desc: 'Belajar mengaji baik iqro ataupun Al-Quran agar jadi lancar',
   },
   {
     id: 2,
-    icon: '🎨',
+    icon: 'Shapes',
     title: 'Program TK',
     desc: 'Belajar sambil bermain, mengenal huruf, angka, dan kreativitas.',
   },
   {
     id: 3,
-    icon: '📚',
+    icon: 'Library',
     title: 'Program SD',
     desc: 'Pemahaman konsep dasar untuk semua mapel dan TKA.',
   },
   {
     id: 4,
-    icon: '🔬',
+    icon: 'FlaskConical',
     title: 'Program SMP',
     desc: 'Tersedia mata pelajaran MTK, IPA, B.Ing dan B.Indo serta fokus TKA.',
   },
   {
     id: 5,
-    icon: '🎓',
+    icon: 'GraduationCap',
     title: 'Program SMA',
     desc: 'Tersedia MTK, B.Ing, B.Indo Biologi, Fisika, Kimia serta TKA.',
   },
@@ -498,25 +538,25 @@ const programs = ref([
 const whyUs = ref([
   {
     id: 1,
-    icon: '✅',
+    icon: 'BadgeCheck',
     title: 'Tentor Berpengalaman',
     desc: 'Pengajar dari universitas terkemuka dengan pengalaman mengajar profesional.',
   },
   {
     id: 2,
-    icon: '🕐',
+    icon: 'Clock',
     title: 'Jadwal Fleksibel',
     desc: 'Belajar kapan saja sesuai waktu luang siswa dan keluarga.',
   },
   {
     id: 3,
-    icon: '🎯',
+    icon: 'Target',
     title: 'Kurikulum Personal',
     desc: 'Materi disesuaikan dengan kebutuhan dan kecepatan belajar tiap siswa.',
   },
   {
     id: 4,
-    icon: '🏠',
+    icon: 'House',
     title: 'Home Visit',
     desc: 'Menerapkan home visit atau tentor datang langsung ke rumah walimurid yang buat jadi makin nyaman.',
   },
@@ -526,25 +566,25 @@ const whyUs = ref([
 const serviceAreas = ref([
   {
     id: 1,
-    icon: '🕌',
+    icon: 'MapPin',
     title: 'Kudus dan Sekitarnya',
     cities: ['Kudus', 'Jepara', 'Rembang', 'Purwodadi', 'Gebog', 'Grobogan'],
   },
   {
     id: 2,
-    icon: '🚆',
+    icon: 'MapPin',
     title: 'Madiun dan Sekitarnya',
     cities: ['Madiun', 'Wonosobo', 'Ngawi', 'Nganjuk', 'Kediri', 'Purwokerto'],
   },
   {
     id: 3,
-    icon: '🏛️',
+    icon: 'MapPin',
     title: 'Semarang dan Sekitarnya',
     cities: ['Semarang', 'Kendal', 'Ungaran', 'Salatiga'],
   },
   {
     id: 4,
-    icon: '🏯',
+    icon: 'MapPin',
     title: 'Demak, Jogja dan Sekitarnya',
     cities: [
       'Demak',
@@ -571,25 +611,25 @@ const serviceAreas = ref([
 const howItWorks = ref([
   {
     id: 1,
-    icon: '💬',
+    icon: 'MessageCircle',
     title: 'Hubungi Kami',
     desc: 'Klik tombol daftar dan kirim pesan via WhatsApp ke tim Bimbel Raya.',
   },
   {
     id: 2,
-    icon: '📝',
+    icon: 'ClipboardList',
     title: 'Konsultasi Kebutuhan',
     desc: 'Ceritakan jenjang, mata pelajaran, dan jadwal belajar yang diinginkan.',
   },
   {
     id: 3,
-    icon: '🧑‍🏫',
+    icon: 'UserCheck',
     title: 'Tentor Dijadwalkan',
     desc: 'Kami carikan tentor yang sesuai dan atur jadwal home visit ke rumah.',
   },
   {
     id: 4,
-    icon: '🚀',
+    icon: 'Rocket',
     title: 'Mulai Belajar',
     desc: 'Anak mulai belajar rutin dan perkembangannya dipantau bersama.',
   },
@@ -641,42 +681,42 @@ const prevSlide = () => {
 const testimonials = ref([
   {
     id: 1,
-    avatar: '👩',
+    avatar: 'User',
     name: 'Ibu Sari',
     review:
       'Anak saya yang tadinya takut matematika sekarang malah suka. Tentor sangat sabar dan bisa menyesuaikan cara belajar anak saya.',
   },
   {
     id: 2,
-    avatar: '👨',
+    avatar: 'User',
     name: 'Bapak Andi',
     review:
       'Jadwal fleksibel banget, sangat membantu karena kesibukan kerja kami. Nilai rapor anak meningkat signifikan hanya dalam 2 bulan.',
   },
   {
     id: 3,
-    avatar: '👩‍💼',
+    avatar: 'User',
     name: 'Ibu Dewi',
     review:
       'Pelayanannya profesional, tentor datang tepat waktu dan selalu siap dengan materi. Anak saya senang belajar bersama Bimbel Raya.',
   },
   {
     id: 4,
-    avatar: '👨‍💼',
+    avatar: 'User',
     name: 'Bapak Rudi',
     review:
       'Sudah 6 bulan pakai jasa ini, hasilnya nyata. Anak lulus seleksi masuk SMP favorit. Mantap!',
   },
   {
     id: 5,
-    avatar: '👩',
+    avatar: 'User',
     name: 'Ibu Lina',
     review:
       'Cara tentor menjelaskan materi sangat mudah dipahami anak saya yang masih SD. Highly recommended untuk para orang tua!',
   },
   {
     id: 6,
-    avatar: '👨',
+    avatar: 'User',
     name: 'Bapak Hendra',
     review:
       'Pengajaran materi TKA-nya sangat membantu persiapan anak saya. Materi terstruktur dan fokus sesuai kebutuhan ujian.',
@@ -1796,6 +1836,36 @@ onUnmounted(() => {
   font-size: 0.78rem;
   opacity: 0.8;
   word-break: break-all;
+}
+
+/* ===== IKON (pengganti emoji) ===== */
+.program-icon svg,
+.why-icon svg,
+.service-icon svg,
+.step-icon svg,
+.jam-card-icon svg {
+  display: inline-block;
+  vertical-align: top;
+}
+.program-icon svg,
+.step-icon svg,
+.jam-card-icon svg,
+.testi-avatar svg {
+  color: #024baa;
+}
+.service-icon {
+  color: #fff;
+}
+.chat-judul {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.chat-close,
+.chat-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =====================================================

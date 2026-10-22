@@ -23,6 +23,18 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [2.3] — 2026-10-22
+
+Rilis frontend: penyempurnaan tampilan. Tidak ada perubahan backend.
+
+### Diubah
+- Seluruh emoji pada tampilan diganti dengan ikon garis yang seragam dan profesional, mencakup halaman publik, masuk, daftar, portal tentor, dan portal admin (dashboard, tabel data, laporan, kamera presensi, dan tombol aksi)
+- Tombol aksi pada baris tabel Data Tentor (Edit, Reset Password, Hapus) dan Data Walimurid (Edit, Hapus) diperkecil di semua ukuran layar agar tidak memakan banyak ruang
+- Tombol navigasi tanggal dan bulan memakai ikon panah, bukan karakter teks
+
+### Diperbaiki
+- Saat modal Riwayat Generate Kode Tentor terbuka, halaman dashboard admin di belakangnya tidak lagi ikut bergulir
+
 ## [2.2] — 2026-10-20
 
 Rilis frontend: pengeditan data tentor dan walimurid, serta perlindungan Surat Kontrak. Mengikuti backend `2.1`, nomor `2.1` sendiri tidak dipakai di sini.
