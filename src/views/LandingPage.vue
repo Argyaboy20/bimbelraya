@@ -318,11 +318,14 @@
         <h3 class="modal-title">Mau daftar sebagai apa?</h3>
         <div class="modal-actions">
           <button class="btn-modal primary" @click="goToSignIn">Daftar Tentor</button>
-          <button class="btn-modal secondary" @click="goToWA">Pendaftaran Anak</button>
+          <button class="btn-modal secondary" @click="bukaPendaftaranAnak">Pendaftaran Anak</button>
         </div>
         <button class="btn-close" @click="closeModal">Tutup</button>
       </div>
     </div>
+
+    <!-- ===== MODAL PENDAFTARAN ANAK ===== -->
+    <PendaftaranAnakModal :tampil="showPendaftaranAnak" @tutup="showPendaftaranAnak = false" />
   </div>
 </template>
 
@@ -331,6 +334,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile, TurnstileError } from '@/utils/turnstile'
+import PendaftaranAnakModal from '@/components/PendaftaranAnakModal.vue'
 import {
   BookOpen,
   Shapes,
@@ -383,11 +387,11 @@ const goToSignIn = () => {
   router.push('/daftar')
 }
 
-const goToWA = () => {
-  const pesan = encodeURIComponent(
-    'Halo min. Saya tertarik untuk mendaftarkan anak saya. Mohon info selanjutnya min',
-  )
-  window.open(`https://wa.me/6282164794445?text=${pesan}`, '_blank')
+// Alur baru: jenjang → daerah → formulir → kirim ke WhatsApp (ada di PendaftaranAnakModal)
+const showPendaftaranAnak = ref(false)
+const bukaPendaftaranAnak = () => {
+  closeModal()
+  showPendaftaranAnak.value = true
 }
 
 // ===== JAM LAYANAN =====

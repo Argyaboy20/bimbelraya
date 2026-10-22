@@ -23,6 +23,20 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+
+## [3.0] — 2026-10-22
+
+Rilis bersama backend `3.0`: pendaftaran anak lewat formulir terarah. Tidak ada perubahan backend.
+
+### Ditambahkan
+- Alur **Pendaftaran Anak** di halaman utama menggantikan tautan langsung ke WhatsApp: pilih jenjang (SD, SMP, atau SMA), pilih daerah, lalu isi formulir sesuai jenjang
+- Pesan pendaftaran dikirim ke WhatsApp admin dalam format baku yang terisi otomatis dari isian formulir
+- Pemeriksaan isian langsung saat mengetik, termasuk aturan Request Mapel: SD bebas, SMP maksimal 2 mapel, SMA maksimal 1 mapel, dan "semua mapel" tidak diterima untuk SMP dan SMA
+- Pelindung isian: batas panjang tiap kolom dan pembuangan karakter pemformat WhatsApp agar format pesan tidak rusak
+
+### Diubah
+- Tombol **Pendaftaran Anak** tidak lagi langsung membuka WhatsApp
+
 ## [2.3] — 2026-10-22
 
 Rilis frontend: penyempurnaan tampilan. Tidak ada perubahan backend.
