@@ -151,7 +151,8 @@ onMounted(async () => {
   }
 })
 
-// Banner kontrak: tampil terus (tanpa tombol tutup) selama kontrak tinggal <= 5 hari atau masa tenggang
+// Banner kontrak: tampil terus (tanpa tombol tutup) selama kontrak tinggal <= 3 hari atau masa tenggang
+// (sama dengan batas dibukanya perpanjangan di server)
 const banner = computed(() => {
   const k = kontrak.value
   if (!k) return null
@@ -171,7 +172,7 @@ const banner = computed(() => {
     return { tipe: 'tenggang', ikon: TriangleAlert, judul: 'Masa tenggang kontrak', pesan }
   }
 
-  if (k.sisaHari <= 5) {
+  if (k.sisaHari <= 3) {
     return {
       tipe: 'aktif',
       ikon: AlarmClock,

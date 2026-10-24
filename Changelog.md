@@ -24,6 +24,22 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 ## [Belum dirilis]
 
 
+## [4.0] — 2026-10-25
+
+Rilis bersama backend `4.0`: percakapan chat yang lebih hidup, jalur WhatsApp yang lebih mudah, dan pengamanan perpanjangan kontrak tentor.
+
+### Ditambahkan
+- Tombol WhatsApp pada bagian Kontak Kami di halaman utama, dengan pesan pembuka yang sudah terisi
+- Kolom **Konfirmasi** pada daftar lowongan: tombol WhatsApp per baris dengan pesan berisi detail lowongan itu, dan nonaktif otomatis saat statusnya sudah diambil
+
+### Diubah
+- Asisten chat menampilkan sapaan awal dengan jeda singkat, memberi animasi masuk pada setiap pesan, dan menampilkan titik mengetik bergelombang saat asisten menjawab
+- Banner kontrak di dashboard tentor tampil mulai sisa kontrak 3 hari, sama dengan saat perpanjangan dibuka
+- Susunan kartu Kontak Kami menjadi dua kolom pada layar tablet ke atas
+
+### Keamanan
+- Persetujuan Surat Kontrak dan perpanjangan kontrak di halaman tentor terkunci selama sisa kontrak lebih dari 3 hari, disertai keterangan tanggal dibukanya. Kunci ini juga ditegakkan di server
+
 ## [3.1] — 2026-10-24
 
 Rilis frontend: penyempurnaan pesan pendaftaran dan penjaga API agar tidak tertidur. Tidak ada perubahan backend.

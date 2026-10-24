@@ -84,12 +84,12 @@
                 </article>
               </div>
             </SuratTerlindungi>
-            <label class="setuju-baris" :class="{ 'is-terkunci': suratDisetujui }">
+            <label class="setuju-baris" :class="{ 'is-terkunci': suratDisetujui || terkunciMenunggu }">
               <input
                 type="checkbox"
                 class="setuju-kotak"
                 v-model="centangSurat"
-                :disabled="suratDisetujui || sedangMenyetujui"
+                :disabled="suratDisetujui || sedangMenyetujui || terkunciMenunggu"
               />
               <span class="setuju-teks">
                 Saya menyetujui segala peraturan dan ketentuan yang berlaku
@@ -107,7 +107,11 @@
             ini. Boleh lebih pendek dari kontrak sekarang.
           </p>
 
-          <p v-if="!suratDisetujui" class="kunci-info">
+          <p v-if="terkunciMenunggu" class="kunci-info">
+            <Lock size="1.15em" class="ikon-inline" /> Perpanjangan kontrak baru dibuka mulai
+            {{ bukaPerpanjang }}, yaitu 3 hari sebelum kontrak berakhir.
+          </p>
+          <p v-else-if="!suratDisetujui" class="kunci-info">
             <Lock size="1.15em" class="ikon-inline" /> Centang persetujuan Surat Kontrak Tentor di atas untuk membuka form ini.
           </p>
           
@@ -122,14 +126,14 @@
                 :min="minTanggal"
                 :max="maxTanggal"
                 @change="touched = true"
-                :disabled="!suratDisetujui"
+                :disabled="!formTerbuka"
               />
               <p v-if="touched && tanggalError" class="field-alert">{{ tanggalError }}</p>
               <p class="field-hint">
                 Rentang yang diperbolehkan: {{ formattedMin }} — {{ formattedMax }}
               </p>
             </div>
-            <button type="submit" class="btn-submit" :disabled="!suratDisetujui || !isFormValid">
+            <button type="submit" class="btn-submit" :disabled="!formTerbuka || !isFormValid">
               Ajukan Kontrak
             </button>
           </form>
@@ -237,13 +241,19 @@ const persetujuan = computed(
 )
 const suratDisetujui = computed(() => persetujuan.value.disetujui)
 const sedangMenyetujui = ref(false)
+// Aturan server: perpanjangan baru dibuka saat sisa kontrak ≤ 3 hari (atau masa tenggang)
+const terkunciMenunggu = computed(
+  () => kontrak.value?.status === 'aktif' && kontrak.value?.bisaPerpanjang === false,
+)
+const bukaPerpanjang = computed(() => formatTanggal(kontrak.value?.bukaPerpanjangPada))
+const formTerbuka = computed(() => suratDisetujui.value && !terkunciMenunggu.value)
 
 // Kotak centang: hanya bisa dicentang saat belum menyetujui. Begitu dicentang langsung dicatat
 // di server dan terkunci selama persetujuan masih berlaku (kontrak masih berjalan).
 const centangSurat = computed({
   get: () => suratDisetujui.value || sedangMenyetujui.value,
   set: async (nilai) => {
-    if (!nilai || suratDisetujui.value || sedangMenyetujui.value) return
+    if (!nilai || suratDisetujui.value || sedangMenyetujui.value || terkunciMenunggu.value) return
     sedangMenyetujui.value = true
     try {
       await tentorStore.setujuSurat()
@@ -271,6 +281,9 @@ const waktuSetuju = computed(() => {
 })
 
 const catatanSurat = computed(() => {
+  if (terkunciMenunggu.value) {
+    return `Persetujuan dan perpanjangan kontrak baru dibuka mulai ${bukaPerpanjang.value}, yaitu 3 hari sebelum kontrak berakhir.`
+  }
   if (suratDisetujui.value) {
     return `Kamu sudah menyetujui surat ini pada ${waktuSetuju.value}. Persetujuan terkunci selama kontrak masih berjalan, dan bisa dicentang lagi setelah kontrak berakhir.`
   }
@@ -305,7 +318,7 @@ const showConfirmModal = ref(false)
 const isSaving = ref(false)
 
 const requestSubmit = () => {
-  if (!suratDisetujui.value) return // form terkunci sampai Surat Kontrak disetujui
+  if (!formTerbuka.value) return // form terkunci sampai waktunya dan Surat Kontrak disetujui
   touched.value = true
   if (!isFormValid.value) return
   showConfirmModal.value = true
