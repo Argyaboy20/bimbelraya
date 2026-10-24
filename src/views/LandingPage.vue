@@ -151,6 +151,27 @@
       <p class="section-subtitle light">Hubungi kami lewat platform favoritmu</p>
 
       <div class="kontak-grid">
+        <!-- WhatsApp -->
+        <a :href="tautanKontakWa" target="_blank" rel="noopener" class="kontak-card">
+          <div class="kontak-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+              <path
+                d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"
+              />
+            </svg>
+          </div>
+          <div class="kontak-name">WhatsApp</div>
+          <div class="kontak-handle">Chat dengan admin</div>
+        </a>
         <!-- Instagram -->
         <a
           href="https://www.instagram.com/bimbel_raya"
@@ -293,7 +314,9 @@
           <div class="chat-bubble">{{ msg.text }}</div>
         </div>
         <div v-if="chatLoading" class="chat-msg bot">
-          <div class="chat-bubble loading">●●●</div>
+          <div class="chat-bubble loading" aria-label="Asisten sedang mengetik">
+            <span class="titik"></span><span class="titik"></span><span class="titik"></span>
+          </div>
         </div>
       </div>
       <div ref="turnstileEl" class="chat-turnstile"></div>
@@ -335,6 +358,7 @@ import { useRouter } from 'vue-router'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile, TurnstileError } from '@/utils/turnstile'
 import PendaftaranAnakModal from '@/components/PendaftaranAnakModal.vue'
+import { NOMOR_WA_ADMIN } from '@/utils/pendaftaranAnak'
 import {
   BookOpen,
   Shapes,
@@ -394,6 +418,11 @@ const bukaPendaftaranAnak = () => {
   showPendaftaranAnak.value = true
 }
 
+// Tombol WhatsApp di bagian Kontak Kami
+const tautanKontakWa = `https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(
+  'Halo min, saya tertarik terkait les privat untuk anak saya. Mohon info selanjutnya',
+)}`
+
 // ===== JAM LAYANAN =====
 const jamSekarang = ref('')
 const isOpen = ref(false)
@@ -423,7 +452,20 @@ const showChat = ref(false)
 const chatInput = ref('')
 const chatLoading = ref(false)
 const chatBody = ref(null)
-const chatMessages = ref([{ from: 'bot', text: 'Halo! Ada yang bisa kami bantu?', sapaan: true }])
+const chatMessages = ref([])
+
+// Sapaan awal muncul ±1,2 detik setelah chat dibuka (seperti lawan bicara yang baru membalas)
+let timerSapaan = null
+const jadwalkanSapaan = () => {
+  clearTimeout(timerSapaan)
+  if (chatMessages.value.length > 0) return
+  timerSapaan = setTimeout(() => {
+    if (chatMessages.value.length === 0) {
+      chatMessages.value.push({ from: 'bot', text: 'Halo! Ada yang bisa kami bantu?', sapaan: true })
+      scrollChatToBottom()
+    }
+  }, 1200)
+}
 
 // Kunci scroll halaman saat chat terbuka. `html` dan `body` sama-sama dikunci, karena aturan
 // "overflow-x: hidden" pada html membuat html (bukan body) yang menjadi penggulung halaman.
@@ -437,10 +479,12 @@ const kunciScrollHalaman = (kunci) => {
 const goToHelp = () => {
   showChat.value = !showChat.value
   kunciScrollHalaman(showChat.value)
+  if (showChat.value) jadwalkanSapaan()
 }
 
 const closeChat = () => {
   showChat.value = false
+  clearTimeout(timerSapaan)
   kunciScrollHalaman(false)
 }
 
@@ -471,6 +515,7 @@ const RIWAYAT_MAKS = 10
 const sendChat = async () => {
   const text = chatInput.value.trim().slice(0, 300)
   if (!text || chatLoading.value) return
+  clearTimeout(timerSapaan) // kalau pengguna sudah mengetik duluan, sapaan tidak perlu muncul
 
   // Riwayat percakapan (maksimal 10 terakhir) dikirim agar pertanyaan lanjutan nyambung.
   // Sapaan awal dan pesan galat tidak ikut dikirim.
@@ -1646,6 +1691,32 @@ onUnmounted(() => {
 .chat-msg.user {
   justify-content: flex-end;
 }
+/* Animasi masuk pesan (seperti WhatsApp): naik dan membesar halus dari sisi pengirim */
+.chat-msg.bot {
+  transform-origin: left bottom;
+  animation: pesan-masuk 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.chat-msg.user {
+  transform-origin: right bottom;
+  animation: pesan-masuk 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes pesan-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-msg.bot,
+  .chat-msg.user,
+  .titik {
+    animation: none;
+  }
+}
 .chat-bubble {
   max-width: 80%;
   padding: 0.55rem 0.9rem;
@@ -1667,9 +1738,35 @@ onUnmounted(() => {
   border-bottom-right-radius: 4px;
 }
 .chat-bubble.loading {
-  letter-spacing: 4px;
-  color: #9ca3af;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.8rem 0.95rem;
+}
+.titik {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9ca3af;
+  animation: titik-gelombang 1.2s ease-in-out infinite;
+}
+.titik:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.titik:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes titik-gelombang {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
 }
 .chat-catatan {
   margin: 0;
@@ -2032,7 +2129,7 @@ onUnmounted(() => {
     padding: 4rem 1.5rem;
   }
   .kontak-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     max-width: 600px;
   }
 }

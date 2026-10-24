@@ -24,11 +24,12 @@
                 <th v-for="kolom in KOLOM_LOWONGAN" :key="kolom.key">{{ kolom.label }}</th>
                 <th>Guru (P/L)</th>
                 <th>Status</th>
+                <th>Konfirmasi</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="lowonganStore.items.length === 0">
-                <td :colspan="KOLOM_LOWONGAN.length + 3" class="empty-row">
+                <td :colspan="KOLOM_LOWONGAN.length + 4" class="empty-row">
                   {{
                     lowonganStore.loading
                       ? 'Memuat lowongan...'
@@ -48,6 +49,38 @@
                   >
                     {{ item.status }}
                   </span>
+                </td>
+                <td class="col-center">
+                  <component
+                    :is="bisaKonfirmasi(item) ? 'a' : 'span'"
+                    class="btn-konfirmasi"
+                    :class="{ nonaktif: !bisaKonfirmasi(item) }"
+                    v-bind="
+                      bisaKonfirmasi(item)
+                        ? {
+                            href: tautanKonfirmasi(item),
+                            target: '_blank',
+                            rel: 'noopener',
+                            'aria-label': 'Konfirmasi lowongan ini lewat WhatsApp',
+                          }
+                        : { 'aria-disabled': 'true', title: 'Lowongan sudah diambil' }
+                    "
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+                      <path
+                        d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"
+                      />
+                    </svg>
+                  </component>
                 </td>
               </tr>
             </tbody>
@@ -79,10 +112,34 @@ defineOptions({ name: 'LowonganTentor' })
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLowonganStore, KOLOM_LOWONGAN } from '@/stores/lowongan'
+import { NOMOR_WA_ADMIN } from '@/utils/pendaftaranAnak'
 
 const router = useRouter()
 const lowonganStore = useLowonganStore()
 onMounted(() => lowonganStore.fetchPublik())
+
+// Tombol Konfirmasi: aktif hanya untuk lowongan yang masih "Tersedia"
+const bisaKonfirmasi = (item) => item.status === 'Tersedia'
+
+// Pesan WhatsApp per lowongan: tiap baris diisi dari baris tabel yang bersangkutan
+const BARIS_PESAN = [
+  ['* Kelas: ', 'kelas'],
+  ['* Alamat Lengkap: ', 'alamat'],
+  ['* Pilihan Paket Seminggu: ', 'paket'],
+  ['* Hari Les: ', 'hari'],
+  ['* Request Jam: ', 'jam'],
+  ['* Durasi: ', 'durasi'],
+  ['* Periode: ', 'periode'],
+  ['* Request Mapel: ', 'mapel'],
+  ['* Guru (P/L) : ', 'guru'],
+]
+
+const tautanKonfirmasi = (item) => {
+  const baris = BARIS_PESAN.map(
+    ([awalan, key]) => awalan + String(item[key] ?? '').replace(/\s+/g, ' ').trim(),
+  )
+  return `https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(baris.join('\n'))}`
+}
 
 // Halaman ini bisa dibuka dari dashboard tentor ATAU langsung lewat link publik,
 // jadi kalau tidak ada riwayat halaman sebelumnya, arahkan ke beranda.
@@ -179,7 +236,7 @@ const kembali = () => {
 
 .loker-table {
   width: 100%;
-  min-width: 1150px;
+  min-width: 1250px;
   border-collapse: collapse;
 }
 .loker-table th {
@@ -232,6 +289,34 @@ const kembali = () => {
 .badge-diambil {
   background: #fee2e2;
   color: #b91c1c;
+}
+/* ===== TOMBOL KONFIRMASI (WhatsApp) ===== */
+.btn-konfirmasi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+.btn-konfirmasi svg {
+  width: 20px;
+  height: 20px;
+}
+.btn-konfirmasi:not(.nonaktif):hover {
+  background: #1ebe5a;
+  transform: scale(1.08);
+}
+.btn-konfirmasi.nonaktif {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 /* ===== KOTAK NOTE MERAH ===== */
