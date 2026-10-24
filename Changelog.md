@@ -24,6 +24,17 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 ## [Belum dirilis]
 
 
+## [3.1] — 2026-10-24
+
+Rilis frontend: penyempurnaan pesan pendaftaran dan penjaga API agar tidak tertidur. Tidak ada perubahan backend.
+
+### Ditambahkan
+- Penjadwal otomatis di Cloudflare yang menghubungi API setiap 5 menit agar server tidak tertidur, sehingga pengunjung tidak lagi menunggu server bangun
+
+### Diubah
+- Pesan pendaftaran anak yang dikirim ke WhatsApp tidak lagi memuat catatan alamat (NOTE) di bagian bawah
+
+
 ## [3.0] — 2026-10-22
 
 Rilis bersama backend `3.0`: pendaftaran anak lewat formulir terarah. Tidak ada perubahan backend.
