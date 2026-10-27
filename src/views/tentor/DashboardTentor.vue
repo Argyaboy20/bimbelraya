@@ -690,6 +690,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 1.15rem;
+  color: #fff;
 }
 
 .card-body {

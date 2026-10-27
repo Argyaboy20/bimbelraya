@@ -77,8 +77,9 @@
                 <h3 class="syarat-judul">Syarat dan Ketentuan</h3>
                 <ol class="syarat-daftar">
                   <li>Kartu ini berlaku selama masa kontrak masih aktif.</li>
-                  <li>Kartu ini merupakan tanda keanggotaan resmi tentor Bimbel Raya.</li>
+                  <li>Kartu ini merupakan tanda keanggotaan resmi dan identitas tentor Bimbel Raya.</li>
                   <li>Kartu ini tidak boleh dipindahtangankan atau disalahgunakan oleh pihak lain.</li>
+                  <li>Apabila terdapat perubahan data atau kendala pada kartu, harap menghubungi admin Bimbel Raya.</li>
                 </ol>
               </div>
               <span class="strip"></span>

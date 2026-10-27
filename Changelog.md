@@ -23,6 +23,17 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [5.1] — 2026-10-27
+
+Rilis frontend: penyempurnaan dashboard tentor dan halaman Reward Bulanan Tentor. Tidak ada perubahan backend.
+
+### Ditambahkan
+- Kotak ucapan di halaman Reward Bulanan Tentor: isinya sama dengan notifikasi juara di dashboard dan menyesuaikan peringkat (juara 1, juara 2, juara 3, atau juara 4 dan seterusnya), dengan warna dan ikon berbeda untuk tiap peringkat. Pada HP dan tablet kotak berada di bawah daftar, pada desktop berada di sisi kanan daftar
+
+### Diubah
+- Ikon pada empat tombol utama di dashboard tentor kini berwarna putih
+- Tampilan "Reward bulan ini belum diumumkan" di halaman Reward Bulanan Tentor kini berupa kartu bergaya dengan ikon bergerak, bukan teks polos
+
 ## [5.0] — 2026-10-27
 
 Rilis bersama backend `5.0`: penyegaran dashboard tentor dengan ringkasan dan e-kartu anggota.

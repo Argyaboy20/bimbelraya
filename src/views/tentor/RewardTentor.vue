@@ -12,22 +12,36 @@
       <p v-if="galat" class="pesan-galat">{{ galat }}</p>
 
       <template v-else-if="reward">
-        <p v-if="!reward.sudahDiumumkan" class="info-kosong">
-          Reward bulan ini belum diumumkan. Pantau terus ya!
-        </p>
+        <div v-if="!reward.sudahDiumumkan" class="kosong-card">
+          <span class="kosong-ikon"><Hourglass size="1em" /></span>
+          <h2 class="kosong-judul">Belum diumumkan</h2>
+          <p class="kosong-teks">Reward bulan ini belum diumumkan. Pantau terus ya!</p>
+        </div>
 
         <!-- Daftar tentor urut dari nilai tertinggi; baris milik kamu di-highlight hijau -->
-        <ol v-else class="daftar-tentor">
-          <li
-            v-for="(t, i) in reward.daftar"
-            :key="i"
-            class="baris-tentor"
-            :class="{ saya: t.saya }"
-          >
-            <span class="no-urut">{{ t.peringkat }}</span>
-            <span class="nama-tentor">{{ t.namaTentor }}</span>
-          </li>
-        </ol>
+        <div v-else class="hasil-reward">
+          <ol class="daftar-tentor">
+            <li
+              v-for="(t, i) in reward.daftar"
+              :key="i"
+              class="baris-tentor"
+              :class="{ saya: t.saya }"
+            >
+              <span class="no-urut">{{ t.peringkat }}</span>
+              <span class="nama-tentor">{{ t.namaTentor }}</span>
+            </li>
+          </ol>
+
+          <!-- Kotak ucapan sesuai peringkat (juara 1, 2, 3, dan 4 seterusnya) -->
+          <div v-if="reward.sudahDiumumkan && saya" class="ucapan" :class="kelasUcapan">
+            <span class="ucapan-ikon"><component :is="ikonUcapan" size="1em" /></span>
+            <p class="ucapan-1">{{ ucapan[0] }}</p>
+            <p class="ucapan-2" :class="{ besar: peringkatSaya >= 1 && peringkatSaya <= 3 }">
+              {{ ucapan[1] }}
+            </p>
+            <p class="ucapan-3">{{ ucapan[2] }}</p>
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -39,7 +53,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, ApiError } from '@/api/http'
 import { namaBulan, bulanSekarang } from '@/stores/reward'
-import { ChevronLeft } from 'lucide-vue-next'
+import { ChevronLeft, Hourglass, Trophy, Medal, Sparkles } from 'lucide-vue-next'
+
 
 const route = useRoute()
 const kodeTentor = computed(() => route.params.id)
@@ -48,6 +63,43 @@ const reward = ref(null) // { bulan, sudahDiumumkan, daftar: [{ namaTentor, peri
 const galat = ref('')
 
 const labelBulan = computed(() => namaBulan(reward.value?.bulan ?? bulanSekarang()))
+// ===== KOTAK UCAPAN (isi sama dengan notif di dashboard tentor) =====
+const saya = computed(() => reward.value?.saya ?? null)
+const peringkatSaya = computed(() => saya.value?.peringkat ?? 0)
+const namaSaya = computed(() => saya.value?.namaTentor ?? '')
+
+const kelasUcapan = computed(() => {
+  const p = peringkatSaya.value
+  return p >= 1 && p <= 3 ? `juara-${p}` : 'biasa'
+})
+const ikonUcapan = computed(() => {
+  const p = peringkatSaya.value
+  if (p === 1) return Trophy
+  if (p === 2 || p === 3) return Medal
+  return Sparkles
+})
+const ucapan = computed(() => {
+  const p = peringkatSaya.value
+  if (p === 1) {
+    return [
+      `Selamat ${namaSaya.value} sebagai`,
+      'Juara 1',
+      `di Reward Best Tentor of the Month untuk ${labelBulan.value}. Silakan chat admin untuk klaim hadiahnya`,
+    ]
+  }
+  if (p === 2 || p === 3) {
+    return [
+      `Selamat ${namaSaya.value} sebagai`,
+      `Juara ${p}`,
+      `di Reward Best Tentor of the Month untuk ${labelBulan.value}. Tingkatkan lagi bulan depannya ya!`,
+    ]
+  }
+  return [
+    'Mohon maaf, kamu belum terpilih di Reward Best Tentor of the Month di bulan ini.',
+    'Jangan bersedih, masih ada bulan lainnya',
+    `Tetap semangat kak ${namaSaya.value}`,
+  ]
+})
 
 onMounted(async () => {
   try {
@@ -119,9 +171,137 @@ onMounted(async () => {
   color: #6b7280;
 }
 
-.info-kosong {
+/* ===== KARTU "BELUM DIUMUMKAN" ===== */
+.kosong-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 1.8rem 1.2rem;
+  border: 2px dashed rgba(46, 135, 246, 0.45);
+  border-radius: 18px;
+  text-align: center;
+  background-color: #fff;
+  background-image: radial-gradient(rgba(46, 135, 246, 0.1) 1.2px, transparent 1.5px);
+  background-size: 16px 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+.kosong-ikon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #fff;
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
+  box-shadow: 0 6px 16px rgba(46, 135, 246, 0.35);
+  animation: balik-jam 3s ease-in-out infinite;
+}
+@keyframes balik-jam {
+  0%,
+  60% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+.kosong-judul {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+.kosong-teks {
+  margin: 0;
   font-size: 0.82rem;
+  line-height: 1.5;
   color: #6b7280;
+}
+
+/* ===== KOTAK UCAPAN ===== */
+.ucapan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1.3rem 1.1rem;
+  border-radius: 18px;
+  text-align: center;
+  color: #fff;
+}
+.ucapan-ikon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: rgba(255, 255, 255, 0.25);
+}
+.ucapan-1,
+.ucapan-2,
+.ucapan-3 {
+  margin: 0;
+}
+.ucapan-1 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.ucapan-2 {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.ucapan-2.besar {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.ucapan-3 {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+.ucapan.juara-1 {
+  background: linear-gradient(135deg, #22a559 0%, #178044 100%);
+  box-shadow: 0 10px 24px rgba(34, 165, 89, 0.35);
+}
+.ucapan.juara-2 {
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
+  box-shadow: 0 10px 24px rgba(46, 135, 246, 0.35);
+}
+.ucapan.juara-3 {
+  color: #5a4a1f;
+  background: linear-gradient(135deg, #f9eccc 0%, #f3dfa8 100%);
+  box-shadow: 0 10px 24px rgba(243, 223, 168, 0.55);
+}
+.ucapan.juara-3 .ucapan-ikon {
+  background: rgba(255, 255, 255, 0.55);
+}
+.ucapan.biasa {
+  color: #374151;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+.ucapan.biasa .ucapan-ikon {
+  color: #2e87f6;
+  background: #eaf3ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kosong-ikon {
+    animation: none;
+  }
 }
 .pesan-galat {
   font-size: 0.8rem;
@@ -129,6 +309,10 @@ onMounted(async () => {
 }
 
 /* ===== DAFTAR TENTOR ===== */
+.hasil-reward {
+  display: flex;
+  flex-direction: column;
+}
 .daftar-tentor {
   list-style: none;
   margin: 0;
@@ -184,8 +368,28 @@ onMounted(async () => {
 
 /* ===== DESKTOP (>= 768px): daftar di sisi kiri ===== */
 @media (min-width: 768px) {
-  .daftar-tentor {
+  .kosong-card {
     max-width: 560px;
+  }
+  .hasil-reward {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .daftar-tentor {
+    flex: 0 1 560px;
+    max-width: 560px;
+  }
+  .ucapan {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 380px;
+    margin-top: 0;
+    position: sticky;
+    top: 1rem;
+  }
+  .ucapan-2.besar {
+    font-size: 2rem;
   }
 }
 
@@ -193,6 +397,12 @@ onMounted(async () => {
 @media (min-width: 1024px) {
   .page-content {
     padding: 2rem 2rem 3rem;
+  }
+  .hasil-reward {
+    gap: 1.5rem;
+  }
+  .ucapan {
+    max-width: 420px;
   }
 }
 </style>
