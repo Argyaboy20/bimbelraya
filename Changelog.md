@@ -23,6 +23,19 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [5.0] — 2026-10-27
+
+Rilis bersama backend `5.0`: penyegaran dashboard tentor dengan ringkasan dan e-kartu anggota.
+
+### Ditambahkan
+- Tiga kotak ringkasan di dashboard tentor: **Presensi Bulanan** (jumlah presensi bulan berjalan dari Riwayat Presensi), **Aktivitas Login** (jumlah login), dan **Kartu Tanda Anggota**
+- **E-kartu anggota virtual** yang terbuka dalam modal: sisi depan memuat foto profil bulat, nama lengkap, dan posisi "Tentor Bimbel Raya"; sisi belakang memuat logo dan syarat dan ketentuan. Kartu berputar saat ditekan, dengan latar dan motif bernuansa Bimbel Raya
+- Foto profil tentor dapat diunggah dan diganti langsung dari e-kartu; sebelum ada foto dipakai avatar
+
+### Diubah
+- Sapaan "Haii! Selamat …" dipindah dari navbar ke bagian isi dashboard tentor, di kiri atas di atas kotak ringkasan
+- Modal e-kartu hanya bisa ditutup dengan tombol Close atau tombol/gesture Back (tidak menutup saat area luar ditekan), dan Back tidak membuat pengguna keluar dari halaman dashboard
+
 
 ## [4.0] — 2026-10-25
 

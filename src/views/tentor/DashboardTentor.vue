@@ -35,8 +35,6 @@
           >
             <span class="profile-initial">{{ inisialTentor }}</span>
           </router-link>
-
-          <p class="greeting-text">{{ greetingText }}</p>
         </div>
 
         <!-- ===== TENGAH: Logo (selalu center, sama seperti Navbar.vue) ===== -->
@@ -51,9 +49,39 @@
 
     <!-- =====================================================
          ISI DASHBOARD TENTOR
-         3 section: Presensi, Perpanjang Kontrak, Lowongan Tentor
+         4 section: Presensi, Perpanjang Kontrak, Lowongan Tentor, Reward Bulanan Tentor
          ===================================================== -->
     <div class="dashboard-content">
+      <!-- ===== SAPAAN ===== -->
+      <section class="tentor-section sapaan-section">
+        <p class="greeting-isi">{{ greetingText }}</p>
+      </section>
+
+            <!-- ===== RINGKASAN: 3 KOTAK ===== -->
+      <section class="tentor-section">
+        <div class="stat-grid">
+          <div class="stat-kotak stat-presensi">
+            <div class="stat-ikon"><CalendarCheck size="1em" /></div>
+            <p class="stat-label">Presensi Bulanan</p>
+            <p class="stat-angka">{{ presensiBulanIni }}</p>
+            <p class="stat-ket">presensi bulan ini</p>
+          </div>
+
+          <div class="stat-kotak stat-login">
+            <div class="stat-ikon"><LogIn size="1em" /></div>
+            <p class="stat-label">Aktivitas Login</p>
+            <p class="stat-angka">{{ jumlahLogin }}</p>
+            <p class="stat-ket">kali login</p>
+          </div>
+
+          <button type="button" class="stat-kotak stat-kartu" @click="bukaKartu">
+            <div class="stat-ikon"><CreditCard size="1em" /></div>
+            <p class="stat-label">Kartu Tanda Anggota</p>
+            <p class="stat-ket">Ketuk untuk melihat</p>
+          </button>
+        </div>
+      </section>
+
       <!-- ===== SECTION 1: PRESENSI ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-presensi">
@@ -119,6 +147,15 @@
         </div>
       </section>
     </div>
+    <!-- ===== MODAL E-KARTU ===== -->
+    <KartuAnggotaModal
+      v-if="kartuTerbuka"
+      :nama="namaTentor"
+      :foto-link="profil?.fotoProfilLink ?? null"
+      @tutup="tutupKartu"
+      @foto-baru="fotoBaru"
+    />
+
     <!-- ===== NOTIF REWARD BULANAN ===== -->
     <RewardNotifModal />
   </div>
@@ -127,16 +164,20 @@
 <script setup>
 defineOptions({ name: 'DashboardTentor' })
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
+import { usePresensiStore } from '@/stores/presensi'
 import { ApiError } from '@/api/http'
-import { Clock, FileText, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock } from 'lucide-vue-next'
+import { Clock, FileText, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard } from 'lucide-vue-next'
 import RewardNotifModal from '@/components/RewardNotifModal.vue'
+import KartuAnggotaModal from '@/components/KartuAnggotaModal.vue'
 
 const route = useRoute()
+const router = useRouter()
 const tentorStore = useTentorStore()
 const authStore = useAuthStore()
+const presensiStore = usePresensiStore()
 
 const kontrak = ref(null) // { status: 'aktif' | 'tenggang', sisaHari, hapusPada? } dari server
 
@@ -229,6 +270,42 @@ const greetingText = computed(() => {
   }
   return labels[period]
 })
+
+// ===== KOTAK RINGKASAN =====
+const presensiSiap = ref(false)
+
+onMounted(async () => {
+  try {
+    await presensiStore.fetchSaya()
+    presensiSiap.value = true
+  } catch {
+    // gagal memuat: kotak tetap menampilkan "–"
+  }
+})
+
+// Jumlah presensi pada bulan berjalan (zona waktu Jakarta), dari Riwayat Presensi
+const presensiBulanIni = computed(() => {
+  if (!presensiSiap.value) return '–'
+  const bulan = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' })
+    .format(now.value)
+    .slice(0, 7) // contoh: 2026-10
+  return presensiStore.riwayatSaya.filter((p) => p.tanggalKey.startsWith(bulan)).length
+})
+
+const jumlahLogin = computed(() => profil.value?.jumlahLogin ?? '–')
+
+// ===== MODAL E-KARTU =====
+// Terbuka/tutupnya ditandai "#kartu" di alamat. Jadi tombol Back / gesture Back
+// hanya menutup modal, tidak pindah halaman.
+const kartuTerbuka = computed(() => route.hash === '#kartu')
+const bukaKartu = () => router.push({ hash: '#kartu' })
+const tutupKartu = () => {
+  if (window.history.state?.back === route.path) router.back()
+  else router.replace({ hash: '' }) // halaman dibuka langsung dengan #kartu
+}
+const fotoBaru = (link) => {
+  if (tentorStore.profil) tentorStore.profil.fotoProfilLink = link
+}
 
 onMounted(() => {
   // Update jam tiap menit, supaya sapaan otomatis berubah saat lewat batas waktu
@@ -543,15 +620,12 @@ onUnmounted(() => {
   letter-spacing: 0.02em;
 }
 
-.greeting-text {
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 600;
-  white-space: normal;
-  overflow: visible;
+.greeting-isi {
+  color: #1f2937;
+  font-size: 1.05rem;
+  font-weight: 700;
   word-break: break-word;
   line-height: 1.3;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin: 0;
 }
 
@@ -709,6 +783,105 @@ onUnmounted(() => {
 }
 
 /* =====================================================
+   3 KOTAK RINGKASAN (Presensi Bulanan, Aktivitas Login, Kartu Anggota)
+   ===================================================== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+.stat-kotak {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.85rem 0.8rem;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  text-align: left;
+  font: inherit;
+}
+.stat-ikon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 0.35rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: #fff;
+}
+.stat-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+.stat-angka {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1f2937;
+}
+.stat-ket {
+  margin: 0;
+  font-size: 0.66rem;
+  color: #9ca3af;
+}
+
+.stat-presensi {
+  box-shadow:
+    inset 0 4px 0 #2e87f6,
+    0 8px 22px rgba(0, 0, 0, 0.08);
+}
+.stat-presensi .stat-ikon {
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
+}
+.stat-login {
+  box-shadow:
+    inset 0 4px 0 #f35c2b,
+    0 8px 22px rgba(0, 0, 0, 0.08);
+}
+.stat-login .stat-ikon {
+  background: linear-gradient(135deg, #f35c2b 0%, #d6481c 100%);
+}
+
+/* Kotak 3: di tengah, di bawah kotak 1 dan 2, berwarna penuh */
+.stat-kartu {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 0.35rem);
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2e87f6 0%, #1d6fd4 100%);
+  box-shadow: 0 10px 24px rgba(46, 135, 246, 0.35);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.stat-kartu .stat-ikon {
+  background: rgba(255, 255, 255, 0.22);
+}
+.stat-kartu .stat-label,
+.stat-kartu .stat-ket {
+  color: #fff;
+}
+.stat-kartu:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(46, 135, 246, 0.42);
+}
+.stat-kartu:active {
+  transform: scale(0.97);
+}
+.stat-kartu:focus-visible {
+  outline: 3px solid #f3dfa8;
+  outline-offset: 2px;
+}
+
+/* =====================================================
    BREAKPOINTS (sama seperti Navbar.vue & Dashboard.vue)
    @media 641px  : tablet
    @media 768px  : desktop
@@ -737,8 +910,8 @@ onUnmounted(() => {
   .profile-initial {
     font-size: 0.74rem;
   }
-  .greeting-text {
-    font-size: 0.8rem;
+  .greeting-isi {
+    font-size: 1.2rem;
   }
   .navbar-logo {
     height: 34px;
@@ -778,6 +951,30 @@ onUnmounted(() => {
     font-size: 0.78rem;
     padding: 0.6rem 1.15rem;
   }
+
+  .stat-grid {
+    gap: 0.9rem;
+  }
+  .stat-kartu {
+    width: calc(50% - 0.45rem);
+  }
+  .stat-kotak {
+    padding: 1rem;
+  }
+  .stat-ikon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+  }
+  .stat-angka {
+    font-size: 2rem;
+  }
+  .stat-ket {
+    font-size: 0.72rem;
+  }
 }
 
 /* ===== DESKTOP (≥ 768px) ===== */
@@ -795,8 +992,8 @@ onUnmounted(() => {
   .tentor-navbar {
     padding: 0.7rem 2rem;
   }
-  .greeting-text {
-    font-size: 0.88rem;
+  .greeting-isi {
+    font-size: 1.35rem;
   }
   .navbar-logo {
     height: 36px;
@@ -826,6 +1023,9 @@ onUnmounted(() => {
     font-size: 0.82rem;
     padding: 0.65rem 1.3rem;
   }
+  .stat-angka {
+    font-size: 2.2rem;
+  }
 }
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
@@ -839,7 +1039,6 @@ onUnmounted(() => {
     height: 260px;
     right: -90px;
   }
-
   .tentor-navbar {
     padding: 0.75rem 3rem;
   }
@@ -850,13 +1049,12 @@ onUnmounted(() => {
   .profile-initial {
     font-size: 0.8rem;
   }
-  .greeting-text {
-    font-size: 0.95rem;
+  .greeting-isi {
+    font-size: 1.5rem;
   }
   .navbar-logo {
     height: 38px;
   }
-
   .dashboard-content {
     padding-bottom: 3.5rem;
     max-width: 900px;
@@ -882,6 +1080,21 @@ onUnmounted(() => {
   .card-btn {
     font-size: 0.85rem;
     padding: 0.7rem 1.4rem;
+  }
+  .stat-grid {
+    gap: 1rem;
+  }
+  .stat-kartu {
+    width: calc(50% - 0.5rem);
+  }
+  .stat-kotak {
+    padding: 1.15rem 1.25rem;
+  }
+  .stat-label {
+    font-size: 0.86rem;
+  }
+  .stat-angka {
+    font-size: 2.4rem;
   }
 }
 </style>

@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 4.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 5.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -135,6 +135,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **3.0** | 2026-10-22 | Pendaftaran anak lewat formulir bertahap di halaman utama (jenjang, daerah, lalu isian sesuai jenjang) dengan pemeriksaan isian langsung dan pesan baku yang terkirim ke WhatsApp admin |
 | **3.1** | 2026-10-24 | Penjadwal otomatis yang menjaga API tidak tertidur, dan pesan pendaftaran anak tanpa catatan alamat di bagian bawah |
 | **4.0** | 2026-10-25 | Chat asisten lebih hidup (animasi pesan dan titik mengetik), tombol WhatsApp di Kontak Kami dan kolom Konfirmasi di daftar lowongan, serta pengamanan perpanjangan kontrak tentor (dibuka 3 hari sebelum kontrak berakhir) |
+| **5.0** | 2026-10-27 | Dashboard tentor lebih kaya: sapaan pindah ke isi halaman, tiga kotak ringkasan (Presensi Bulanan, Aktivitas Login, Kartu Tanda Anggota), serta e-kartu anggota virtual yang bisa dibalik dengan foto profil yang dapat diunggah |
 
 ## Kontribusi
 
