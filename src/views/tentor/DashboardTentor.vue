@@ -23,17 +23,24 @@
       <!-- =====================================================
           NAVBAR KHUSUS TENTOR
           (mirip Navbar.vue admin, tapi sudut kiri berisi
-          icon profil bulat + greeting text tentor)
+          icon profil bulat)
           ===================================================== -->
       <nav class="tentor-navbar">
-        <!-- ===== SUDUT KIRI: Icon Profil Bulat + Sapaan ===== -->
+        <!-- ===== SUDUT KIRI: Icon Profil Bulat===== -->
         <div class="navbar-left">
           <router-link
             :to="`/tentor/biodata/${kodeTentor}`"
             class="profile-icon"
             aria-label="Lihat Biodata Tentor"
           >
-            <span class="profile-initial">{{ inisialTentor }}</span>
+            <img
+              v-if="fotoProfil && !fotoGagal"
+              :src="fotoProfil"
+              alt=""
+              class="profile-foto"
+              @error="fotoGagal = true"
+            />
+            <span v-else class="profile-initial">{{ inisialTentor }}</span>
           </router-link>
         </div>
 
@@ -163,7 +170,7 @@
 
 <script setup>
 defineOptions({ name: 'DashboardTentor' })
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
@@ -244,6 +251,13 @@ const inisialTentor = computed(() => {
     .join('')
     .slice(0, 2)
     .toUpperCase()
+})
+
+// Foto profil nyata (sama dengan foto di e-kartu); kosong atau gagal dimuat → tetap inisial
+const fotoProfil = computed(() => profil.value?.fotoProfilLink ?? null)
+const fotoGagal = ref(false)
+watch(fotoProfil, () => {
+  fotoGagal.value = false
 })
 
 // ===== WAKTU SAAT INI (update tiap menit, agar sapaan akurat) =====
@@ -589,8 +603,8 @@ onUnmounted(() => {
 
 .profile-icon {
   flex-shrink: 0;
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -614,12 +628,18 @@ onUnmounted(() => {
   transform: scale(0.96);
 }
 .profile-initial {
-  font-size: 0.68rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #2e87f6;
   letter-spacing: 0.02em;
 }
-
+.profile-foto {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
 .greeting-isi {
   color: #1f2937;
   font-size: 1.05rem;
@@ -905,11 +925,11 @@ onUnmounted(() => {
     padding: 0.65rem 1.5rem;
   }
   .profile-icon {
-    width: 34px;
-    height: 34px;
+    width: 50px;
+    height: 50px;
   }
   .profile-initial {
-    font-size: 0.74rem;
+    font-size: 1.1rem;
   }
   .greeting-isi {
     font-size: 1.2rem;
@@ -999,9 +1019,15 @@ onUnmounted(() => {
   .navbar-logo {
     height: 36px;
   }
-
   .dashboard-content {
     padding-bottom: 3rem;
+  }
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .profile-initial {
+    font-size: 1.2rem;
   }
   .tentor-section {
     padding: 1.75rem 1.5rem 0;
@@ -1044,8 +1070,8 @@ onUnmounted(() => {
     padding: 0.75rem 3rem;
   }
   .profile-icon {
-    width: 38px;
-    height: 38px;
+    width: 45px;
+    height: 45px;
   }
   .profile-initial {
     font-size: 0.8rem;

@@ -10,7 +10,14 @@
       <!-- ===== AVATAR INISIAL ===== -->
       <div class="avatar-wrap">
         <div class="avatar-circle">
-          <span class="avatar-initial">{{ inisialTentor }}</span>
+          <img
+            v-if="fotoProfil && !fotoGagal"
+            :src="fotoProfil"
+            alt="Foto profil"
+            class="avatar-foto"
+            @error="fotoGagal = true"
+          />
+          <span v-else class="avatar-initial">{{ inisialTentor }}</span>
         </div>
         <p class="avatar-label">Profil Tentor</p>
       </div>
@@ -197,7 +204,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTentorStore } from '@/stores/tentor'
@@ -245,6 +252,13 @@ const inisialTentor = computed(() => {
     .join('')
     .slice(0, 2)
     .toUpperCase()
+})
+
+// ===== FOTO PROFIL (sama dengan foto di e-kartu) =====
+const fotoProfil = computed(() => tentorStore.profil?.fotoProfilLink ?? null)
+const fotoGagal = ref(false) // link foto gagal dimuat → kembali ke inisial
+watch(fotoProfil, () => {
+  fotoGagal.value = false
 })
 
 // ===== STATE EDIT =====
@@ -518,6 +532,14 @@ const hapusAkun = async () => {
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.04em;
+}
+
+.avatar-foto {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .avatar-label {

@@ -23,6 +23,15 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [5.2] — 2026-10-28
+
+Rilis frontend: foto profil nyata di Biodata dan dashboard tentor. Tidak ada perubahan backend.
+
+### Diubah
+- Foto profil di halaman Biodata tentor kini menampilkan foto yang sama dengan di e-kartu anggota. Bila foto belum diunggah, tetap berupa inisial nama
+- Tombol profil di navbar dashboard tentor kini juga menampilkan foto yang sama dengan di e-kartu pada semua ukuran layar, dan tetap berupa inisial bila belum ada foto
+- Tombol profil di navbar dashboard tentor diperbesar pada semua ukuran layar (HP, tablet, desktop, dan desktop besar) agar lebih jelas
+
 ## [5.1] — 2026-10-27
 
 Rilis frontend: penyempurnaan dashboard tentor dan halaman Reward Bulanan Tentor. Tidak ada perubahan backend.
