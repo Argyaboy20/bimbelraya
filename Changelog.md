@@ -23,6 +23,16 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [6.0] — 2026-10-28
+
+Rilis bersama backend `6.0`: halaman Berkas untuk berbagi file dari admin ke tentor.
+
+### Ditambahkan
+- Halaman **Berkas** untuk admin (`/admin/berkas`), bergaya Google Drive: membuat folder bertingkat, mengunggah beberapa file sekaligus ke dalam folder atau di luar folder, mengubah nama, dan menghapus. Jalur folder (breadcrumb) tampil di atas, dan tombol atau gesture Back naik satu folder. Section **Berkas** ditambahkan di dashboard admin, di bawah Presensi Tentor
+- Halaman **Berkas** untuk tentor (`/tentor/berkas/:id`): melihat folder dan file dari admin, serta mengunduh file dengan nama aslinya. Tentor tidak dapat mengunggah, mengubah nama, atau menghapus. Kartu **Berkas** ditambahkan di dashboard tentor, di bawah Perpanjang Kontrak
+- Daftar berkas menyesuaikan ukuran layar: kolom Ukuran dan Diunggah tampil di desktop, sedangkan di HP keterangannya berada di bawah nama
+- Pesan yang jelas bila file ditolak, misalnya lebih dari 5 MB, jenis file tidak didukung, atau nama kembar
+
 ## [5.2] — 2026-10-28
 
 Rilis frontend: foto profil nyata di Biodata dan dashboard tentor. Tidak ada perubahan backend.

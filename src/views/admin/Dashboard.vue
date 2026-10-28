@@ -109,6 +109,20 @@
         </router-link>
       </section>
 
+      <!-- ===== SECTION: BERKAS ===== -->
+      <section class="dashboard-section">
+        <h2 class="section-title">Berkas</h2>
+        <p class="section-desc">
+          Unggah dan kelola file untuk para tentor, seperti modul dan soal latihan. Tentor hanya bisa
+          mengunduhnya.
+        </p>
+        <router-link to="/admin/berkas" class="section-card card-charcoal">
+          <span class="card-icon"><FolderOpen size="1em" /></span>
+          <span class="card-text">KELOLA BERKAS</span>
+          <span class="card-arrow"><ArrowRight size="1em" /></span>
+        </router-link>
+      </section>
+
       <!-- ===== SECTION: LOWONGAN TENTOR ===== -->
       <section class="dashboard-section">
         <h2 class="section-title">Lowongan Tentor</h2>
@@ -178,6 +192,7 @@ import {
   Users,
   Megaphone,
   Trophy,
+  FolderOpen,
   LogOut,
   ArrowRight,
 } from 'lucide-vue-next'
@@ -386,6 +401,9 @@ const setujuKode = async () => {
 }
 .card-green {
   background: linear-gradient(135deg, #22a559 0%, #178044 100%);
+}
+.card-charcoal {
+  background: linear-gradient(135deg, #36454f 0%, #4A4A4A 100%);
 }
 
 /* ===== TOMBOL LOGOUT (sengaja dibuat kecil, beda dari section-card lain) ===== */

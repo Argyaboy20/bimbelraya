@@ -122,7 +122,23 @@
         </div>
       </section>
 
-      <!-- ===== SECTION 3: LOWONGAN TENTOR ===== -->
+      <!-- ===== SECTION: BERKAS ===== -->
+      <section class="tentor-section">
+        <div class="tentor-card card-berkas">
+          <div class="card-icon-circle"><FolderOpen size="1em" /></div>
+          <div class="card-body">
+            <h2 class="card-title">Berkas</h2>
+            <p class="card-desc">
+              Unduh modul, soal latihan, dan file lain yang disiapkan admin untuk membantumu mengajar.
+            </p>
+            <router-link :to="`/tentor/berkas/${kodeTentor}`" class="card-btn btn-berkas">
+              Lihat Berkas <span class="btn-arrow"><ArrowRight size="1em" /></span>
+            </router-link>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 4: LOWONGAN TENTOR ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-lowongan">
           <div class="card-icon-circle"><Megaphone size="1em" /></div>
@@ -138,7 +154,7 @@
         </div>
       </section>
       
-      <!-- ===== SECTION 4: REWARD BULANAN TENTOR ===== -->
+      <!-- ===== SECTION 5: REWARD BULANAN TENTOR ===== -->
       <section class="tentor-section">
         <div class="tentor-card card-reward">
           <div class="card-icon-circle"><Trophy size="1em" /></div>
@@ -176,7 +192,7 @@ import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
 import { usePresensiStore } from '@/stores/presensi'
 import { ApiError } from '@/api/http'
-import { Clock, FileText, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard } from 'lucide-vue-next'
+import { Clock, FileText, FolderOpen, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard } from 'lucide-vue-next'
 import RewardNotifModal from '@/components/RewardNotifModal.vue'
 import KartuAnggotaModal from '@/components/KartuAnggotaModal.vue'
 
@@ -779,7 +795,16 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #f35c2b 0%, #d6481c 100%);
   box-shadow: 0 6px 16px rgba(243, 92, 43, 0.3);
 }
-
+.card-berkas {
+  border-left-color: #1e5aa8;
+}
+.card-berkas .card-icon-circle {
+  background: linear-gradient(135deg, #1e5aa8 0%, #123c75 100%);
+}
+.btn-berkas {
+  background: linear-gradient(135deg, #1e5aa8 0%, #123c75 100%);
+  box-shadow: 0 6px 16px rgba(18, 60, 117, 0.3);
+}
 .card-lowongan {
   border-left-color: #f3dfa8;
 }

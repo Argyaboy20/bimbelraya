@@ -15,6 +15,7 @@ import DataWaliMurid from '@/views/admin/DataWaliMurid.vue'
 import LaporanPresensi from '@/views/admin/LaporanPresensi.vue'
 import DataLowongan from '@/views/admin/DataLowongan.vue'
 import AdminReward from '@/views/admin/Reward.vue'
+import AdminBerkas from '@/views/admin/Berkas.vue'
 
 // Tentor
 import DashboardTentor from '@/views/tentor/DashboardTentor.vue'
@@ -22,6 +23,7 @@ import TentorBiodata from '@/views/tentor/Biodata.vue'
 import TentorPresensi from '@/views/tentor/Presensi.vue'
 import PerpanjangKontrak from '@/views/tentor/PerpanjangKontrak.vue'
 import TentorReward from '@/views/tentor/RewardTentor.vue'
+import TentorBerkas from '@/views/tentor/Berkas.vue'
 
 const routes = [
   // ===== PUBLIK =====
@@ -88,6 +90,11 @@ const routes = [
         component: AdminReward,
         meta: { requiresAuth: true, role: 'admin', title: 'Reward Tentor' },
       },
+            {
+        path: 'berkas',
+        component: AdminBerkas,
+        meta: { requiresAuth: true, role: 'admin', title: 'Berkas Bimbel Raya' },
+      },
     ],
   },
 
@@ -127,6 +134,11 @@ const routes = [
         path: 'rewardtentor/:id',
         component: TentorReward,
         meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Reward Bulanan Tentor' },
+      },
+      {
+        path: 'berkas/:id',
+        component: TentorBerkas,
+        meta: { requiresAuth: true, role: 'tentor', title: 'Bimbel Raya - Berkas Tentor' },
       },
     ],
   },
