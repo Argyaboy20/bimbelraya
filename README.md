@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 6.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 6.1** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -19,13 +19,14 @@ Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 - **Les Siswa**: tentor mengelola daftar siswa yang diajar
 - **Presensi per siswa** dengan foto kehadiran dan validasi foto langsung di browser
 - Riwayat presensi per siswa dan unduhan **Absen Kehadiran** dalam bentuk gambar PNG
-- **Berkas**: melihat dan mengunduh file (modul, soal, dan lainnya) yang disiapkan admin
+- **Berkas**: membuka pratinjau dan mengunduh file (modul, soal, dan lainnya) yang disiapkan admin
 
 **Portal admin**
 - Dashboard ringkasan dan pembuatan kode tentor
 - Pengelolaan data tentor, data walimurid, dan data lowongan
 - **Laporan presensi**: harian (diperbarui otomatis untuk hari ini) dan rekap bulanan per siswa
 - **Berkas**: mengunggah dan mengelola file dalam folder bertingkat untuk dibagikan ke tentor
+- Nama file dan bagian lain di baris file dapat diklik untuk membuka pratinjau di tab baru
 
 ## Teknologi
 
@@ -141,6 +142,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **5.1** | 2026-10-27 | Penyempurnaan frontend: ikon tombol utama dashboard tentor berwarna putih, tampilan "belum diumumkan" yang lebih menarik, dan kotak ucapan sesuai peringkat di halaman Reward Bulanan Tentor |
 | **5.2** | 2026-10-28 | Foto profil nyata (dari e-kartu) tampil di Biodata dan di tombol profil dashboard tentor, dengan inisial sebagai cadangan, serta tombol profil yang lebih besar di semua ukuran layar |
 | **6.0** | 2026-10-28 | Halaman Berkas bergaya Google Drive: admin mengelola folder bertingkat dan unggahan file (maksimal 5 MB), tentor melihat dan mengunduhnya |
+| **6.1** | 2026-10-29 | Penyempurnaan Berkas: seluruh baris file dapat diklik untuk membuka pratinjau, sementara tombol aksi tetap berfungsi |
 
 ## Kontribusi
 

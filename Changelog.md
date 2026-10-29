@@ -21,7 +21,12 @@ Aturan tambahan:
 
 Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbaiki**, **Dihapus**, dan **Keamanan** (hanya garis besar, tanpa rincian teknis).
 
-## [Belum dirilis]
+## [6.1] — 2026-10-29
+
+Penyempurnaan halaman Berkas di admin dan tentor.
+
+### Diubah
+- Seluruh baris file dapat diklik untuk membuka pratinjau di tab baru, bukan hanya nama file. Tombol aksi tetap berfungsi seperti sebelumnya
 
 ## [6.0] — 2026-10-28
 

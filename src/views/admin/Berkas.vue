@@ -6,7 +6,7 @@
     <div class="page-content">
       <h1 class="page-title">Berkas Bimbel Raya</h1>
       <p class="page-note">
-        File yang diunggah di sini muncul di halaman Berkas semua tentor. Tentor hanya bisa mengunduhnya.
+        File yang diunggah di sini muncul di halaman Berkas semua tentor. Klik nama file untuk membukanya atau unduh.
       </p>
 
       <BerkasManager peran="admin" />

@@ -1,4 +1,4 @@
-<!-- Berkas.vue (tentor): hanya melihat dan mengunduh -->
+<!-- Berkas.vue (tentor): melihat, membuka, dan mengunduh berkas -->
 <template>
   <div class="berkas-tentor-page">
     <div class="page-content">
@@ -8,7 +8,7 @@
         </router-link>
 
         <h1 class="page-title">Berkas</h1>
-        <p class="page-sub">Modul, soal, dan file lain dari admin. Kamu bisa mengunduhnya di sini.</p>
+        <p class="page-sub">Modul, soal, dan file lain dari admin. Klik nama file untuk membuka atau mengunduhnya.</p>
       </div>
 
       <BerkasManager peran="tentor" />

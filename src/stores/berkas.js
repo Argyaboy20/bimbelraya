@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { api } from '@/api/http'
 
-// Halaman Berkas. peran = 'admin' atau 'tentor' (tentor hanya bisa melihat dan mengunduh).
+// Halaman Berkas. peran = 'admin' atau 'tentor' (tentor hanya bisa melihat, membuka pratinjau, dan mengunduh).
 // Semua aturan (ukuran, jenis file, nama kembar) dicek di server; frontend hanya menampilkan hasilnya.
 export const useBerkasStore = defineStore('berkas', {
   actions: {
@@ -32,6 +32,12 @@ export const useBerkasStore = defineStore('berkas', {
       if (folderId) fd.append('folderId', String(folderId))
       fd.append('berkas', file) // file ditaruh terakhir
       return api('/api/admin/berkas/file', { method: 'POST', body: fd, pesan: 'Mengunggah file…' })
+    },
+
+    // ===== Link file sementara (5 menit) =====
+    async linkPratinjau(id, peran) {
+      const data = await api(`/api/${peran}/berkas/file/${id}/pratinjau`, { pesan: 'Membuka file…' })
+      return data.link
     },
 
     // ===== Khusus tentor: link unduh sementara (5 menit) =====

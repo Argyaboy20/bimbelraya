@@ -98,7 +98,14 @@
         </li>
 
         <!-- File -->
-        <li v-for="b in isi.berkas" :key="'f' + b.id" class="baris">
+        <li v-for="b in isi.berkas" :key="'f' + b.id" class="baris baris-file">
+          <button
+            type="button"
+            class="pratinjau-baris"
+            :aria-label="`Buka pratinjau ${b.nama} di tab baru`"
+            :disabled="membukaPratinjau === b.id"
+            @click="bukaPratinjau(b)"
+          ></button>
           <div class="kolom-nama">
             <span class="ikon" :class="kelasFile(b.nama)">
               <component :is="ikonFile(b.nama)" size="1em" />
@@ -217,7 +224,7 @@ import {
 } from 'lucide-vue-next'
 
 const props = defineProps({
-  // 'admin' = bisa kelola (folder, unggah, ubah nama, hapus); 'tentor' = hanya lihat dan unduh
+  // 'admin' = bisa kelola; 'tentor' = hanya lihat, buka, dan unduh
   peran: { type: String, default: 'tentor' },
 })
 const admin = computed(() => props.peran === 'admin')
@@ -361,7 +368,27 @@ async function kirimModal() {
   }
 }
 
-// ===== Unduh (tentor): minta link sementara ke server, lalu browser menyimpan filenya =====
+// ===== Pratinjau dan unduh: minta tautan sementara ke server =====
+const membukaPratinjau = ref(null)
+async function bukaPratinjau(b) {
+  const tab = window.open('about:blank', '_blank')
+  if (!tab) {
+    alert('Tab pratinjau diblokir oleh browser. Izinkan pop-up lalu coba lagi.')
+    return
+  }
+  tab.opener = null
+  membukaPratinjau.value = b.id
+  try {
+    const link = await berkas.linkPratinjau(b.id, props.peran)
+    tab.location.assign(link)
+  } catch (err) {
+    tab.close()
+    alert(err instanceof ApiError ? err.message : 'Gagal membuka file. Coba lagi.')
+  } finally {
+    membukaPratinjau.value = null
+  }
+}
+
 const mengunduh = ref(null)
 async function unduh(b) {
   mengunduh.value = b.id
@@ -551,6 +578,7 @@ async function unduh(b) {
   overflow: hidden;
 }
 .baris {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -562,6 +590,22 @@ async function unduh(b) {
 }
 .baris:not(.baris-kepala):hover {
   background: #f7faff;
+}
+.pratinjau-baris {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.pratinjau-baris:focus-visible {
+  outline: 2px solid #2e87f6;
+  outline-offset: -3px;
+}
+.pratinjau-baris:disabled {
+  cursor: wait;
 }
 .baris-kepala {
   display: none;
@@ -641,6 +685,8 @@ async function unduh(b) {
   display: none;
 }
 .kolom-aksi {
+  position: relative;
+  z-index: 2;
   flex-shrink: 0;
   display: flex;
   align-items: center;
