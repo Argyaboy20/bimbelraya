@@ -21,6 +21,8 @@ Aturan tambahan:
 
 Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbaiki**, **Dihapus**, dan **Keamanan** (hanya garis besar, tanpa rincian teknis).
 
+## [Belum dirilis]
+
 ## [6.1] — 2026-10-29
 
 Penyempurnaan halaman Berkas di admin dan tentor.
