@@ -96,5 +96,12 @@ export const useRewardStore = defineStore('reward', () => {
     status.value[bulan] = { sudahDiumumkan: true, diumumkanPada: hasil.diumumkanPada }
   }
 
-  return { draf, status, peringkatBulan, semuaTerisi, muatBulan, umumkan }
+  // Bulan yang tampil saat halaman dibuka. Ditentukan server: bulan yang belum diumumkan tidak dilewati,
+  // dan bulan yang baru diumumkan tetap tampil 2 hari.
+  async function bulanAktif() {
+    const data = await api('/api/admin/reward/bulan-aktif')
+    return data.bulan
+  }
+
+  return { draf, status, peringkatBulan, semuaTerisi, muatBulan, umumkan, bulanAktif }
 })

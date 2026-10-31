@@ -169,7 +169,16 @@ async function muat() {
   }
 }
 
-onMounted(muat)
+onMounted(async () => {
+  let aktif = bulan.value
+  try {
+    aktif = await rewardStore.bulanAktif()
+  } catch {
+    // gagal mengambil bulan aktif: tetap memakai bulan kalender
+  }
+  if (aktif !== bulan.value) bulan.value = aktif // watch(bulan) di bawah yang memuat datanya
+  else await muat()
+})
 watch(bulan, muat)
 </script>
 

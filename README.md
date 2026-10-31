@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 6.1** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 6.4** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -143,6 +143,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **5.2** | 2026-10-28 | Foto profil nyata (dari e-kartu) tampil di Biodata dan di tombol profil dashboard tentor, dengan inisial sebagai cadangan, serta tombol profil yang lebih besar di semua ukuran layar |
 | **6.0** | 2026-10-28 | Halaman Berkas bergaya Google Drive: admin mengelola folder bertingkat dan unggahan file (maksimal 5 MB), tentor melihat dan mengunduhnya |
 | **6.1** | 2026-10-29 | Penyempurnaan Berkas: seluruh baris file dapat diklik untuk membuka pratinjau, sementara tombol aksi tetap berfungsi |
+| **6.4** | 2026-10-31 | Bulan Reward Tentor menunggu pengumuman: halaman admin dan tentor tidak berganti ke bulan berikutnya sebelum bulan itu diumumkan, dan setelah diumumkan tetap tampil 2 hari sebelum berganti otomatis |
 
 ## Kontribusi
 

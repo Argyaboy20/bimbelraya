@@ -23,6 +23,14 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [6.4] — 2026-10-31
+
+Rilis bersama backend `6.4`: bulan Reward Tentor menunggu pengumuman. Mengikuti urutan nomor backend, nomor `6.2` dan `6.3` tidak dipakai di sini.
+
+### Diubah
+- Halaman Reward Tentor untuk admin kini terbuka pada bulan reward yang ditentukan server: bulan yang belum diumumkan tidak dilewati walau kalender sudah berganti bulan, dan bulan yang baru diumumkan tetap tampil selama 2 hari sebelum otomatis berganti ke bulan berikutnya. Tombol Sebelumnya dan Berikutnya tetap bisa dipakai untuk melihat bulan lain
+- Halaman Reward Bulanan Tentor dan notifikasi juara di dashboard tentor mengikuti bulan reward yang sama dengan admin
+
 ## [6.1] — 2026-10-29
 
 Penyempurnaan halaman Berkas di admin dan tentor.
