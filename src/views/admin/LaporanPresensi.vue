@@ -623,7 +623,7 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
 .presensi-right {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.4rem;
   min-width: 0;
 }
 .presensi-waktu {
@@ -634,6 +634,7 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
 }
 .presensi-materi {
   line-height: 1.5;
+  margin: 0;
   white-space: pre-wrap;
   max-height: 7.5rem;
   overflow-y: auto;
@@ -921,10 +922,10 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
     flex-direction: row;
     align-items: flex-start;
     padding: 1.1rem 1.25rem;
-    gap: 1rem;
+    gap: 0.75rem;
   }
   .presensi-left {
-    min-width: 180px;
+    min-width: 150px;
     flex-shrink: 0;
   }
   .tentor-avatar {
@@ -991,10 +992,10 @@ watch(tampilan, (t) => (t === 'bulanan' ? muatRekap() : muatHarian()))
   .presensi-card {
     padding: 1.25rem 1.5rem;
     border-radius: 16px;
-    gap: 1.25rem;
+    gap: 1rem;
   }
   .presensi-left {
-    min-width: 200px;
+    min-width: 165px;
   }
   .tentor-avatar {
     width: 44px;

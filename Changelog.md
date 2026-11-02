@@ -23,6 +23,13 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [6.6] — 2026-11-02
+
+Rilis frontend: penyempurnaan tampilan Laporan Presensi. Tidak ada perubahan backend. Mengikuti urutan nomor, `6.5` (backend) tidak dipakai di sini.
+
+### Diubah
+- Jarak antar baris keterangan pada kartu presensi di halaman Laporan Presensi admin (absensi, siswa, dan materi) kini seragam dan lebih rapat, dan jarak antara nama tentor dan keterangan di sebelah kanannya pada layar desktop dikurangi. Berlaku untuk tab harian dan rekap bulanan
+
 ## [6.4] — 2026-10-31
 
 Rilis bersama backend `6.4`: bulan Reward Tentor menunggu pengumuman. Mengikuti urutan nomor backend, nomor `6.2` dan `6.3` tidak dipakai di sini.
