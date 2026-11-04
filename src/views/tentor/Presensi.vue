@@ -926,9 +926,11 @@ const downloadPNG = async () => {
 .kop-absen {
   padding: 0.75rem 0.75rem 0.5rem;
   background: #fff;
+  min-width: 500px; /* sama dengan lebar minimal tabel, supaya judul di tengah tabel */
 }
 .kop-atas {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.6rem;
@@ -938,13 +940,15 @@ const downloadPNG = async () => {
   height: 48px;
   object-fit: contain;
   flex-shrink: 0;
+  justify-self: start;
 }
 .kop-spacer {
   width: 48px;
   flex-shrink: 0;
 }
 .kop-judul {
-  flex: 1;
+  white-space: nowrap;
+  padding-left: 0.08em; /* mengimbangi jarak huruf di ujung kanan, supaya benar-benar di tengah */
   margin: 0;
   text-align: center;
   font-size: 1rem;

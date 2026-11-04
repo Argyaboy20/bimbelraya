@@ -43,12 +43,24 @@
       <Camera size="1.15em" class="ikon-inline" /> Ambil Foto
     </button>
     <button v-else type="button" class="btn-retake" @click="ambilUlang"><RefreshCw size="1.15em" class="ikon-inline" /> Ambil Ulang Foto</button>
+    
+    <!-- ===== PILIH DARI GALERI ===== -->
+    <template v-if="!modelValue">
+      <button type="button" class="btn-galeri" :disabled="memeriksaGaleri" @click="pilihDariGaleri">
+        <Images size="1.15em" class="ikon-inline" />
+        {{ memeriksaGaleri ? 'Memeriksa foto...' : 'Pilih dari Galeri' }}
+      </button>
+      <input ref="inputGaleri" type="file" accept="image/*" class="input-galeri" @change="saatFotoGaleri" />
+      <p v-if="galeriError" class="galeri-error" role="alert">
+        <CircleX size="1.15em" class="ikon-inline" /> {{ galeriError }}
+      </p>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Camera, ScanFace, TriangleAlert, User, CircleCheck, CircleX, RefreshCw } from 'lucide-vue-next'
+import { Camera, ScanFace, TriangleAlert, User, CircleCheck, CircleX, RefreshCw, Images } from 'lucide-vue-next'
 
 const props = defineProps({
   label: { type: String, default: 'Upload Foto' },
@@ -177,6 +189,73 @@ const ambilUlang = () => {
       )
       faceCount.value = detections.length
     }, 700)
+  }
+}
+
+
+// ===== PILIH FOTO DARI GALERI (wajib lolos deteksi wajah yang sama dengan kamera) =====
+const inputGaleri = ref(null)
+const galeriError = ref('')
+const memeriksaGaleri = ref(false)
+
+const pilihDariGaleri = () => {
+  galeriError.value = ''
+  inputGaleri.value?.click()
+}
+
+// Muat file menjadi elemen gambar (orientasi foto HP sudah diterapkan browser)
+const muatGambar = (file) =>
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(img)
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('gagal dibaca'))
+    }
+    img.src = url
+  })
+
+const saatFotoGaleri = async (e) => {
+  const file = e.target.files?.[0]
+  e.target.value = '' // supaya foto yang sama bisa dipilih ulang
+  if (!file) return
+  galeriError.value = ''
+
+  if (!file.type.startsWith('image/')) {
+    galeriError.value = 'File harus berupa foto.'
+    return
+  }
+  if (!detectionAvailable.value) {
+    galeriError.value = loadingModel.value
+      ? 'Deteksi wajah belum siap. Tunggu sebentar lalu coba lagi.'
+      : 'Deteksi wajah tidak tersedia, foto dari galeri belum bisa dipakai. Gunakan kamera.'
+    return
+  }
+
+  memeriksaGaleri.value = true
+  try {
+    const img = await muatGambar(file)
+    const skala = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight))
+    const canvas = canvasEl.value
+    canvas.width = Math.round(img.naturalWidth * skala)
+    canvas.height = Math.round(img.naturalHeight * skala)
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+
+    const wajah = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
+    if (wajah.length < props.minFaces) {
+      galeriError.value = `Terdeteksi ${wajah.length} wajah, minimal ${props.minFaces} orang diperlukan. Pilih foto lain.`
+      return
+    }
+    emit('update:modelValue', canvas.toDataURL('image/jpeg', 0.9))
+    stopCamera()
+  } catch {
+    galeriError.value = 'Foto tidak bisa dibaca. Coba foto lain.'
+  } finally {
+    memeriksaGaleri.value = false
   }
 }
 
@@ -323,6 +402,41 @@ onUnmounted(() => {
   background: #2e87f6;
   color: #fff;
 }
+.btn-galeri {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: 1.5px solid #2e87f6;
+  background: #fff;
+  color: #2e87f6;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.btn-galeri:hover:not(:disabled) {
+  background: #2e87f6;
+  color: #fff;
+}
+.btn-galeri:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.input-galeri {
+  display: none;
+}
+.galeri-error {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #b91c1c;
+  background: #fdecec;
+}
 
 .ikon-inline {
   display: inline-block;
@@ -348,6 +462,13 @@ onUnmounted(() => {
   .btn-shutter {
     font-size: 0.9rem;
     padding: 0.8rem;
+  }
+  .btn-galeri {
+    font-size: 0.88rem;
+    padding: 0.75rem;
+  }
+  .galeri-error {
+    font-size: 0.78rem;
   }
 }
 

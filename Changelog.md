@@ -23,6 +23,16 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [6.8] — 2026-11-04
+
+Rilis frontend: foto presensi dari galeri dan perapian judul Absen Kehadiran. Tidak ada perubahan backend. Mengikuti urutan nomor, `6.7` (backend) tidak dipakai di sini.
+
+### Ditambahkan
+- Tombol **Pilih dari Galeri** di bawah tombol Ambil Foto pada halaman Presensi tentor, untuk memakai foto yang sudah ada di galeri. Foto dari galeri juga diperiksa otomatis dan hanya diterima bila terdeteksi minimal 2 wajah, sama seperti foto dari kamera. Foto yang tidak memenuhi syarat ditolak dengan pesan yang jelas, dan foto besar diperkecil otomatis sebelum dikirim
+
+### Diubah
+- Judul "ABSEN KEHADIRAN" pada tabel riwayat presensi kini tepat di tengah secara horizontal di semua ukuran layar, termasuk pada gambar PNG yang diunduh
+
 ## [6.6] — 2026-11-02
 
 Rilis frontend: penyempurnaan tampilan Laporan Presensi. Tidak ada perubahan backend. Mengikuti urutan nomor, `6.5` (backend) tidak dipakai di sini.

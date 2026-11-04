@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 6.6** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 6.8** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -17,7 +17,7 @@ Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 - Pendaftaran dan masuk akun
 - Biodata dan perpanjangan kontrak (disertai persetujuan surat kontrak)
 - **Les Siswa**: tentor mengelola daftar siswa yang diajar
-- **Presensi per siswa** dengan foto kehadiran dan validasi foto langsung di browser
+- **Presensi per siswa** dengan foto kehadiran dari kamera atau galeri, dan validasi foto (minimal 2 wajah) langsung di browser
 - Riwayat presensi per siswa dan unduhan **Absen Kehadiran** dalam bentuk gambar PNG
 - **Berkas**: membuka pratinjau dan mengunduh file (modul, soal, dan lainnya) yang disiapkan admin
 
@@ -145,6 +145,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **6.1** | 2026-10-29 | Penyempurnaan Berkas: seluruh baris file dapat diklik untuk membuka pratinjau, sementara tombol aksi tetap berfungsi |
 | **6.4** | 2026-10-31 | Bulan Reward Tentor menunggu pengumuman: halaman admin dan tentor tidak berganti ke bulan berikutnya sebelum bulan itu diumumkan, dan setelah diumumkan tetap tampil 2 hari sebelum berganti otomatis |
 | **6.6** | 2026-11-02 | Penyempurnaan tampilan Laporan Presensi admin: jarak antar baris keterangan di kartu presensi lebih seragam dan lebih rapat |
+| **6.8** | 2026-11-04 | Foto presensi kini bisa dipilih dari galeri (tetap wajib terdeteksi minimal 2 wajah), dan judul Absen Kehadiran tepat di tengah di semua ukuran layar |
 
 ## Kontribusi
 
