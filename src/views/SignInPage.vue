@@ -236,6 +236,7 @@ const emailError = computed(() => {
   if (!form.email) return 'Email wajib diisi'
   const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
   if (!emailRegex.test(form.email)) return 'Format email tidak valid'
+  if (!/@(gmail|yahoo)\.com$/i.test(form.email)) return 'Email harus berakhiran @gmail.com atau @yahoo.com'
   return ''
 })
 

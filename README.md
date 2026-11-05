@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 6.8** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 7.0** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -12,6 +12,7 @@ Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 - Profil bimbel, program per jenjang (TK, SD, SMP, SMA, dan mengaji), area layanan, testimoni, dan cara bergabung
 - Daftar lowongan tentor
 - Asisten chat berbasis AI untuk pertanyaan umum seputar bimbel
+- Halaman **Kebijakan Privasi** dan **Tentang Sistem**
 
 **Portal tentor**
 - Pendaftaran dan masuk akun
@@ -146,6 +147,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **6.4** | 2026-10-31 | Bulan Reward Tentor menunggu pengumuman: halaman admin dan tentor tidak berganti ke bulan berikutnya sebelum bulan itu diumumkan, dan setelah diumumkan tetap tampil 2 hari sebelum berganti otomatis |
 | **6.6** | 2026-11-02 | Penyempurnaan tampilan Laporan Presensi admin: jarak antar baris keterangan di kartu presensi lebih seragam dan lebih rapat |
 | **6.8** | 2026-11-04 | Foto presensi kini bisa dipilih dari galeri (tetap wajib terdeteksi minimal 2 wajah), dan judul Absen Kehadiran tepat di tengah di semua ukuran layar |
+| **7.0** | 2026-11-05 | Menu navbar tentor dengan halaman Kebijakan Privasi dan Tentang Sistem, navbar yang seragam di semua ukuran layar, kolom Password di Biodata yang baru menampilkan Password Baru saat Edit Profil, pesan gagal masuk yang lebih rapat, dan pendaftaran yang hanya menerima email Gmail atau Yahoo |
 
 ## Kontribusi
 

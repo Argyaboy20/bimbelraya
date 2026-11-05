@@ -7,6 +7,8 @@ import LoginPage from '@/views/LoginPage.vue'
 import SignInPage from '@/views/SignInPage.vue'
 import LoginAdmin from '@/views/LoginAdmin.vue'
 import LowonganTentor from '@/views/Lowongan.vue'
+import PrivasiPage from '@/views/Privasi.vue'
+import TentangPage from '@/views/Tentang.vue'
 
 // Admin
 import AdminDashboard from '@/views/admin/Dashboard.vue'
@@ -52,6 +54,16 @@ const routes = [
     path: '/lowongan',
     component: LowonganTentor,
     meta: { title: 'Bimbel Raya - Lowongan Tentor' },
+  },
+  {
+    path: '/privasi',
+    component: PrivasiPage,
+    meta: { title: 'Bimbel Raya - Kebijakan Privasi' },
+  },
+  {
+    path: '/tentang',
+    component: TentangPage,
+    meta: { title: 'Bimbel Raya - Tentang Sistem' },
   },
 
   // ===== ADMIN (butuh login + role admin) =====

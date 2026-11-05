@@ -49,8 +49,29 @@
           <img src="/assets/logobimbel.png" alt="Logo Bimbel Raya" class="navbar-logo" />
         </div>
 
-        <!-- ===== KANAN: slot kosong, jaga keseimbangan grid ===== -->
-        <div class="right-area"></div>
+        <!-- ===== KANAN: tombol menu ===== -->
+        <div ref="menuEl" class="right-area">
+          <button
+            type="button"
+            class="menu-btn"
+            aria-haspopup="true"
+            :aria-expanded="menuTerbuka"
+            aria-label="Menu"
+            @click="menuTerbuka = !menuTerbuka"
+          >
+            <component :is="menuTerbuka ? X : Menu" size="1em" />
+          </button>
+          <Transition name="menu-turun">
+            <div v-if="menuTerbuka" class="menu-panel" role="menu">
+              <router-link to="/privasi" class="menu-item" role="menuitem" @click="menuTerbuka = false">
+                <ShieldCheck size="1.15em" /> Kebijakan Privasi
+              </router-link>
+              <router-link to="/tentang" class="menu-item" role="menuitem" @click="menuTerbuka = false">
+                <Info size="1.15em" /> Tentang Sistem
+              </router-link>
+            </div>
+          </Transition>
+        </div>
       </nav>
     </header>
 
@@ -192,7 +213,7 @@ import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
 import { usePresensiStore } from '@/stores/presensi'
 import { ApiError } from '@/api/http'
-import { Clock, FileText, FolderOpen, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard } from 'lucide-vue-next'
+import { Clock, FileText, FolderOpen, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard, Menu, X, ShieldCheck, Info } from 'lucide-vue-next'
 import RewardNotifModal from '@/components/RewardNotifModal.vue'
 import KartuAnggotaModal from '@/components/KartuAnggotaModal.vue'
 
@@ -323,6 +344,24 @@ const presensiBulanIni = computed(() => {
 })
 
 const jumlahLogin = computed(() => profil.value?.jumlahLogin ?? '–')
+
+// ===== MENU NAVBAR (Kebijakan Privasi, Tentang Sistem) =====
+const menuTerbuka = ref(false)
+const menuEl = ref(null)
+const tutupBilaDiLuar = (e) => {
+  if (menuTerbuka.value && menuEl.value && !menuEl.value.contains(e.target)) menuTerbuka.value = false
+}
+const tutupDenganEsc = (e) => {
+  if (e.key === 'Escape') menuTerbuka.value = false
+}
+onMounted(() => {
+  document.addEventListener('click', tutupBilaDiLuar)
+  document.addEventListener('keydown', tutupDenganEsc)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', tutupBilaDiLuar)
+  document.removeEventListener('keydown', tutupDenganEsc)
+})
 
 // ===== MODAL E-KARTU =====
 // Terbuka/tutupnya ditandai "#kartu" di alamat. Jadi tombol Back / gesture Back
@@ -667,18 +706,93 @@ onUnmounted(() => {
 
 /* ===== LOGO (mobile: nempel pojok kanan, sama seperti Navbar.vue) ===== */
 .logo-area {
-  order: 3;
-  justify-self: end;
+  order: 2;
+  justify-self: center;
 }
 .navbar-logo {
   height: 30px;
   width: auto;
   filter: brightness(0) invert(1);
 }
-
 /* ===== KANAN (placeholder, jaga grid seimbang) ===== */
 .right-area {
-  order: 2;
+  order: 3;
+  justify-self: end;
+  position: relative;
+}
+/* ===== TOMBOL MENU DAN PANEL ===== */
+.menu-btn {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+.menu-btn:active {
+  transform: scale(0.94);
+}
+.menu-btn:focus-visible {
+  outline: 3px solid #f3dfa8;
+  outline-offset: 2px;
+}
+.menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.6rem);
+  z-index: 20;
+  min-width: 210px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-decoration: none;
+}
+.menu-item:hover {
+  background: #eaf3ff;
+  color: #1d6fd4;
+}
+.menu-turun-enter-active,
+.menu-turun-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+.menu-turun-enter-from,
+.menu-turun-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-turun-enter-active,
+  .menu-turun-leave-active {
+    transition: none;
+  }
 }
 
 /* =====================================================
@@ -969,7 +1083,14 @@ onUnmounted(() => {
   .right-area {
     order: 3;
   }
-
+  .menu-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+  .menu-item {
+    font-size: 0.92rem;
+  }
   .dashboard-content {
     padding-bottom: 2.75rem;
   }
@@ -1051,6 +1172,10 @@ onUnmounted(() => {
     width: 40px;
     height: 40px;
   }
+  .menu-btn {
+    width: 40px;
+    height: 40px;
+  }
   .profile-initial {
     font-size: 1.2rem;
   }
@@ -1095,6 +1220,10 @@ onUnmounted(() => {
     padding: 0.75rem 3rem;
   }
   .profile-icon {
+    width: 45px;
+    height: 45px;
+  }
+  .menu-btn {
     width: 45px;
     height: 45px;
   }

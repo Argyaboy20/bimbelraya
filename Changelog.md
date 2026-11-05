@@ -23,6 +23,20 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.0] — 2026-11-05
+
+Rilis bersama backend `7.0`: penyegaran halaman akun tentor dan penambahan halaman informasi. Mengikuti urutan nomor, `6.9` tidak dipakai.
+
+### Ditambahkan
+- Tombol **menu** di sudut kanan navbar dashboard tentor yang membuka daftar **Kebijakan Privasi** dan **Tentang Sistem**. Menu tertutup bila area di luarnya ditekan atau tombol Esc ditekan
+- Halaman publik **Kebijakan Privasi** (`/privasi`) dan **Tentang Sistem** (`/tentang`) yang dapat dibuka tanpa login, dengan tombol Kembali dan tampilan yang menyesuaikan semua ukuran layar
+
+### Diubah
+- Navbar dashboard tentor kini seragam di semua ukuran layar: profil di kiri, logo di tengah, dan menu di kanan. Sebelumnya di HP logo berada di sudut kanan
+- Pesan gagal masuk di halaman Masuk kini memakai ruang di antara kolom Password dan tombol, sehingga jaraknya tidak lagi lebar
+- Halaman Biodata tentor menampilkan kolom **Password** berupa titik-titik (password asli tidak dapat ditampilkan karena hanya tersimpan dalam bentuk sandi satu arah). Kolom **Password Baru** dengan tombol mata baru muncul setelah tombol Edit Profil ditekan
+- Halaman Daftar kini hanya menerima email berakhiran `@gmail.com` atau `@yahoo.com`, dengan pesan langsung saat mengetik
+
 ## [6.8] — 2026-11-04
 
 Rilis frontend: foto presensi dari galeri dan perapian judul Absen Kehadiran. Tidak ada perubahan backend. Mengikuti urutan nomor, `6.7` (backend) tidak dipakai di sini.

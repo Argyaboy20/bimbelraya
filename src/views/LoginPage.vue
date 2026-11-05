@@ -52,8 +52,11 @@
             <p v-if="touched.password && passwordError" class="field-alert">{{ passwordError }}</p>
           </div>
 
-          <div ref="turnstileEl" class="turnstile-slot"></div>
-          <p v-if="loginError" class="field-alert">{{ loginError }}</p>
+          <!-- Anti-bot + pesan gagal masuk dalam satu blok, supaya tidak menambah jarak ekstra -->
+          <div class="aksi-area" :class="{ 'ada-alert': loginError }">
+            <div ref="turnstileEl" class="turnstile-slot"></div>
+            <p v-if="loginError" class="field-alert login-alert">{{ loginError }}</p>
+          </div>
           <!-- Tombol Masuk -->
           <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">Masuk</button>
 
@@ -395,12 +398,27 @@ const handleSubmit = async () => {
 .field-input.is-error:focus {
   box-shadow: 0 0 0 3px rgba(243, 92, 43, 0.12);
 }
-
 .field-alert {
   font-size: 0.72rem;
   color: #f35c2b;
   margin-top: 0.35rem;
   line-height: 1.3;
+}
+
+/* Blok anti-bot dan pesan gagal masuk */
+.aksi-area {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: 0.3rem;
+}
+/* Saat ada pesan, blok ini memakai ruang kosong di antara Password dan tombol */
+.aksi-area.ada-alert {
+  margin: -0.45rem 0;
+}
+.login-alert {
+  margin: 0;
+  text-align: left;
 }
 
 /* ===== PASSWORD INPUT ===== */

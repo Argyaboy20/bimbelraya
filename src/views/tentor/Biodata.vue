@@ -30,7 +30,7 @@
         </p>
 
         <!-- Nama Tentor -->
-        <div class="field-group">
+        <div v-if="isEditing" class="field-group">
           <label class="field-label">Nama Tentor</label>
           <input
             type="text"
@@ -85,6 +85,18 @@
           <p v-if="isEditing && touched.email && emailError" class="field-alert">
             {{ emailError }}
           </p>
+        </div>
+
+        <!-- Password: hanya tampilan titik-titik (password asli tidak pernah bisa dibaca, hanya disimpan sebagai hash) -->
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input
+            type="text"
+            class="field-input"
+            value="••••••••"
+            disabled
+            aria-label="Password (tersembunyi)"
+          />
         </div>
 
         <!-- Password Baru (opsional) -->
