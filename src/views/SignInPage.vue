@@ -78,16 +78,35 @@
           <!-- Email -->
           <div class="field-group">
             <label class="field-label">Email</label>
-            <input
-              type="text"
-              class="field-input"
-              :class="{ 'is-error': touched.email && emailError }"
-              v-model="form.email"
-              @focus="touched.email = true"
-              @blur="touched.email = true"
-              placeholder="nama@email.com"
-            />
+            <div class="email-wrap">
+              <input
+                type="text"
+                class="field-input"
+                :class="{ 'is-error': touched.email && emailError, 'is-valid': emailTerverifikasi }"
+                v-model="form.email"
+                @focus="touched.email = true"
+                @blur="touched.email = true"
+                placeholder="nama@email.com"
+              />
+              <CircleCheck v-if="emailTerverifikasi" class="email-centang" size="1.2em" />
+            </div>
             <p v-if="touched.email && emailError" class="field-alert">{{ emailError }}</p>
+            <template v-else-if="!emailError">
+              <p v-if="emailTerverifikasi" class="field-alert field-success">Email sudah terverifikasi</p>
+              <template v-else>
+                <button
+                  type="button"
+                  class="link-verifikasi"
+                  :disabled="mengirimEmail || jeda > 0"
+                  @click="kirimVerifikasi"
+                >
+                  {{ labelVerifikasi }}
+                </button>
+                <p v-if="emailPesan" class="field-alert" :class="{ 'field-success': emailPesanOk }">
+                  {{ emailPesan }}
+                </p>
+              </template>
+            </template>
           </div>
 
           <!-- Password -->
@@ -164,12 +183,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api, ApiError } from '@/api/http'
 import { buatTurnstile } from '@/utils/turnstile'
 import TombolMata from '@/components/TombolMata.vue'
+import { CircleCheck } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -271,6 +291,7 @@ const isFormValid = computed(() => {
     !nameError.value &&
     !waError.value &&
     !emailError.value &&
+    emailTerverifikasi.value &&
     !passwordError.value &&
     !confirmError.value &&
     !kodeError.value
@@ -280,11 +301,122 @@ const isFormValid = computed(() => {
 // Turnstile (anti-bot): dipasang saat halaman dibuka, dilepas saat ditutup
 const turnstileEl = ref(null)
 let turnstile = null
+
+// ===== VERIFIKASI EMAIL =====
+// 'belum' → 'menunggu' (link sudah dikirim) → 'terverifikasi' (tombol di email sudah ditekan)
+const statusEmail = ref('belum')
+const mengirimEmail = ref(false)
+const emailPesan = ref('')
+const emailPesanOk = ref(false)
+const jeda = ref(0) // hitung mundur kirim ulang (detik)
+const emailTerverifikasi = computed(() => statusEmail.value === 'terverifikasi')
+const labelVerifikasi = computed(() => {
+  if (mengirimEmail.value) return 'Mengirim...'
+  if (statusEmail.value === 'belum') return 'Verifikasi Email'
+  return jeda.value > 0 ? `Kirim ulang (${jeda.value} dtk)` : 'Kirim ulang link'
+})
+
+let emailDikirim = ''
+let timerCek = null
+let timerJeda = null
+let batasCek = 0
+
+const hentikanCek = () => {
+  clearInterval(timerCek)
+  timerCek = null
+}
+const hentikanJeda = () => {
+  clearInterval(timerJeda)
+  timerJeda = null
+  jeda.value = 0
+}
+const mulaiJeda = (detik) => {
+  hentikanJeda()
+  jeda.value = detik
+  timerJeda = setInterval(() => {
+    jeda.value -= 1
+    if (jeda.value <= 0) hentikanJeda()
+  }, 1000)
+}
+
+// Cek apakah tombol di email sudah ditekan (berhenti sendiri setelah 30 menit)
+const cekStatus = async () => {
+  if (statusEmail.value !== 'menunggu') return
+  if (Date.now() > batasCek) {
+    hentikanCek()
+    return
+  }
+  const email = emailDikirim
+  try {
+    const data = await api('/api/auth/tentor/email/status', {
+      method: 'POST',
+      auth: false,
+      body: { email },
+    })
+    if (data.terverifikasi && statusEmail.value === 'menunggu' && email === emailDikirim) {
+      statusEmail.value = 'terverifikasi'
+      emailPesan.value = ''
+      hentikanCek()
+    }
+  } catch {
+    // diabaikan, dicoba lagi pada putaran berikutnya
+  }
+}
+
+const kirimVerifikasi = async () => {
+  if (emailError.value || mengirimEmail.value || jeda.value > 0) return
+  mengirimEmail.value = true
+  emailPesan.value = ''
+  try {
+    const email = form.email.trim()
+    const turnstileToken = turnstile ? await turnstile.ambilTokenLonggar() : ''
+    const data = await api('/api/auth/tentor/email/kirim', {
+      method: 'POST',
+      auth: false,
+      body: { email, turnstileToken },
+    })
+    emailDikirim = email
+    statusEmail.value = 'menunggu'
+    emailPesan.value = data.message
+    emailPesanOk.value = true
+    mulaiJeda(60)
+    batasCek = Date.now() + 30 * 60 * 1000
+    hentikanCek()
+    timerCek = setInterval(cekStatus, 6000)
+  } catch (err) {
+    emailPesan.value = err instanceof ApiError ? err.message : 'Gagal mengirim. Coba lagi.'
+    emailPesanOk.value = false
+  } finally {
+    mengirimEmail.value = false
+  }
+}
+
+// Email diubah setelah dikirim atau diverifikasi → mulai dari awal
+watch(
+  () => form.email,
+  () => {
+    if (statusEmail.value === 'belum' && !emailPesan.value) return
+    statusEmail.value = 'belum'
+    emailPesan.value = ''
+    hentikanCek()
+    hentikanJeda()
+  },
+)
+
+// Kembali ke tab ini (misalnya setelah membuka email di aplikasi lain) → cek status langsung
+const saatTampil = () => {
+  if (document.visibilityState === 'visible') cekStatus()
+}
+
 onMounted(() => {
   turnstile = buatTurnstile(turnstileEl.value)
+  document.addEventListener('visibilitychange', saatTampil)
 })
 onUnmounted(() => {
   if (turnstile) turnstile.hancurkan()
+  document.removeEventListener('visibilitychange', saatTampil)
+  hentikanCek()
+  hentikanJeda()
 })
 
 // ===== SUBMIT =====
@@ -310,6 +442,7 @@ const handleSubmit = async () => {
     })
   } catch (err) {
     submitError.value = err instanceof ApiError ? err.message : 'Terjadi kesalahan. Coba lagi.'
+    if (err instanceof ApiError && err.message.startsWith('Email belum diverifikasi')) statusEmail.value = 'belum'
     isSubmitting.value = false
     return
   }
@@ -534,6 +667,39 @@ const handleSubmit = async () => {
 .field-alert.field-success {
   color: #16a34a;
 }
+/* ===== VERIFIKASI EMAIL ===== */
+.email-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.email-wrap .field-input.is-valid {
+  padding-right: 2.5rem;
+}
+.email-centang {
+  position: absolute;
+  right: 0.75rem;
+  color: #16a34a;
+  pointer-events: none;
+}
+.link-verifikasi {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #2E87F6;
+  cursor: pointer;
+}
+.link-verifikasi:hover:not(:disabled) {
+  text-decoration: underline;
+}
+.link-verifikasi:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
 
 /* ===== PHONE INPUT ===== */
 .phone-input-wrap {
@@ -691,6 +857,9 @@ const handleSubmit = async () => {
   }
   .field-alert {
     font-size: 0.74rem;
+  }
+  .link-verifikasi {
+    font-size: 0.82rem;
   }
   .phone-prefix {
     padding: 0 0.75rem;

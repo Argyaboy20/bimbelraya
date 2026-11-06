@@ -9,6 +9,7 @@ import LoginAdmin from '@/views/LoginAdmin.vue'
 import LowonganTentor from '@/views/Lowongan.vue'
 import PrivasiPage from '@/views/Privasi.vue'
 import TentangPage from '@/views/Tentang.vue'
+import VerifikasiEmail from '@/views/VerifikasiEmail.vue'
 
 // Admin
 import AdminDashboard from '@/views/admin/Dashboard.vue'
@@ -64,6 +65,11 @@ const routes = [
     path: '/tentang',
     component: TentangPage,
     meta: { title: 'Bimbel Raya - Tentang Sistem' },
+  },
+  {
+    path: '/verifikasi-email',
+    component: VerifikasiEmail,
+    meta: { title: 'Bimbel Raya - Verifikasi Email' },
   },
 
   // ===== ADMIN (butuh login + role admin) =====

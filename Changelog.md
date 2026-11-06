@@ -23,6 +23,18 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.1] — 2026-11-06
+
+Rilis bersama backend `7.1`: verifikasi email pada pendaftaran tentor.
+
+### Ditambahkan
+- Tautan **Verifikasi Email** di bawah kolom Email pada halaman Daftar, yang muncul setelah format email valid (`@gmail.com` atau `@yahoo.com`). Ditekan, sistem mengirim email berisi tombol **Verifikasikan Email**. Tersedia tombol kirim ulang dengan hitung mundur 60 detik
+- Setelah tombol di email ditekan, halaman Daftar yang masih terbuka otomatis menampilkan ceklis di ujung kanan kolom Email dan teks **Email sudah terverifikasi**. Statusnya juga dicek saat pengguna kembali ke tab pendaftaran
+- Halaman publik **Verifikasi Email** (`/verifikasi-email`) yang terbuka dari tombol di email, menampilkan hasil verifikasi atau penjelasan bila link tidak valid atau sudah kedaluwarsa
+
+### Diubah
+- Tombol Daftar Tentor baru aktif setelah email terverifikasi. Bila email diubah sesudah diverifikasi, verifikasi diminta ulang
+
 ## [7.0] — 2026-11-05
 
 Rilis bersama backend `7.0`: penyegaran halaman akun tentor dan penambahan halaman informasi. Mengikuti urutan nomor, `6.9` tidak dipakai.
