@@ -88,6 +88,110 @@ const faceCount = ref(0)
 let detectInterval = null
 let faceapi = null
 
+// ===== DETEKSI WAJAH BERTAHAP =====
+// Tahap 1: gambar apa adanya. Tahap 2 (hanya bila wajah masih kurang): salinan yang dicerahkan dan
+// dikontraskan otomatis, dengan ambang lebih longgar. Cocok untuk foto redup atau membelakangi cahaya.
+let pantauAktif = false
+
+// Salinan gambar dengan kecerahan dan kontras diperbaiki (dibuat baru tiap panggilan)
+const perbaikiCahaya = (sumber) => {
+  const asliW = sumber.videoWidth || sumber.width
+  const asliH = sumber.videoHeight || sumber.height
+  const skala = Math.min(1, 640 / asliW)
+  const w = Math.max(1, Math.round(asliW * skala))
+  const h = Math.max(1, Math.round(asliH * skala))
+  const kanvas = document.createElement('canvas')
+  kanvas.width = w
+  kanvas.height = h
+  const ctx = kanvas.getContext('2d', { willReadFrequently: true })
+  ctx.drawImage(sumber, 0, 0, w, h)
+  const gambar = ctx.getImageData(0, 0, w, h)
+  const d = gambar.data
+
+  // Sebaran kecerahan
+  const hist = new Uint32Array(256)
+  let jumlah = 0
+  for (let i = 0; i < d.length; i += 4) {
+    const v = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) | 0
+    hist[v]++
+    jumlah += v
+  }
+  const total = w * h
+  const rata = jumlah / total / 255
+
+  // Regangkan kontras (abaikan 2% paling gelap dan paling terang)
+  let acc = 0
+  let bawah = 0
+  let atas = 255
+  for (let v = 0; v < 256; v++) {
+    acc += hist[v]
+    if (acc >= total * 0.02) {
+      bawah = v
+      break
+    }
+  }
+  acc = 0
+  for (let v = 255; v >= 0; v--) {
+    acc += hist[v]
+    if (acc >= total * 0.02) {
+      atas = v
+      break
+    }
+  }
+  const rentang = Math.max(40, atas - bawah)
+
+  // Terangkan bila gambar gelap (gamma < 1 mencerahkan)
+  const gamma = rata < 0.5 ? Math.min(1, Math.max(0.35, Math.log(0.5) / Math.log(Math.max(rata, 0.05)))) : 1
+
+  const tabel = new Uint8Array(256)
+  for (let v = 0; v < 256; v++) {
+    const x = Math.min(1, Math.max(0, (v - bawah) / rentang))
+    tabel[v] = Math.round(255 * Math.pow(x, gamma))
+  }
+  for (let i = 0; i < d.length; i += 4) {
+    d[i] = tabel[d[i]]
+    d[i + 1] = tabel[d[i + 1]]
+    d[i + 2] = tabel[d[i + 2]]
+  }
+  ctx.putImageData(gambar, 0, 0)
+  return kanvas
+}
+
+// Jumlah wajah terdeteksi pada video atau canvas
+const hitungWajah = async (sumber) => {
+  const tahap1 = await faceapi.detectAllFaces(
+    sumber,
+    new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.4 }),
+  )
+  if (tahap1.length >= props.minFaces) return tahap1.length
+
+  const diperbaiki = perbaikiCahaya(sumber)
+  const tahap2 = await faceapi.detectAllFaces(
+    diperbaiki,
+    new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.3 }),
+  )
+  return Math.max(tahap1.length, tahap2.length)
+}
+
+// Pantau jumlah wajah di kamera: satu putaran selesai dulu, baru 0,5 detik kemudian putaran berikutnya
+const mulaiPantau = () => {
+  if (pantauAktif) return
+  pantauAktif = true
+  const putaran = async () => {
+    if (!pantauAktif) return
+    const video = videoEl.value
+    if (video && !props.modelValue && video.readyState >= 2 && video.videoWidth > 0) {
+      try {
+        faceCount.value = await hitungWajah(video)
+      } catch {
+        // satu putaran gagal: abaikan, coba lagi di putaran berikutnya
+      }
+    }
+    if (pantauAktif) detectInterval = setTimeout(putaran, 500)
+  }
+  putaran()
+}
+
 const faceStatusClass = computed(() => {
   if (!cameraReady.value || loadingModel.value) return 'status-info'
   if (!detectionAvailable.value) return 'status-warning'
@@ -123,8 +227,9 @@ const stopCamera = () => {
     mediaStream.getTracks().forEach((track) => track.stop())
     mediaStream = null
   }
+  pantauAktif = false
   if (detectInterval) {
-    clearInterval(detectInterval)
+    clearTimeout(detectInterval)
     detectInterval = null
   }
 }
@@ -142,15 +247,8 @@ const loadFaceDetection = async () => {
     detectionAvailable.value = true
     loadingModel.value = false
 
-    // Deteksi berulang tiap 700ms selama kamera masih live
-    detectInterval = setInterval(async () => {
-      if (!videoEl.value || props.modelValue) return
-      const detections = await faceapi.detectAllFaces(
-        videoEl.value,
-        new faceapi.TinyFaceDetectorOptions(),
-      )
-      faceCount.value = detections.length
-    }, 700)
+    // Pantau jumlah wajah selama kamera masih live
+    mulaiPantau()
   } catch {
     // Model gagal dimuat (offline/CDN bermasalah) → fallback manual
     detectionAvailable.value = false
@@ -180,16 +278,7 @@ const ambilUlang = () => {
   faceCount.value = 0
   cameraReady.value = false
   startCamera()
-  if (detectionAvailable.value) {
-    detectInterval = setInterval(async () => {
-      if (!videoEl.value || props.modelValue) return
-      const detections = await faceapi.detectAllFaces(
-        videoEl.value,
-        new faceapi.TinyFaceDetectorOptions(),
-      )
-      faceCount.value = detections.length
-    }, 700)
-  }
+  if (detectionAvailable.value) mulaiPantau()
 }
 
 
@@ -245,9 +334,9 @@ const saatFotoGaleri = async (e) => {
     canvas.height = Math.round(img.naturalHeight * skala)
     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
 
-    const wajah = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
-    if (wajah.length < props.minFaces) {
-      galeriError.value = `Terdeteksi ${wajah.length} wajah, minimal ${props.minFaces} orang diperlukan. Pilih foto lain.`
+    const jumlahWajah = await hitungWajah(canvas)
+    if (jumlahWajah < props.minFaces) {
+      galeriError.value = `Terdeteksi ${jumlahWajah} wajah, minimal ${props.minFaces} orang diperlukan. Pilih foto lain.`
       return
     }
     emit('update:modelValue', canvas.toDataURL('image/jpeg', 0.9))

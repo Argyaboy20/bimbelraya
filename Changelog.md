@@ -23,6 +23,16 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.2] — 2026-11-10
+
+Rilis frontend: deteksi wajah pada foto presensi lebih akurat. Tidak ada perubahan backend.
+
+### Diperbaiki
+- Foto presensi dengan 2 orang yang sebelumnya tidak terdeteksi, terutama saat cahaya redup atau membelakangi cahaya, kini lebih mudah terdeteksi. Pemeriksaan jumlah wajah dilakukan bertahap: percobaan pertama lebih peka, dan bila wajah masih kurang, percobaan kedua memeriksa salinan foto yang dicerahkan dan dikontraskan otomatis. Berlaku untuk foto dari kamera dan dari galeri
+
+### Diubah
+- Pemantauan wajah di kamera kini berjalan berurutan (tidak lagi bertumpuk), sehingga lebih ringan di HP
+
 ## [7.1] — 2026-11-06
 
 Rilis bersama backend `7.1`: verifikasi email pada pendaftaran tentor.
