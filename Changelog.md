@@ -23,6 +23,16 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.3] — 2026-11-14
+
+Rilis frontend: ilustrasi pada section Jam Layanan dan Siap Bergabung Bersama Kami, serta tampilan carousel hero yang lebih bergaya 3D.
+
+### Ditambahkan
+- Ilustrasi di kiri dan kanan section Jam Layanan dan Siap Bergabung Bersama Kami. Di HP dan tablet gambar tampil di bawah isi section, di desktop di kedua sisi isi.
+
+### Diubah
+- Carousel foto di hero: kartu samping kini miring menghadap ke tengah dan makin redup menjauhi tengah, tanpa sudut membulat dan bayangan kotak.
+
 ## [7.2] — 2026-11-10
 
 Rilis frontend: deteksi wajah pada foto presensi lebih akurat. Tidak ada perubahan backend.

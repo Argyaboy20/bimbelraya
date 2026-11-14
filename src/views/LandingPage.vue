@@ -120,6 +120,11 @@
 
     <!-- ===== JAM LAYANAN ===== -->
     <section class="jam-layanan animate-section" ref="sectionJamLayanan">
+      <div class="sisi-layout">
+        <div class="sisi-ilustrasi sisi-kiri" aria-hidden="true">
+          <img src="/assets/ilustrasi/jam.svg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="sisi-isi">
       <h2 class="section-title">Jam Layanan</h2>
 
       <!-- Jam digital realtime -->
@@ -141,6 +146,11 @@
           <div class="jam-card-icon"><Sun size="1em" /></div>
           <div class="jam-card-hari">Sabtu & Minggu</div>
           <div class="jam-card-waktu">09.00 – 17.00</div>
+        </div>
+      </div>
+        </div>
+        <div class="sisi-ilustrasi sisi-kanan sisi-cermin" aria-hidden="true">
+          <img src="/assets/ilustrasi/jam.svg" alt="" loading="lazy" decoding="async" />
         </div>
       </div>
     </section>
@@ -267,12 +277,22 @@
     <!-- ===== CTA ===== -->
     <!-- Ref="sectionCta" untuk scroll animation dari kiri -->
     <section class="cta animate-section" ref="sectionCta">
-      <h2 class="cta-title">Siap Bergabung Bersama Kami?</h2>
-      <p class="cta-desc">
-        Daftarkan diri sekarang dan mulai perjalanan belajar yang menyenangkan bersama tentor-tentor
-        terbaik Bimbel Raya.
-      </p>
-      <button class="btn-cta" @click="openModal">Daftar Sekarang</button>
+      <div class="sisi-layout">
+        <div class="sisi-ilustrasi sisi-kiri sisi-panel" aria-hidden="true">
+          <img src="/assets/ilustrasi/bergabung-kiri.svg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="sisi-isi">
+          <h2 class="cta-title">Siap Bergabung Bersama Kami?</h2>
+          <p class="cta-desc">
+            Daftarkan diri sekarang dan mulai perjalanan belajar yang menyenangkan bersama
+            tentor-tentor terbaik Bimbel Raya.
+          </p>
+          <button class="btn-cta" @click="openModal">Daftar Sekarang</button>
+        </div>
+        <div class="sisi-ilustrasi sisi-kanan sisi-panel" aria-hidden="true">
+          <img src="/assets/ilustrasi/bergabung-kanan.svg" alt="" loading="lazy" decoding="async" />
+        </div>
+      </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
@@ -708,14 +728,18 @@ const total = carouselImages.value.length
 const getCardStyle = (index) => {
   let offset = (((index - current.value) % total) + total) % total
   if (offset > total / 2) offset -= total
-  const z = -Math.abs(offset) * 80
-  const x = offset * 140
-  const scale = 1 - Math.abs(offset) * 0.12
-  const opacity = Math.abs(offset) > 2 ? 0 : 1 - Math.abs(offset) * 0.25
+  const jarak = Math.abs(offset)
+  const z = -jarak * 80
+  const x = offset * 130
+  const scale = 1 - jarak * 0.1
+  const miring = offset * -35 // kartu kanan miring ke kiri, kartu kiri miring ke kanan
+  const opacity = jarak > 2 ? 0 : 1 - jarak * 0.2
+  const gelap = 1 - jarak * 0.18 // makin jauh makin redup, memberi kesan kedalaman
   return {
-    transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) scale(${scale})`,
+    transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${miring}deg) scale(${scale})`,
     opacity,
-    zIndex: 10 - Math.abs(offset),
+    filter: `brightness(${gelap})`,
+    zIndex: 10 - jarak,
   }
 }
 
@@ -1025,9 +1049,10 @@ onUnmounted(() => {
   width: 160px;
   height: 200px;
   transform-origin: center center;
-  border-radius: 16px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(2, 75, 170, 0.3);
+  box-shadow: none;
+  backface-visibility: hidden;
   transition:
     transform 0.8s cubic-bezier(0.25, 1, 0.5, 1),
     opacity 0.8s;
@@ -1968,6 +1993,57 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
+/* ===== ILUSTRASI SAMPING (Jam Layanan & CTA, rilis 7.3) ===== */
+/* HP (default): isi di atas, dua gambar berdampingan di bawahnya */
+.sisi-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'isi isi'
+    'kiri kanan';
+  column-gap: 1rem;
+  row-gap: 1.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.sisi-isi {
+  grid-area: isi;
+}
+.sisi-kiri {
+  grid-area: kiri;
+}
+.sisi-kanan {
+  grid-area: kanan;
+}
+.sisi-ilustrasi {
+  display: block;
+  width: 100%;
+  max-width: 170px;
+  align-self: end;
+}
+.sisi-kiri {
+  justify-self: end;
+}
+.sisi-kanan {
+  justify-self: start;
+}
+.sisi-ilustrasi img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+}
+.sisi-cermin img {
+  transform: scaleX(-1);
+}
+/* Latar putih lembut supaya gambar tetap jelas di atas biru CTA */
+.sisi-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 20px;
+  padding: 0.75rem;
+  box-shadow: 0 12px 40px rgba(2, 40, 100, 0.25);
+}
 
 /* =====================================================
    RESPONSIVE — Mobile-first
@@ -2131,6 +2207,21 @@ onUnmounted(() => {
   .kontak-grid {
     grid-template-columns: repeat(2, 1fr);
     max-width: 600px;
+  }
+  .sisi-layout {
+    max-width: 640px;
+    column-gap: 1.5rem;
+    row-gap: 2rem;
+  }
+  .sisi-ilustrasi {
+    max-width: 250px;
+  }
+  .sisi-ilustrasi img {
+    max-height: 210px;
+  }
+  .sisi-panel {
+    border-radius: 24px;
+    padding: 1rem;
   }
 }
 
@@ -2351,6 +2442,21 @@ onUnmounted(() => {
   .kontak-handle {
     font-size: 0.82rem;
   }
+  .sisi-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem) minmax(0, 1fr);
+    grid-template-areas: 'kiri isi kanan';
+    column-gap: 1rem;
+    row-gap: 0;
+    max-width: 1100px;
+    align-items: center;
+  }
+  .sisi-ilustrasi {
+    max-width: 100%;
+    align-self: center;
+  }
+  .sisi-ilustrasi img {
+    max-height: 260px;
+  }
 }
 
 /* ===== LARGE DESKTOP (≥ 1024px) ===== */
@@ -2413,6 +2519,13 @@ onUnmounted(() => {
   }
   .kontak-grid {
     max-width: 780px;
+  }
+  .sisi-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem) minmax(0, 1fr);
+    column-gap: 2.5rem;
+  }
+  .sisi-ilustrasi img {
+    max-height: 320px;
   }
 }
 </style>
