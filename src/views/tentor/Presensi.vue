@@ -211,7 +211,7 @@
                 </td>
               </tr>
               <tr v-for="(item, index) in riwayat" :key="index">
-                <td class="col-no">{{ riwayat.length - index }}</td>
+                <td class="col-no">{{ index + 1 }}</td>
                 <td>{{ item.hariTanggalDisplay }}</td>
                 <td class="col-materi">{{ item.materi }}</td>
                 <td class="col-kehadiran">
@@ -265,10 +265,11 @@ const kodeTentor = route.params.id
 const hariIniKey = () =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date())
 
-const kurangiHari = (key, n) => {
-  const d = new Date(key + 'T00:00:00Z')
-  d.setUTCDate(d.getUTCDate() - n)
-  return d.toISOString().slice(0, 10)
+// Tanggal pertama dan terakhir bulan dari sebuah tanggal (YYYY-MM-DD)
+const awalBulan = (key) => key.slice(0, 7) + '-01'
+const akhirBulan = (key) => {
+  const [tahun, bulan] = key.split('-').map(Number)
+  return new Date(Date.UTC(tahun, bulan, 0)).toISOString().slice(0, 10)
 }
 
 const formatHariTanggal = (dateKeyStr) => {
@@ -396,13 +397,13 @@ const hapusSiswa = async (s) => {
 
 // ===== VALIDASI =====
 // Aturan server: hari ini atau sampai 2 hari ke belakang, tidak boleh tanggal depan
-const maxTanggal = computed(() => hariIniKey())
-const minTanggal = computed(() => kurangiHari(hariIniKey(), 2))
+const maxTanggal = computed(() => akhirBulan(hariIniKey()))
+const minTanggal = computed(() => awalBulan(hariIniKey()))
 
 const tanggalError = computed(() => {
   if (!form.tanggal) return 'Tanggal wajib diisi'
   if (form.tanggal < minTanggal.value || form.tanggal > maxTanggal.value) {
-    return 'Tanggal hanya boleh hari ini atau sampai 2 hari ke belakang'
+    return 'Tanggal hanya boleh berada di bulan ini'
   }
   return ''
 })
@@ -471,7 +472,14 @@ const submitPresensi = async () => {
 }
 
 // ===== RIWAYAT PRESENSI TENTOR INI =====
-const riwayat = computed(() => (siswaTerpilih.value ? presensiStore.riwayatSaya : []))
+// Urut dari tanggal kecil ke besar; tanggal sama diurutkan menurut waktu pengisian
+const riwayat = computed(() =>
+  siswaTerpilih.value
+    ? [...presensiStore.riwayatSaya].sort((a, b) =>
+        a.tanggalKey < b.tanggalKey ? -1 : a.tanggalKey > b.tanggalKey ? 1 : a.id - b.id,
+      )
+    : [],
+)
 
 onMounted(async () => {
   try {

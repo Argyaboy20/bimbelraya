@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 7.3** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 7.4** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -151,6 +151,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **7.1** | 2026-11-06 | Verifikasi email pada pendaftaran tentor: tautan Verifikasi Email di halaman Daftar, email berisi tombol verifikasi, dan halaman konfirmasi `/verifikasi-email` |
 | **7.2** | 2026-11-10 | Deteksi 2 wajah pada foto presensi lebih akurat, termasuk saat cahaya redup, untuk foto dari kamera maupun galeri |
 | **7.3** | 2026-11-14 | Ilustrasi pada Jam Layanan dan Siap Bergabung, hero carousel bergaya 3D |
+| **7.4** | 2026-11-16 | Rilis bersama backend 7.4: tanggal presensi tentor bebas di bulan berjalan (tanggal 1 sampai akhir bulan), tidak lagi hanya 2 hari ke belakang. Urutan riwayat presensi diperbaiki |
 
 ## Kontribusi
 

@@ -23,6 +23,13 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.4] — 2026-11-16
+
+Rilis bersama frontend `7.4`: tanggal presensi tentor sebulan penuh. Tidak ada perubahan skema database. Mengikuti urutan nomor, `7.2` dan `7.3` (frontend) tidak dipakai di sini.
+
+### Diubah
+- Tanggal presensi tentor kini bebas dipilih di bulan berjalan (zona waktu Jakarta), dari tanggal 1 sampai akhir bulan, termasuk tanggal yang belum tiba. Sebelumnya hanya hari ini dan sampai 2 hari ke belakang. Tanggal di luar bulan berjalan ditolak oleh server
+
 ## [7.3] — 2026-11-14
 
 Rilis frontend: ilustrasi pada section Jam Layanan dan Siap Bergabung Bersama Kami, serta tampilan carousel hero yang lebih bergaya 3D.
