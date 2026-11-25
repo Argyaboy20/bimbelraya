@@ -23,6 +23,15 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.6] — 2026-11-25
+
+Rilis bersama backend `7.6`: asisten AI di dashboard tentor.
+
+### Ditambahkan
+- Bubble chat asisten AI khusus tentor di dashboard, di sudut kanan bawah. Awan chat bertuliskan "Hai! Aku asisten AI Bimbel Raya siap membantumu!" naik dari bawah, lalu menutup menjadi ikon. Asisten ini terpisah dari asisten di landing page: ikon dan warnanya berbeda, dan pengetahuannya berasal dari SOP Bimbel Raya serta cara memakai aplikasi tentor
+- Jendela chat menampilkan sisa pertanyaan hari ini (jatah 10 pertanyaan per hari per akun). Saat jatah habis, kolom ketik dinonaktifkan
+- Setiap pesan di dalam chat muncul dengan animasi mantul yang halus, dan dimatikan otomatis bagi pengguna yang memilih gerakan minimal
+
 ## [7.5] — 2026-11-25
 
 Rilis bersama backend `7.5`: data tentor di e-kartu, tombol navbar landing page, dan navbar dashboard tentor.

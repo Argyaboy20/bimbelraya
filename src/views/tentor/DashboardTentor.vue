@@ -205,6 +205,9 @@
 
     <!-- ===== NOTIF REWARD BULANAN ===== -->
     <RewardNotifModal />
+
+    <!-- ===== ASISTEN AI TENTOR ===== -->
+    <TentorChatBubble />
   </div>
 </template>
 
@@ -219,6 +222,7 @@ import { ApiError } from '@/api/http'
 import { Clock, FileText, FolderOpen, Megaphone, Trophy, ArrowRight, TriangleAlert, AlarmClock, CalendarCheck, LogIn, CreditCard, Menu, X, ShieldCheck, Info } from 'lucide-vue-next'
 import RewardNotifModal from '@/components/RewardNotifModal.vue'
 import KartuAnggotaModal from '@/components/KartuAnggotaModal.vue'
+import TentorChatBubble from '@/components/TentorChatBubble.vue'
 
 const route = useRoute()
 const router = useRouter()
