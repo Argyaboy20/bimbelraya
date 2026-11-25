@@ -23,6 +23,20 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.5] — 2026-11-25
+
+Rilis bersama backend `7.5`: data tentor di e-kartu, tombol navbar landing page, dan navbar dashboard tentor.
+
+### Ditambahkan
+- Sisi depan e-kartu anggota kini menampilkan Kode Tentor, Panggilan, dan Nomor Telepon sesuai data tentor yang diisi admin di Data Tentor, jadi isinya berbeda untuk tiap akun. Nomor telepon tampil sebagai angka saja, tanpa awalan `wa.me/`
+
+### Diubah
+- Navbar landing page: tombol Daftar Sekarang di sudut kanan atas diganti dua tombol, Kebijakan Privasi dan Tentang Sistem, dengan ukuran yang lebih kecil di HP. Tombol Daftar Sekarang di section ajakan bergabung tetap ada
+- Navbar dashboard tentor kini bergaya kaca biru tembus pandang dengan kilau di bagian atas
+
+### Diperbaiki
+- Navbar dashboard tentor kini benar-benar menempel di atas saat halaman di-scroll. Sebelumnya tidak menempel karena aturan penahan geser samping yang dipasang landing page untuk seluruh aplikasi
+
 ## [7.4] — 2026-11-16
 
 Rilis bersama frontend `7.4`: tanggal presensi tentor sebulan penuh. Tidak ada perubahan skema database. Mengikuti urutan nomor, `7.2` dan `7.3` (frontend) tidak dipakai di sini.

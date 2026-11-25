@@ -5,7 +5,10 @@
       <div class="navbar-brand">
         <img src="/assets/logobimbel.png" alt="Logo Bimbel Raya" class="navbar-logo" />
       </div>
-      <button class="btn-daftar" @click="openModal">Daftar Sekarang</button>
+      <div class="navbar-links">
+        <router-link to="/privasi" class="nav-link">Kebijakan Privasi</router-link>
+        <router-link to="/tentang" class="nav-link">Tentang Sistem</router-link>
+      </div>
     </nav>
 
     <!-- ===== HERO ===== -->
@@ -950,7 +953,8 @@ onUnmounted(() => {
   margin: 0 !important;
   padding: 0 !important;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* cadangan untuk browser lama */
+  overflow-x: clip; /* tetap menahan geser samping, tapi tidak membuat wadah scroll, jadi sticky bisa bekerja */
 }
 
 * {
@@ -965,7 +969,8 @@ onUnmounted(() => {
   width: 100%;
 }
 :global(body) {
-  overflow-x: hidden;
+  overflow-x: hidden; /* cadangan untuk browser lama */
+  overflow-x: clip; /* tetap menahan geser samping, tapi tidak membuat wadah scroll, jadi sticky bisa bekerja */
 }
 
 /* ===== NAVBAR ===== */
@@ -986,19 +991,27 @@ onUnmounted(() => {
   height: 32px;
   width: auto;
 }
-.btn-daftar {
-  padding: 0.4rem 1rem;
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.nav-link {
+  padding: 0.3rem 0.55rem;
   border-radius: 9999px;
+  border: 1.5px solid #024baa;
+  color: #024baa;
+  font-weight: 700;
+  font-size: 0.66rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.nav-link:hover {
   background: #024baa;
   color: #fff;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s;
-  font-size: 0.8rem;
-}
-.btn-daftar:hover {
-  transform: scale(1.05);
 }
 
 /* ===== HERO ===== */
@@ -2061,9 +2074,12 @@ onUnmounted(() => {
   .navbar-logo {
     height: 36px;
   }
-  .btn-daftar {
-    padding: 0.45rem 1.25rem;
-    font-size: 0.875rem;
+  .navbar-links {
+    gap: 0.5rem;
+  }
+  .nav-link {
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
   }
 
   /* Hero */
@@ -2234,8 +2250,11 @@ onUnmounted(() => {
   .navbar-logo {
     height: 40px;
   }
-  .btn-daftar {
-    padding: 0.5rem 1.5rem;
+  .navbar-links {
+    gap: 0.6rem;
+  }
+  .nav-link {
+    padding: 0.5rem 1.25rem;
     font-size: 0.9rem;
   }
 

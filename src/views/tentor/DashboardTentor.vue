@@ -196,6 +196,9 @@
       v-if="kartuTerbuka"
       :nama="namaTentor"
       :foto-link="profil?.fotoProfilLink ?? null"
+      :kode-tentor="profil?.kodeTentor || kodeTentor"
+      :panggilan="profil?.panggilan || ''"
+      :telepon="profil?.telepon || ''"
       @tutup="tutupKartu"
       @foto-baru="fotoBaru"
     />
@@ -634,18 +637,31 @@ onUnmounted(() => {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(46, 135, 246, 0.92) 0%,
-    rgba(57, 148, 255, 0.88) 50%,
-    rgba(46, 135, 246, 0.92) 100%
-  );
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  /* Kaca biru: tembus pandang, buram di belakangnya, bertepi terang */
+  background: rgba(29, 111, 212, 0.7);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
   box-shadow:
-    0 4px 24px rgba(46, 135, 246, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    0 8px 32px rgba(31, 100, 200, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+/* Kilau kaca: pantulan cahaya miring dan sorot terang di bagian atas */
+.tentor-navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 15%,
+      rgba(255, 255, 255, 0.28) 32%,
+      rgba(255, 255, 255, 0) 48%
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
 }
 
 /* ===== SUDUT KIRI: icon profil + teks sapaan ===== */

@@ -64,6 +64,23 @@
                 <h2 class="kartu-nama">{{ nama }}</h2>
                 <span class="kartu-garis"></span>
                 <p class="kartu-posisi">Tentor Bimbel Raya</p>
+                <dl class="kartu-data">
+                  <div class="data-baris">
+                    <Hash class="data-ikon" aria-hidden="true" />
+                    <dt class="data-label">Kode Tentor</dt>
+                    <dd class="data-nilai">{{ kodeTentor || '-' }}</dd>
+                  </div>
+                  <div class="data-baris">
+                    <User class="data-ikon" aria-hidden="true" />
+                    <dt class="data-label">Panggilan</dt>
+                    <dd class="data-nilai">{{ panggilan || '-' }}</dd>
+                  </div>
+                  <div class="data-baris">
+                    <Phone class="data-ikon" aria-hidden="true" />
+                    <dt class="data-label">Nomor Telepon</dt>
+                    <dd class="data-nilai">{{ teleponTampil || '-' }}</dd>
+                  </div>
+                </dl>
               </div>
 
               <span class="strip"></span>
@@ -104,15 +121,26 @@
 
 <script setup>
 defineOptions({ name: 'KartuAnggotaModal' })
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { api, ApiError } from '@/api/http'
-import { X, Camera, User, BookOpen, Pencil, GraduationCap, Calculator, Star } from 'lucide-vue-next'
+import { X, Camera, User, BookOpen, Pencil, GraduationCap, Calculator, Star, Hash, Phone } from 'lucide-vue-next'
 
 const props = defineProps({
   nama: { type: String, default: 'Tentor' },
   fotoLink: { type: String, default: null },
+  kodeTentor: { type: String, default: '' },
+  panggilan: { type: String, default: '' },
+  telepon: { type: String, default: '' },
 })
 const emit = defineEmits(['tutup', 'fotoBaru'])
+
+// Nomor telepon di Data Tentor bisa berbentuk link (wa.me/628...). Di kartu tampilkan nomornya saja.
+const teleponTampil = computed(() =>
+  (props.telepon || '')
+    .trim()
+    .replace(/^(https?:\/\/)?(www\.)?wa\.me\//i, '')
+    .replace(/\?.*$/, ''),
+)
 
 const terbalik = ref(false)
 const gagalMuat = ref(false)
@@ -516,6 +544,44 @@ onUnmounted(() => {
   font-weight: 600;
   letter-spacing: 0.04em;
   color: #1d6fd4;
+}
+/* Data tentor di sisi depan (dari Data Tentor admin) */
+.kartu-data {
+  width: 100%;
+  margin: 1em 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+.data-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.4em 0.7em;
+  border-radius: 0.7em;
+  background: rgba(46, 135, 246, 0.08);
+  font-size: 0.86em;
+}
+.data-ikon {
+  flex-shrink: 0;
+  width: 1.15em;
+  height: 1.15em;
+  color: #1d6fd4;
+}
+.data-label {
+  flex-shrink: 0;
+  margin: 0;
+  font-weight: 600;
+  color: #6b7280;
+}
+.data-nilai {
+  margin: 0 0 0 auto;
+  min-width: 0;
+  text-align: right;
+  font-weight: 700;
+  color: #1f2937;
+  word-break: break-word;
 }
 
 /* ----- Belakang ----- */
