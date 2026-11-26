@@ -73,8 +73,25 @@ import { api, ApiError } from '@/api/http'
 
 const RIWAYAT_MAKS = 10
 
-// fase tombol: sembunyi -> awan -> ikon
-const fase = ref('sembunyi')
+// Awan sapaan hanya tampil sekali per sesi (login atau tab baru). Sesudahnya tombol langsung timbul sebagai ikon.
+const KUNCI_SAPA = 'aiTentorSudahSapa'
+const sudahSapa = (() => {
+  try {
+    return sessionStorage.getItem(KUNCI_SAPA) === '1'
+  } catch {
+    return false
+  }
+})()
+const tandaiSudahSapa = () => {
+  try {
+    sessionStorage.setItem(KUNCI_SAPA, '1')
+  } catch {
+    // abaikan: awan hanya akan tampil lagi
+  }
+}
+
+// fase tombol: sembunyi -> awan -> ikon (pertama kali) | kecil -> ikon (kunjungan berikutnya) | keluar (pindah halaman)
+const fase = ref(sudahSapa ? 'kecil' : 'sembunyi')
 const terbuka = ref(false)
 const isian = ref('')
 const memuat = ref(false)
@@ -85,9 +102,18 @@ const pesanList = ref([])
 let timerAwan = null
 let timerIkon = null
 let timerSapaan = null
+let timerMuncul = null
 
 onMounted(() => {
-  timerAwan = setTimeout(() => (fase.value = 'awan'), 1200)
+  if (sudahSapa) {
+    // Kunjungan berikutnya (refresh atau kembali ke beranda): ikon timbul dari kecil ke ukuran normal
+    timerMuncul = setTimeout(() => (fase.value = 'ikon'), 250)
+    return
+  }
+  timerAwan = setTimeout(() => {
+    fase.value = 'awan'
+    tandaiSudahSapa()
+  }, 1200)
   timerIkon = setTimeout(() => {
     if (!terbuka.value) fase.value = 'ikon'
   }, 7500)
@@ -96,8 +122,30 @@ onMounted(() => {
 onUnmounted(() => {
   clearTimeout(timerAwan)
   clearTimeout(timerIkon)
+  clearTimeout(timerMuncul)
   clearTimeout(timerSapaan)
 })
+
+// Dipanggil DashboardTentor saat pengguna pindah halaman. Mengecil dulu, baru navigasi dilanjutkan.
+// tanpaAnimasi = true dipakai saat logout: sapaan di-reset supaya awan tampil lagi di login berikutnya.
+const keluar = (tanpaAnimasi = false) => {
+  clearTimeout(timerAwan)
+  clearTimeout(timerIkon)
+  clearTimeout(timerMuncul)
+  clearTimeout(timerSapaan)
+  if (tanpaAnimasi) {
+    try {
+      sessionStorage.removeItem(KUNCI_SAPA)
+    } catch {
+      // abaikan
+    }
+    return Promise.resolve()
+  }
+  terbuka.value = false
+  fase.value = 'keluar'
+  return new Promise((selesai) => setTimeout(selesai, 450))
+}
+defineExpose({ keluar })
 
 const gulirKeBawah = () => {
   nextTick(() => {
@@ -117,6 +165,8 @@ const ambilSisa = async () => {
 const buka = () => {
   clearTimeout(timerAwan)
   clearTimeout(timerIkon)
+  clearTimeout(timerMuncul)
+  tandaiSudahSapa()
   fase.value = 'ikon'
   terbuka.value = true
   ambilSisa()
@@ -225,6 +275,30 @@ const kirimPesan = async () => {
 }
 .ai-float.is-ikon:hover {
   transform: scale(1.07);
+}
+/* Kunjungan berikutnya: ikon timbul dari kecil (kecil -> ikon, memakai mantul bawaan tombol).
+   Pindah halaman: ikon mengecil lalu hilang (ikon -> keluar). */
+.ai-float.is-kecil,
+.ai-float.is-keluar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.2);
+  pointer-events: none;
+}
+.ai-float.is-keluar {
+  transition:
+    width 0.4s ease,
+    height 0.4s ease,
+    border-radius 0.4s ease,
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.5, 0, 0.75, 0);
+}
+.ai-float.is-kecil .ai-ikon,
+.ai-float.is-keluar .ai-ikon {
+  opacity: 1;
+  transform: none;
 }
 
 /* Ekor awan chat */
@@ -483,6 +557,7 @@ const kirimPesan = async () => {
 
 @media (prefers-reduced-motion: reduce) {
   .ai-float,
+  .ai-float.is-keluar,
   .ai-panel-enter-active,
   .ai-panel-leave-active {
     transition-duration: 0.01s;
@@ -513,6 +588,8 @@ const kirimPesan = async () => {
     bottom: calc(28px + env(safe-area-inset-bottom));
   }
   .ai-float.is-sembunyi,
+  .ai-float.is-kecil,
+  .ai-float.is-keluar,
   .ai-float.is-ikon {
     width: 56px;
     height: 56px;

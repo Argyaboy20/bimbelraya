@@ -207,14 +207,14 @@
     <RewardNotifModal />
 
     <!-- ===== ASISTEN AI TENTOR ===== -->
-    <TentorChatBubble />
+    <TentorChatBubble ref="chatAi" />
   </div>
 </template>
 
 <script setup>
 defineOptions({ name: 'DashboardTentor' })
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useTentorStore } from '@/stores/tentor'
 import { useAuthStore } from '@/stores/auth'
 import { usePresensiStore } from '@/stores/presensi'
@@ -226,6 +226,10 @@ import TentorChatBubble from '@/components/TentorChatBubble.vue'
 
 const route = useRoute()
 const router = useRouter()
+// Asisten AI: saat pindah halaman, tombolnya mengecil dulu lalu hilang (navigasi menunggu sekitar 0,45 detik).
+// Menuju /login (logout) tanpa animasi, hanya me-reset sapaan.
+const chatAi = ref(null)
+onBeforeRouteLeave((to) => chatAi.value?.keluar(to.path === '/login'))
 const tentorStore = useTentorStore()
 const authStore = useAuthStore()
 const presensiStore = usePresensiStore()

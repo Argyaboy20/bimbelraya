@@ -23,6 +23,17 @@ Kategori yang dipakai pada setiap rilis: **Ditambahkan**, **Diubah**, **Diperbai
 
 ## [Belum dirilis]
 
+## [7.7] — 2026-11-26
+
+Rilis frontend saja (backend tetap `7.6`): penyempurnaan tombol asisten AI tentor dan halaman Tentang Sistem.
+
+### Ditambahkan
+- Halaman Tentang Sistem, bagian "Untuk tentor", kini memuat poin Asisten AI (bertanya seputar SOP, presensi, dan kontrak, dengan jatah 10 pertanyaan per hari)
+
+### Diubah
+- Awan sapaan "Hai! Aku asisten AI Bimbel Raya siap membantumu!" kini tampil sekali saja, saat tentor baru masuk dan website pertama kali dibuka. Saat halaman di-refresh atau tentor kembali ke beranda, tombol langsung timbul dari kecil ke ukuran normalnya
+- Saat tentor pindah ke halaman lain, tombol asisten AI mengecil lalu menghilang, dan timbul lagi dari kecil saat kembali ke beranda tentor. Animasi ini dimatikan otomatis bagi pengguna yang memilih gerakan minimal
+
 ## [7.6] — 2026-11-25
 
 Rilis bersama backend `7.6`: asisten AI di dashboard tentor.

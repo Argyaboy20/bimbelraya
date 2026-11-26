@@ -26,6 +26,10 @@
       <li><strong>Reward bulanan:</strong> melihat peringkat tentor terbaik setiap bulan.</li>
       <li><strong>Kartu Tanda Anggota:</strong> e-kartu digital dengan foto profil.</li>
       <li><strong>Kontrak:</strong> memantau masa kontrak dan memperpanjangnya secara online.</li>
+      <li>
+        <strong>Asisten AI:</strong> bertanya seputar SOP, presensi, dan kontrak lewat bubble chat di
+        dashboard, dengan jatah 10 pertanyaan per hari.
+      </li>
     </ul>
 
     <h2>Untuk admin</h2>

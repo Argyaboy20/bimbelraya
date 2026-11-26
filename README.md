@@ -4,7 +4,7 @@ Aplikasi web **Bimbel Raya**, layanan bimbingan belajar privat dengan home visit
 Repositori ini berisi sisi tampilan (frontend): halaman publik, portal tentor, dan portal admin.
 Sisi server ada di repositori terpisah: **bimbelraya-backend**.
 
-**Versi saat ini: 7.6** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
+**Versi saat ini: 7.7** — lihat [Riwayat versi](#riwayat-versi) dan [CHANGELOG.md](Changelog.md).
 
 ## Fitur
 
@@ -155,6 +155,7 @@ dan versi **MINOR** (`2.1`, `2.2`, ...) untuk perubahan yang lebih kecil. Aturan
 | **7.4** | 2026-11-16 | Rilis bersama backend 7.4: tanggal presensi tentor bebas di bulan berjalan (tanggal 1 sampai akhir bulan), tidak lagi hanya 2 hari ke belakang. Urutan riwayat presensi diperbaiki |
 | **7.5** | 2026-11-25 | Rilis bersama backend 7.5: e-kartu anggota menampilkan Kode Tentor, Panggilan, dan Nomor Telepon dari Data Tentor; tombol Kebijakan Privasi dan Tentang Sistem di navbar landing page; navbar dashboard tentor bergaya kaca biru dan menempel di atas saat di-scroll |
 | **7.6** | 2026-11-25 | Rilis bersama backend 7.6: asisten AI khusus tentor di dashboard (bubble chat di kanan bawah dengan animasi awan, berbasis SOP, jatah 10 pertanyaan per hari) |
+| **7.7** | 2026-11-26 | Rilis frontend saja (backend tetap 7.6): awan sapaan asisten AI tentor hanya tampil sekali per sesi, tombolnya timbul dari kecil dan mengecil saat pindah halaman, serta poin Asisten AI di halaman Tentang Sistem |
 
 ## Kontribusi
 
